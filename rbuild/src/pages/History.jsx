@@ -9,15 +9,32 @@ import {
   Button
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteHistoryAPI, getHistoryAPI } from "../services/allAPIs";
+import { deleteHistoryAPI, getHistoryAPI, getAResumeAPI } from "../services/allAPIs";
 
 const History = () => {
+
   const [historyData, setHistoryData] = useState([]);
+  const [resumeMap, setResumeMap] = useState({});
 
   const loadHistory = async () => {
     try {
       const res = await getHistoryAPI();
       setHistoryData(res.data);
+
+      // ⭐ fetch all resumes
+      const resumePromises = res.data.map(item =>
+        getAResumeAPI(item.resumeId)
+      );
+
+      const resumeResponses = await Promise.all(resumePromises);
+
+      const map = {};
+      resumeResponses.forEach(r => {
+        map[r.data.id] = r.data;
+      });
+
+      setResumeMap(map);
+
     } catch (err) {
       console.log(err);
     }
@@ -37,16 +54,9 @@ const History = () => {
   }, []);
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "#f4f6fb",
-        py: 6
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", background: "#f4f6fb", py: 6 }}>
       <Container maxWidth="xl">
 
-        {/* PAGE HEADER */}
         <Box mb={4}>
           <Typography variant="h4" fontWeight="bold">
             Resume History
@@ -56,65 +66,66 @@ const History = () => {
           </Typography>
         </Box>
 
-        {/* EMPTY STATE */}
-        {historyData.length === 0 && (
-          <Paper sx={{ p: 6, textAlign: "center", borderRadius: 4 }}>
-            <Typography variant="h6">No history available</Typography>
-            <Typography color="text.secondary">
-              Downloaded resumes will appear here
-            </Typography>
-          </Paper>
-        )}
-
-        {/* HISTORY GRID */}
         <Grid container spacing={4}>
-          {historyData.map((item) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
-              <Paper
-                sx={{
-                  borderRadius: 4,
-                  overflow: "hidden",
-                  boxShadow: 3,
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column"
-                }}
-              >
-                {/* CARD HEADER */}
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ px: 2, py: 1.5, borderBottom: "1px solid #eee" }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    {item.formattedDate}
-                  </Typography>
+          {historyData.map((item) => {
 
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => deleteHistory(item.id)}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </Stack>
+            const resume = resumeMap[item.resumeId];
 
-                {/* PREVIEW */}
-                <Box
-                  component="img"
-                  src={item.imgData}
-                  alt="resume"
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+                <Paper
                   sx={{
-                    width: "100%",
-                    height: 360,
-                    objectFit: "cover",
-                    background: "#fff"
+                    borderRadius: 4,
+                    overflow: "hidden",
+                    boxShadow: 3,
+                    p: 2
                   }}
-                />
-              </Paper>
-            </Grid>
-          ))}
+                >
+
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      {item.formattedDate}
+                    </Typography>
+
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => deleteHistory(item.id)}
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  </Stack>
+
+                  {/* ⭐ Resume Preview Card */}
+                  {resume && (
+                    <Box>
+                      <Typography fontWeight="bold">
+                        {resume.personalDetails.name}
+                      </Typography>
+
+                      <Typography variant="body2" color="text.secondary">
+                        {resume.personalDetails.title}
+                      </Typography>
+
+                      <Typography variant="body2" mt={1}>
+                        {resume.education.course}
+                      </Typography>
+
+                      <Typography variant="body2">
+                        {resume.professionalDetails.company}
+                      </Typography>
+                    </Box>
+                  )}
+
+                </Paper>
+              </Grid>
+            );
+          })}
         </Grid>
 
       </Container>

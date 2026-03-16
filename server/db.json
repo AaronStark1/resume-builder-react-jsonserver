@@ -1,0 +1,109 @@
+{
+  "resumes": [
+    {
+      "id": 1,
+      "personalDetails": {
+        "name": "Aaron Correya",
+        "title": "Full Stack Developer",
+        "location": "Kerala, India"
+      },
+      "contactDetails": {
+        "email": "aaroncorreya@gmail.com",
+        "phoneNumber": "9898989898",
+        "github": "https://github.com/aaroncorreya",
+        "linkedIn": "https://linkedin.com/in/aaroncorreya",
+        "portfolio": "https://aaron.dev"
+      },
+      "education": {
+        "course": "B.Tech Computer Science",
+        "college": "XYZ Engineering College",
+        "university": "KTU",
+        "year": "2024"
+      },
+      "professionalDetails": {
+        "jobTitle": "Software Developer Intern",
+        "company": "Cognizant",
+        "location": "Kochi",
+        "duration": "Jan 2024 - Jun 2024"
+      },
+      "skills": ["React", "NodeJS", "Express", "MongoDB", "MySQL"],
+      "summary": "Passionate full stack developer experienced in building scalable web apps using MERN stack."
+    },
+    {
+      "id": 2,
+      "personalDetails": {
+        "name": "Meera Nair",
+        "title": "UI/UX Designer",
+        "location": "Bangalore"
+      },
+      "contactDetails": {
+        "email": "meera@gmail.com",
+        "phoneNumber": "9876543210",
+        "github": "https://github.com/meera",
+        "linkedIn": "https://linkedin.com/in/meera",
+        "portfolio": "https://meeradesign.com"
+      },
+      "education": {
+        "course": "B.Des Interaction Design",
+        "college": "NID",
+        "university": "NID",
+        "year": "2023"
+      },
+      "professionalDetails": {
+        "jobTitle": "Product Designer",
+        "company": "Zerodha",
+        "location": "Bangalore",
+        "duration": "Aug 2023 - Present"
+      },
+      "skills": ["Figma", "User Research", "Wireframing", "Prototyping"],
+      "summary": "Creative designer focused on intuitive digital experiences."
+    },
+    {
+      "id": 3,
+      "personalDetails": {
+        "name": "Rahul Menon",
+        "title": "Backend Engineer",
+        "location": "Hyderabad"
+      },
+      "contactDetails": {
+        "email": "rahul@gmail.com",
+        "phoneNumber": "9123456780",
+        "github": "https://github.com/rahul",
+        "linkedIn": "https://linkedin.com/in/rahul",
+        "portfolio": "https://rahul.dev"
+      },
+      "education": {
+        "course": "M.Tech Software Engineering",
+        "college": "IIIT Hyderabad",
+        "university": "IIIT",
+        "year": "2022"
+      },
+      "professionalDetails": {
+        "jobTitle": "Backend Developer",
+        "company": "Swiggy",
+        "location": "Hyderabad",
+        "duration": "2022 - Present"
+      },
+      "skills": ["Java", "Spring Boot", "Microservices", "PostgreSQL"],
+      "summary": "Backend engineer specializing in scalable distributed systems."
+    }
+  ],
+
+  "history": [
+    {
+      "id": 1,
+      "resumeId": 1,
+      "formattedDate": "16/03/2026 , 10:20 AM"
+    },
+    {
+      "id": 2,
+      "resumeId": 2,
+      "formattedDate": "16/03/2026 , 10:35 AM"
+    },
+    {
+      "id": 3,
+      "resumeId": 3,
+      "formattedDate": "16/03/2026 , 11:10 AM"
+    }
+  ]
+}

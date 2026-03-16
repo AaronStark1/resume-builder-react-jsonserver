@@ -15,10 +15,10 @@ rbuilderServer.use(middleware)
 rbuilderServer.use(router)
 
 //6. port creation
-const port = process.env.port ||  3000
+const PORT = process.env.PORT || 3000
 
 // 7. start server 
-rbuilderServer.listen(port,()=>{
-    console.log("Resume Builder Server running on the port "+port);
+rbuilderServer.listen(PORT,()=>{
+    console.log("Resume Builder Server running on the port "+PORT);
     
 })

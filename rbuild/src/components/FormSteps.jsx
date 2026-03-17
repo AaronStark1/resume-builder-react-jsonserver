@@ -19,7 +19,7 @@ const steps = [
   'Review and Submit'
 ]
 
-const FormSteps = ({ formData, setFormData, isFinished, setIsFinished }) => {
+const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeId }) => {
 
   const { personalDetails, contactDetails, education, professionalDetails, skills, summary } = formData
 
@@ -74,6 +74,7 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished }) => {
     try {
       const response = await addResumeAPI(formData)
       if (response.status === 201) {
+        setResumeId(response.data.id)
         Swal.fire("Success", "Resume submitted", "success")
         setIsFinished(true)
       } else {

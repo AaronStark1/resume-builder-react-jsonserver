@@ -26,7 +26,7 @@ const Form = () => {
     skills: [],
     summary: ''
   })
-
+  const [resumeId, setResumeId] = useState(null)
   const [isFinished, setIsFinished] = useState(false)
 
   return (
@@ -50,7 +50,7 @@ const Form = () => {
           isFinished
             ? (
               <Box sx={{ width: "100%" }}>
-                <Preview formData={formData} />
+                <Preview formData={formData} resumeId={resumeId}/>
               </Box>
             )
             : (
@@ -62,6 +62,7 @@ const Form = () => {
                     setFormData={setFormData}
                     isFinished={isFinished}
                     setIsFinished={setIsFinished}
+                    setResumeId={setResumeId}
                   />
                 </Box>
 
@@ -76,7 +77,7 @@ const Form = () => {
                     minHeight: 500
                   }}
                 >
-                  <Preview formData={formData} />
+                  <Preview formData={formData} resumeId={resumeId}/>
                 </Box>
               </>
             )

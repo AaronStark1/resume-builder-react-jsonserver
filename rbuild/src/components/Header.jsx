@@ -16,16 +16,23 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
-import LightModeIcon from '@mui/icons-material/LightMode'
 import { Link, useLocation } from 'react-router-dom'
 
 import { useColorMode } from '../context/useColorMode'
+import ThemeToggleIcon from './ThemeToggleIcon'
 
 const Header = () => {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { mode, toggleColorMode } = useColorMode()
+  const { mode, toggleColorMode, prepareColorModeToggle } = useColorMode()
+  const themeLabel = mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+  // Intent to toggle: lets the ink snapshot the page before the click lands.
+  const themeToggleProps = {
+    onClick: toggleColorMode,
+    onPointerEnter: prepareColorModeToggle,
+    onPointerDown: prepareColorModeToggle,
+    onFocus: prepareColorModeToggle,
+  }
 
   const isActive = (path) => {
     if (path === '/resume') {
@@ -131,10 +138,10 @@ const Header = () => {
 
           {/* DESKTOP THEME TOGGLE & CTA */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
-            <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+            <Tooltip title={themeLabel}>
               <IconButton
-                onClick={toggleColorMode}
-                aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                {...themeToggleProps}
+                aria-label={themeLabel}
                 sx={{
                   color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
                   bgcolor: 'rgba(255,255,255,0.08)',
@@ -146,7 +153,7 @@ const Header = () => {
                   },
                 }}
               >
-                {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+                <ThemeToggleIcon mode={mode} />
               </IconButton>
             </Tooltip>
 
@@ -175,15 +182,15 @@ const Header = () => {
           {/* MOBILE THEME TOGGLE & HAMBURGER */}
           <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto', alignItems: 'center', gap: 1 }}>
             <IconButton
-              onClick={toggleColorMode}
-              aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              {...themeToggleProps}
+              aria-label={themeLabel}
               sx={{
                 color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
                 bgcolor: 'rgba(255,255,255,0.08)',
                 p: 0.8,
               }}
             >
-              {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+              <ThemeToggleIcon mode={mode} />
             </IconButton>
 
             <IconButton
@@ -210,14 +217,15 @@ const Header = () => {
             bgcolor: theme.palette.mode === 'dark' ? '#140c22' : 'primary.dark',
             color: 'white',
             p: 3,
+            pt: 11, // start below the app bar, which sits above the drawer (zIndex drawer + 1)
           }),
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Button
             size="small"
-            onClick={toggleColorMode}
-            startIcon={mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+            {...themeToggleProps}
+            startIcon={<ThemeToggleIcon mode={mode} size={18} />}
             sx={{
               color: 'white',
               bgcolor: 'rgba(255,255,255,0.08)',

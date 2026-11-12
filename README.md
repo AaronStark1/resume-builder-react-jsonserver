@@ -16,7 +16,7 @@ https://resume-builder-react-jsonserver.vercel.app/
 
 ## ✨ Overview
 
-**rBuild** is a modern, responsive resume builder web application built with React 19, Vite, MUI v7, and Motion. It enables job seekers to create recruiter-ready resumes with guided steps, live responsive A4 preview, client-side PDF export, direct modal editing, and local history tracking.
+**rBuild** is a modern, responsive resume builder web application built with React 19, Vite, MUI v7, and Motion. It enables job seekers to create recruiter-ready resumes with guided steps, live responsive A4 preview, client-side PDF export, direct modal editing, and local history tracking — in light or dark mode, switched with an organic WebGL ink-bleed transition.
 
 ------------------------------------------------------------------------
 
@@ -38,12 +38,23 @@ https://resume-builder-react-jsonserver.vercel.app/
 - Client-side multi-page PDF generation via lazy-loaded `html2canvas` and `jsPDF`
 - High-fidelity JPEG compression (quality 0.92) with automatic user-based naming
 - Print-optimized CSS stylesheet for ATS-friendly selectable text PDFs
+- Resumes always render as a white A4 document with dark text — in the preview, the PDF and print — whatever the app theme
 
 ### 🕘 Resume History & Snapshots
 - Relationship-based snapshot history with json-server (`_expand=resume`)
 - Search by name or job title with instant filtering
 - Direct route `/resume/:id` to open, edit, and re-download any snapshot
 - Optimistic deletion with confirmation dialogs
+
+### 🌗 Ink-Bleed Light / Dark Mode
+- Switching themes spreads an organic ink blot (or bleach, back to light) from the toggle across the page, revealing the new theme as it grows
+- Custom WebGL2 shader: domain-warped noise, branching tendrils, paper-fibre edges, diffusion haze, speckles and a pooled pigment rim
+- Pixel-accurate snapshots of the screen, rendered by the browser itself (SVG `foreignObject`) at the moment you toggle — so it works on every page, with live form input, scroll position and sticky headers
+- Interruptible: toggle again mid-spread and a new ink spreads over the current frame
+- Sun ⇄ moon toggle icon that morphs in step with the ink; works with mouse, touch and keyboard (Enter / Space)
+- Respects `prefers-reduced-motion` with a gentle colour cross-fade, which is also the fallback without WebGL2
+- Theme saved in `localStorage` (`rbuild_theme_mode`); follows your OS setting until you choose one
+- Lazy-loaded engine (~11 kB gzipped) that frees its GPU memory after each transition — see [`rbuild/src/ink/`](rbuild/src/ink/)
 
 ------------------------------------------------------------------------
 
@@ -53,6 +64,7 @@ https://resume-builder-react-jsonserver.vercel.app/
 - **React 19** + **Vite 7**
 - **Material UI (MUI v7)** + Emotion
 - **Motion (`motion/react`)** for smooth, accessible page & element animations
+- **WebGL2** (custom GLSL shader) for the ink-bleed theme transition
 - **React Router v7** with lazy-loaded route splitting
 - **SweetAlert2** + **canvas-confetti**
 
@@ -113,6 +125,12 @@ VITE_API_URL=https://resume-builder-jsonserver.onrender.com
 | Resume History | PDF Export |
 | :---: | :---: |
 | *(A4 miniature cards with search & actions)* | *(Crisp multi-page PDF export & print preview)* |
+
+------------------------------------------------------------------------
+
+## 🙏 Acknowledgements
+
+The ink-bleed theme transition is adapted from [ink-bleed-theme-changer](https://github.com/codemure-official/ink-bleed-theme-changer) by codemure.
 
 ------------------------------------------------------------------------
 

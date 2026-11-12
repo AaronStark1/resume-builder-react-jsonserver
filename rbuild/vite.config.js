@@ -9,8 +9,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          mui: ['@mui/material', '@mui/icons-material'],
-          emotion: ['@emotion/react', '@emotion/styled'],
+          // Emotion shares this chunk: split apart, the two chunks import each other and the
+          // production bundle fails at start-up ("Cannot access … before initialization").
+          mui: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
         },
       },
     },

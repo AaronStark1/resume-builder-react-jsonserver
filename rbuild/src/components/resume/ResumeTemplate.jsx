@@ -2,12 +2,18 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Chip from '@mui/material/Chip'
+import { ThemeProvider } from '@mui/material/styles'
 import { normalizeResume } from '../../utils/normalizeResume'
+import { getAppTheme } from '../../theme'
 
 const A4_WIDTH = 794
 const A4_MIN_HEIGHT = 1123
 
-const ResumeTemplate = ({ data, placeholders = false }) => {
+// The resume is a printed document: white paper and dark text whatever the app theme, so its MUI
+// tokens (text.secondary, Chip, typography) always resolve against the light theme.
+const documentTheme = getAppTheme('light')
+
+const ResumeDocument = ({ data, placeholders = false }) => {
   const resume = normalizeResume(data)
   const {
     template = 'classic',
@@ -613,6 +619,12 @@ const ResumeTemplate = ({ data, placeholders = false }) => {
     </Box>
   )
 }
+
+const ResumeTemplate = (props) => (
+  <ThemeProvider theme={documentTheme}>
+    <ResumeDocument {...props} />
+  </ThemeProvider>
+)
 
 export default ResumeTemplate
 

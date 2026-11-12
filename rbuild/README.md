@@ -16,3 +16,14 @@ Copy `.env.example` to `.env` and set:
 - `VITE_API_URL` — Backend API URL (defaults to `http://localhost:3000`)
 
 For Vercel deployment, set `VITE_API_URL` in the project settings.
+
+## Theme Transition
+
+The light/dark switch is an ink-bleed transition in `src/ink/`, lazy-loaded by `ColorModeProvider`:
+
+- `InkTransition.js` — orchestration: snapshot, synchronous theme flip, spread, interruptions, fallbacks
+- `capture.js` — viewport snapshots rendered by the browser through SVG `foreignObject`
+- `renderer.js`, `shaders.js` — WebGL2 renderer and the ink shader
+- `params.js` — tuning: duration, tendrils, softness, rim colours
+
+Under `prefers-reduced-motion`, without WebGL2, or if a snapshot fails, it falls back to a CSS colour cross-fade (`themeFade.js`).

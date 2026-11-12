@@ -4,6 +4,38 @@ body {
   margin: 0;
 }
 
+/* ---------- Ink-bleed theme transition (src/ink) ----------
+   WebGL overlay that spreads the new theme. Never intercepts input; only visible mid-transition. */
+.ink-canvas {
+  position: fixed;
+  inset: 0;
+  /* Above app bar (1100+), drawer (1200), modal (1300), snackbar (1400) and tooltip (1500). */
+  z-index: 2000;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.ink-canvas.is-active {
+  visibility: visible;
+}
+
+/* CSS fallback (reduced motion, no WebGL2, or snapshot unavailable).
+   The class only exists for the duration of a flip. */
+html.theme-fade,
+html.theme-fade *,
+html.theme-fade *::before,
+html.theme-fade *::after {
+  transition:
+    background-color var(--theme-fade, 0.45s) ease,
+    border-color var(--theme-fade, 0.45s) ease,
+    color var(--theme-fade, 0.45s) ease,
+    fill var(--theme-fade, 0.45s) ease,
+    stroke var(--theme-fade, 0.45s) ease,
+    box-shadow var(--theme-fade, 0.45s) ease !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;
@@ -18,7 +50,8 @@ body {
   footer,
   .no-print,
   button,
-  .MuiAppBar-root {
+  .MuiAppBar-root,
+  .ink-canvas {
     display: none !important;
   }
 

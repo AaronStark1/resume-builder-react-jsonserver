@@ -207,37 +207,37 @@ The repo has no `vercel.json`, so refreshing `/history` or `/form` on the live s
 
 ### 4.1 Step labels don't match content
 `steps` labels: `…'Skills and Certifications', 'Review and Submit'`, but step 4 is skills only and step 5 is the **Professional Summary** text box, not a review.
-- [ ] Rename the steps to: `Basics`, `Contact`, `Education`, `Experience`, `Skills`, `Summary`, then add a real **7th "Review" step** that shows a compact read-only summary with "Edit" links that jump back to a step (`setActiveStep(i)`).
-- [ ] Make **Contact** required, since email is essential. If an optional step is still wanted, make **Experience** optional (for freshers) and keep the existing skip logic.
+- [x] Rename the steps to: `Basics`, `Contact`, `Education`, `Experience`, `Skills`, `Summary`, then add a real **7th "Review" step** that shows a compact read-only summary with "Edit" links that jump back to a step (`setActiveStep(i)`).
+- [x] Make **Contact** required, since email is essential. If an optional step is still wanted, make **Experience** optional (for freshers) and keep the existing skip logic.
 
 ### 4.2 Validation
-- [ ] Per-step validation before `handleNext`:
+- [x] Per-step validation before `handleNext`:
   - `name` is required.
   - `email` is required and must match a valid email format.
   - `phoneNumber`: digits, spaces, `+` and `-`, 7–15 digits.
   - URL fields: optional, but if present they must be valid. Auto-prefix `https://` when the protocol is missing.
   - `year`: 4 digits, between 1950 and current year + 6.
-- [ ] Show errors with `TextField` `error` and `helperText`. Don't use `alert()`.
+- [x] Show errors with `TextField` `error` and `helperText`. Don't use `alert()`.
 - **Acceptance:** you can't advance with an invalid email. Errors clear as the user fixes them.
 
 ### 4.3 Skills input
-- [ ] Trim input. Make the duplicate check case-insensitive. Replace `alert("Skill already exists")` with helper text or a MUI `Snackbar`.
-- [ ] Pressing **Enter** adds the skill.
-- [ ] Render added skills as `Chip`s with `onDelete` (as Edit does), not as contained `Button`s with "✕".
-- [ ] Expand suggestions (e.g. TypeScript, Next.js, Python, Java, SQL, Git, Docker, AWS, Figma, Communication, Leadership) and hide ones already added. Ideally, derive suggestions from the entered job title using a small static map (frontend → React/TypeScript/CSS…, backend → Node/SQL/Docker…).
+- [x] Trim input. Make the duplicate check case-insensitive. Replace `alert("Skill already exists")` with helper text or a MUI `Snackbar`.
+- [x] Pressing **Enter** adds the skill.
+- [x] Render added skills as `Chip`s with `onDelete` (as Edit does), not as contained `Button`s with "✕".
+- [x] Expand suggestions (e.g. TypeScript, Next.js, Python, Java, SQL, Git, Docker, AWS, Figma, Communication, Leadership) and hide ones already added. Ideally, derive suggestions from the entered job title using a small static map (frontend → React/TypeScript/CSS…, backend → Node/SQL/Docker…).
 
 ### 4.4 Summary step
-- [ ] Add a live character counter (aim for 300–600 chars) and 2–3 clickable "starter" templates that insert editable text using the user's title and skills.
+- [x] Add a live character counter (aim for 300–600 chars) and 2–3 clickable "starter" templates that insert editable text using the user's title and skills.
 
 ### 4.5 Draft autosave
 Refreshing the page loses everything.
-- [ ] Persist `formData` and `activeStep` to `localStorage` (debounced, ~400 ms; wrap in try/catch). Restore on mount and clear after a successful submit. Show a subtle "Draft saved" indicator.
+- [x] Persist `formData` and `activeStep` to `localStorage` (debounced, ~400 ms; wrap in try/catch). Restore on mount and clear after a successful submit. Show a subtle "Draft saved" indicator.
 
 ### 4.6 After finishing
-- [ ] On the final screen, add a **"Create another resume"** button that resets the form state and draft, plus a "Back to editing" option.
+- [x] On the final screen, add a **"Create another resume"** button that resets the form state and draft, plus a "Back to editing" option.
 
 ### 4.7 Mobile stepper
-- [ ] Six or seven horizontal steps overflow on phones. Use `orientation="vertical"` below `md` (`useMediaQuery`), or `alternativeLabel` with a `MobileStepper` on xs.
+- [x] Six or seven horizontal steps overflow on phones. Use `orientation="vertical"` below `md` (`useMediaQuery`), or `alternativeLabel` with a `MobileStepper` on xs.
 
 ---
 

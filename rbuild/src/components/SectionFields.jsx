@@ -26,3 +26,4 @@ const SectionFields = ({ section, value = {}, onChange, errors = {} }) => {
 }
 
 export default SectionFields
+

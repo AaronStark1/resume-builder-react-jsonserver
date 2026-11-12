@@ -73,3 +73,4 @@ const ScaledPage = ({ children, targetWidth, sx = {} }) => {
 }
 
 export default ScaledPage
+

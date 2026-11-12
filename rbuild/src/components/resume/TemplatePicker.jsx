@@ -64,8 +64,10 @@ const TemplatePicker = ({
                 cursor: 'pointer',
                 borderRadius: 2.5,
                 borderWidth: isSelected ? 2 : 1,
-                borderColor: isSelected ? currentAccent : 'rgba(20,0,43,0.12)',
-                bgcolor: isSelected ? 'rgba(61, 0, 102, 0.03)' : '#ffffff',
+                borderColor: isSelected ? currentAccent : 'divider',
+                bgcolor: (theme) => isSelected
+                  ? (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(61, 0, 102, 0.04)')
+                  : 'background.paper',
                 transition: 'all 0.2s ease',
                 ':hover': {
                   borderColor: currentAccent,
@@ -74,7 +76,7 @@ const TemplatePicker = ({
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#111827">
+                <Typography variant="subtitle2" fontWeight={700} color="text.primary">
                   {tpl.name}
                 </Typography>
                 {isSelected && (
@@ -124,8 +126,8 @@ const TemplatePicker = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: isSelected
-                  ? `0 0 0 3px #ffffff, 0 0 0 5px ${color.value}`
+                boxShadow: (theme) => isSelected
+                  ? `0 0 0 3px ${theme.palette.background.paper}, 0 0 0 5px ${color.value}`
                   : '0 2px 4px rgba(0,0,0,0.1)',
                 transition: 'all 0.2s',
                 ':hover': {

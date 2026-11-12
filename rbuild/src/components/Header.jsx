@@ -11,15 +11,21 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemText
+  ListItemText,
+  Tooltip
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
 import { Link, useLocation } from 'react-router-dom'
+
+import { useColorMode } from '../context/useColorMode'
 
 const Header = () => {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { mode, toggleColorMode } = useColorMode()
 
   const isActive = (path) => {
     if (path === '/resume') {
@@ -56,7 +62,7 @@ const Header = () => {
       position="sticky"
       elevation={0}
       sx={(theme) => ({
-        background: 'rgba(20, 0, 43, 0.92)',
+        background: theme.palette.mode === 'dark' ? 'rgba(12, 7, 20, 0.92)' : 'rgba(20, 0, 43, 0.92)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         zIndex: theme.zIndex.drawer + 1,
@@ -123,8 +129,27 @@ const Header = () => {
             ))}
           </Box>
 
-          {/* DESKTOP CTA */}
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          {/* DESKTOP THEME TOGGLE & CTA */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+            <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+              <IconButton
+                onClick={toggleColorMode}
+                aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                sx={{
+                  color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
+                  bgcolor: 'rgba(255,255,255,0.08)',
+                  p: 1,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.18)',
+                    transform: 'rotate(15deg)',
+                  },
+                }}
+              >
+                {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+              </IconButton>
+            </Tooltip>
+
             <Button
               component={Link}
               to="/form"
@@ -147,8 +172,20 @@ const Header = () => {
             </Button>
           </Box>
 
-          {/* MOBILE HAMBURGER BUTTON */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto' }}>
+          {/* MOBILE THEME TOGGLE & HAMBURGER */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto', alignItems: 'center', gap: 1 }}>
+            <IconButton
+              onClick={toggleColorMode}
+              aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              sx={{
+                color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
+                bgcolor: 'rgba(255,255,255,0.08)',
+                p: 0.8,
+              }}
+            >
+              {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+            </IconButton>
+
             <IconButton
               color="inherit"
               aria-label="Open mobile menu"
@@ -168,15 +205,31 @@ const Header = () => {
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
         PaperProps={{
-          sx: {
-            width: 260,
-            bgcolor: 'primary.dark',
+          sx: (theme) => ({
+            width: 270,
+            bgcolor: theme.palette.mode === 'dark' ? '#140c22' : 'primary.dark',
             color: 'white',
             p: 3,
-          },
+          }),
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Button
+            size="small"
+            onClick={toggleColorMode}
+            startIcon={mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+            sx={{
+              color: 'white',
+              bgcolor: 'rgba(255,255,255,0.08)',
+              px: 1.5,
+              py: 0.5,
+              fontSize: '0.8rem',
+              ':hover': { bgcolor: 'rgba(255,255,255,0.15)' }
+            }}
+          >
+            {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </Button>
+
           <IconButton
             onClick={() => setMobileOpen(false)}
             sx={{ color: 'white' }}

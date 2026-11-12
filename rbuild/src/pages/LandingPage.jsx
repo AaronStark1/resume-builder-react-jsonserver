@@ -399,15 +399,15 @@ const LandingPage = () => {
                   }}
                 >
                   <Card
-                    sx={{
+                    sx={(theme) => ({
                       height: '100%',
                       p: 4,
                       borderRadius: 4,
                       position: 'relative',
-                      bgcolor: '#ffffff',
-                      boxShadow: '0 4px 16px rgba(20,0,43,0.04)',
-                      border: '1px solid rgba(20,0,43,0.06)'
-                    }}
+                      bgcolor: 'background.paper',
+                      boxShadow: theme.palette.mode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 16px rgba(20,0,43,0.04)',
+                      border: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(20,0,43,0.06)'
+                    })}
                   >
                     <Typography
                       variant="h2"
@@ -498,17 +498,17 @@ const LandingPage = () => {
                   >
                     <CardContent>
                       <Box
-                        sx={{
+                        sx={(theme) => ({
                           width: 48,
                           height: 48,
                           borderRadius: 3,
-                          bgcolor: 'rgba(61,0,102,0.08)',
+                          bgcolor: theme.palette.mode === 'dark' ? 'rgba(192,132,252,0.12)' : 'rgba(61,0,102,0.08)',
                           color: 'primary.main',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           mb: 2.5
-                        }}
+                        })}
                       >
                         {feat.icon}
                       </Box>
@@ -528,7 +528,7 @@ const LandingPage = () => {
       </Box>
 
       {/* TECH STRIP */}
-      <Box sx={{ py: 6, bgcolor: 'background.default', borderTop: '1px solid rgba(20,0,43,0.06)' }}>
+      <Box sx={(theme) => ({ py: 6, bgcolor: 'background.default', borderTop: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(20,0,43,0.06)' })}>
         <Container maxWidth="md">
           <Typography align="center" variant="subtitle2" color="text.secondary" textTransform="uppercase" letterSpacing={1} mb={3}>
             Built with Modern Web Technologies

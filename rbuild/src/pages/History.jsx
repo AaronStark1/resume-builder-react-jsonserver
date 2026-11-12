@@ -188,7 +188,7 @@ const History = () => {
                   </InputAdornment>
                 )
               }}
-              sx={{ bgcolor: '#fff', borderRadius: 2, minWidth: { sm: 260 } }}
+              sx={{ bgcolor: 'background.paper', borderRadius: 2, minWidth: { sm: 260 } }}
             />
             <Button
               component={Link}

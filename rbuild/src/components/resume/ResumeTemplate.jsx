@@ -615,3 +615,4 @@ const ResumeTemplate = ({ data, placeholders = false }) => {
 }
 
 export default ResumeTemplate
+

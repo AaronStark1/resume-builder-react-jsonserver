@@ -110,7 +110,7 @@ const ResumeScore = ({ data }) => {
       sx={{
         p: 2.5,
         borderRadius: 3,
-        bgcolor: '#ffffff',
+        bgcolor: 'background.paper',
         mb: 3,
       }}
     >
@@ -159,7 +159,7 @@ const ResumeScore = ({ data }) => {
 
       {/* ACTIONABLE TIPS */}
       {tips.length > 0 && (
-        <Stack spacing={1} sx={{ mt: 1, pt: 1.5, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+        <Stack spacing={1} sx={{ mt: 1, pt: 1.5, borderTop: 1, borderColor: 'divider' }}>
           <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <LightbulbIcon fontSize="inherit" color="secondary" /> Actionable Tips:
           </Typography>

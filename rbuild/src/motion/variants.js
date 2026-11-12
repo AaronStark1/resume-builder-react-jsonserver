@@ -30,3 +30,4 @@ export const pageTransition = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease } },
   exit: { opacity: 0, y: -8, transition: { duration: 0.2, ease } },
 }
+

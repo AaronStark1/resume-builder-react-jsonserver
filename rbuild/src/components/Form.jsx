@@ -205,7 +205,7 @@ const Form = () => {
             sx={{
               height: 6,
               borderRadius: 3,
-              bgcolor: 'rgba(61, 0, 102, 0.08)',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(61, 0, 102, 0.08)',
               '& .MuiLinearProgress-bar': {
                 bgcolor: completionPercentage === 100 ? 'success.main' : 'secondary.main',
                 borderRadius: 3,
@@ -236,12 +236,12 @@ const Form = () => {
             <Box sx={{ flex: 1, width: '100%' }}>
               <Paper
                 elevation={0}
-                sx={{
+                sx={(theme) => ({
                   p: { xs: 2.5, sm: 4 },
                   borderRadius: 3,
-                  border: '1px solid rgba(20,0,43,0.08)',
-                  bgcolor: '#ffffff',
-                }}
+                  border: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(20,0,43,0.08)',
+                  bgcolor: 'background.paper',
+                })}
               >
                 <FormSteps
                   formData={formData}
@@ -256,7 +256,7 @@ const Form = () => {
             {/* STICKY LIVE PREVIEW (RIGHT PANE, DESKTOP >= md) */}
             {!isMobile && (
               <Box
-                sx={{
+                sx={(theme) => ({
                   flex: 1.2,
                   width: '100%',
                   position: 'sticky',
@@ -265,9 +265,9 @@ const Form = () => {
                   overflowY: 'auto',
                   p: 2.5,
                   borderRadius: 3,
-                  bgcolor: '#fafafa',
-                  border: '1px solid rgba(20,0,43,0.08)',
-                }}
+                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#fafafa',
+                  border: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(20,0,43,0.08)',
+                })}
               >
                 <Preview
                   formData={formData}
@@ -324,7 +324,7 @@ const Form = () => {
                   <CloseIcon />
                 </IconButton>
               </DialogTitle>
-              <DialogContent sx={{ p: 2, bgcolor: '#f7f7fb' }}>
+              <DialogContent sx={{ p: 2, bgcolor: 'background.default' }}>
                 <Preview
                   formData={formData}
                   resumeId={resumeId}

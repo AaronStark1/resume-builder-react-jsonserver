@@ -106,3 +106,4 @@ const ResumeView = () => {
 }
 
 export default ResumeView
+

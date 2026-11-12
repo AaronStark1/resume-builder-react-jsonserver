@@ -485,7 +485,7 @@ const FormSteps = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            bgcolor: 'rgba(0,0,0,0.03)',
+                            bgcolor: 'action.hover',
                             px: 1.5,
                             py: 0.8,
                             borderRadius: 1.5,

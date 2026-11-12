@@ -34,7 +34,7 @@ const PageNotFound = () => {
             sx={(theme) => ({
               fontSize: { xs: '6rem', md: '9rem' },
               fontWeight: 900,
-              background: theme.custom.gradient,
+              background: theme.palette.mode === 'dark' ? 'linear-gradient(135deg, #c084fc 0%, #ff9100 100%)' : theme.custom.gradient,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               lineHeight: 1,

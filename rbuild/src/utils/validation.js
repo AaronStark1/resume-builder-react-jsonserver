@@ -93,3 +93,4 @@ export const validateStep = (step, formData) => {
     errors,
   }
 }
+

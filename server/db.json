@@ -2,108 +2,182 @@
   "resumes": [
     {
       "id": 1,
+      "template": "classic",
+      "accentColor": "#3d0066",
       "personalDetails": {
-        "name": "Aaron Correya",
+        "name": "Alex Sample",
         "title": "Full Stack Developer",
-        "location": "Kerala, India"
+        "location": "San Francisco, CA"
       },
       "contactDetails": {
-        "email": "aaroncorreya@gmail.com",
-        "phoneNumber": "9898989898",
-        "github": "https://github.com/aaroncorreya",
-        "linkedIn": "https://linkedin.com/in/aaroncorreya",
-        "portfolio": "https://aaron.dev"
+        "email": "alex.sample@example.com",
+        "phoneNumber": "+1 (555) 019-2834",
+        "github": "https://github.com/example",
+        "linkedIn": "https://linkedin.com/in/example",
+        "portfolio": "https://example.com"
       },
       "education": {
-        "course": "B.Tech Computer Science",
-        "college": "XYZ Engineering College",
-        "university": "KTU",
+        "course": "B.S. in Computer Science",
+        "college": "State University",
+        "university": "State University System",
         "year": "2024"
       },
+      "educationList": [
+        {
+          "course": "B.S. in Computer Science",
+          "college": "State University",
+          "university": "State University System",
+          "year": "2024"
+        }
+      ],
       "professionalDetails": {
-        "jobTitle": "Software Developer Intern",
-        "company": "Cognizant",
-        "location": "Kochi",
-        "duration": "Jan 2024 - Jun 2024"
+        "jobTitle": "Software Developer",
+        "company": "Tech Innovators Inc",
+        "location": "San Francisco, CA",
+        "duration": "Jan 2024 - Present"
       },
-      "skills": ["React", "NodeJS", "Express", "MongoDB", "MySQL"],
-      "summary": "Passionate full stack developer experienced in building scalable web apps using MERN stack."
+      "experienceList": [
+        {
+          "jobTitle": "Software Developer",
+          "company": "Tech Innovators Inc",
+          "location": "San Francisco, CA",
+          "duration": "Jan 2024 - Present",
+          "bullets": [
+            "Architected full stack features using React, Node.js and PostgreSQL.",
+            "Improved web performance by 35% through bundle optimization."
+          ]
+        }
+      ],
+      "skills": ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Docker", "Git"],
+      "summary": "Passionate full stack developer experienced in building accessible, scalable web applications.",
+      "projects": [],
+      "certifications": []
     },
     {
       "id": 2,
+      "template": "modern",
+      "accentColor": "#065f46",
       "personalDetails": {
-        "name": "Meera Nair",
-        "title": "UI/UX Designer",
-        "location": "Bangalore"
+        "name": "Jordan Rivera",
+        "title": "Product Designer",
+        "location": "Austin, TX"
       },
       "contactDetails": {
-        "email": "meera@gmail.com",
-        "phoneNumber": "9876543210",
-        "github": "https://github.com/meera",
-        "linkedIn": "https://linkedin.com/in/meera",
-        "portfolio": "https://meeradesign.com"
+        "email": "jordan.rivera@example.com",
+        "phoneNumber": "+1 (555) 018-9923",
+        "github": "https://github.com/example",
+        "linkedIn": "https://linkedin.com/in/example",
+        "portfolio": "https://example.com"
       },
       "education": {
-        "course": "B.Des Interaction Design",
-        "college": "NID",
-        "university": "NID",
+        "course": "B.Des in Interaction Design",
+        "college": "Design Academy",
+        "university": "Design Institute",
         "year": "2023"
       },
+      "educationList": [
+        {
+          "course": "B.Des in Interaction Design",
+          "college": "Design Academy",
+          "university": "Design Institute",
+          "year": "2023"
+        }
+      ],
       "professionalDetails": {
-        "jobTitle": "Product Designer",
-        "company": "Zerodha",
-        "location": "Bangalore",
+        "jobTitle": "UI/UX Designer",
+        "company": "Creative Wave Labs",
+        "location": "Austin, TX",
         "duration": "Aug 2023 - Present"
       },
-      "skills": ["Figma", "User Research", "Wireframing", "Prototyping"],
-      "summary": "Creative designer focused on intuitive digital experiences."
+      "experienceList": [
+        {
+          "jobTitle": "UI/UX Designer",
+          "company": "Creative Wave Labs",
+          "location": "Austin, TX",
+          "duration": "Aug 2023 - Present",
+          "bullets": [
+            "Designed end-to-end design system components in Figma.",
+            "Conducted usability testing sessions with 40+ active users."
+          ]
+        }
+      ],
+      "skills": ["Figma", "Design Systems", "User Research", "Wireframing", "Prototyping"],
+      "summary": "User-focused product designer creating intuitive interfaces backed by qualitative user research.",
+      "projects": [],
+      "certifications": []
     },
     {
       "id": 3,
+      "template": "minimal",
+      "accentColor": "#1a365d",
       "personalDetails": {
-        "name": "Rahul Menon",
+        "name": "Morgan Lee",
         "title": "Backend Engineer",
-        "location": "Hyderabad"
+        "location": "Seattle, WA"
       },
       "contactDetails": {
-        "email": "rahul@gmail.com",
-        "phoneNumber": "9123456780",
-        "github": "https://github.com/rahul",
-        "linkedIn": "https://linkedin.com/in/rahul",
-        "portfolio": "https://rahul.dev"
+        "email": "morgan.lee@example.com",
+        "phoneNumber": "+1 (555) 017-3829",
+        "github": "https://github.com/example",
+        "linkedIn": "https://linkedin.com/in/example",
+        "portfolio": "https://example.com"
       },
       "education": {
-        "course": "M.Tech Software Engineering",
-        "college": "IIIT Hyderabad",
-        "university": "IIIT",
+        "course": "M.S. in Software Engineering",
+        "college": "Northwest University",
+        "university": "Northwest University",
         "year": "2022"
       },
+      "educationList": [
+        {
+          "course": "M.S. in Software Engineering",
+          "college": "Northwest University",
+          "university": "Northwest University",
+          "year": "2022"
+        }
+      ],
       "professionalDetails": {
-        "jobTitle": "Backend Developer",
-        "company": "Swiggy",
-        "location": "Hyderabad",
+        "jobTitle": "Backend Engineer",
+        "company": "CloudScale Systems",
+        "location": "Seattle, WA",
         "duration": "2022 - Present"
       },
-      "skills": ["Java", "Spring Boot", "Microservices", "PostgreSQL"],
-      "summary": "Backend engineer specializing in scalable distributed systems."
+      "experienceList": [
+        {
+          "jobTitle": "Backend Engineer",
+          "company": "CloudScale Systems",
+          "location": "Seattle, WA",
+          "duration": "2022 - Present",
+          "bullets": [
+            "Engineered high-throughput event processing pipelines handling 10k req/s.",
+            "Automated microservices deployment on AWS with Docker."
+          ]
+        }
+      ],
+      "skills": ["Python", "Java", "PostgreSQL", "Docker", "AWS", "Microservices"],
+      "summary": "Backend engineer specializing in distributed systems, asynchronous queues, and database performance tuning.",
+      "projects": [],
+      "certifications": []
     }
   ],
-
   "history": [
     {
       "id": 1,
       "resumeId": 1,
-      "formattedDate": "16/03/2026 , 10:20 AM"
+      "formattedDate": "16/03/2026 , 10:20 AM",
+      "createdAt": "2026-03-16T10:20:00.000Z"
     },
     {
       "id": 2,
       "resumeId": 2,
-      "formattedDate": "16/03/2026 , 10:35 AM"
+      "formattedDate": "16/03/2026 , 10:35 AM",
+      "createdAt": "2026-03-16T10:35:00.000Z"
     },
     {
       "id": 3,
       "resumeId": 3,
-      "formattedDate": "16/03/2026 , 11:10 AM"
+      "formattedDate": "16/03/2026 , 11:10 AM",
+      "createdAt": "2026-03-16T11:10:00.000Z"
     }
   ]
 }

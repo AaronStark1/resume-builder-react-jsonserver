@@ -14,6 +14,7 @@ import { getAResumeAPI, updateAResumeAPI } from '../services/allAPIs'
 import Swal from 'sweetalert2'
 import { sections } from '../config/resumeFields'
 import SectionFields from './SectionFields'
+import TemplatePicker from './resume/TemplatePicker'
 
 const modalStyle = {
   position: 'absolute',
@@ -41,10 +42,14 @@ const Section = ({ title, children }) => (
 )
 
 const initialResumeState = {
+  template: 'classic',
+  accentColor: '#3d0066',
   personalDetails: { name: '', title: '', location: '' },
   contactDetails: { email: '', phoneNumber: '', github: '', linkedIn: '', portfolio: '' },
   education: { course: '', college: '', university: '', year: '' },
+  educationList: [],
   professionalDetails: { jobTitle: '', company: '', location: '', duration: '' },
+  experienceList: [],
   skills: [],
   summary: ''
 }
@@ -61,10 +66,14 @@ const Edit = ({ resumeId, onUpdate }) => {
       const response = await getAResumeAPI(resumeId)
       if (response?.data) {
         setResumeData({
+          template: response.data.template || 'classic',
+          accentColor: response.data.accentColor || '#3d0066',
           personalDetails: { ...initialResumeState.personalDetails, ...response.data.personalDetails },
           contactDetails: { ...initialResumeState.contactDetails, ...response.data.contactDetails },
           education: { ...initialResumeState.education, ...response.data.education },
+          educationList: Array.isArray(response.data.educationList) ? response.data.educationList : [],
           professionalDetails: { ...initialResumeState.professionalDetails, ...response.data.professionalDetails },
+          experienceList: Array.isArray(response.data.experienceList) ? response.data.experienceList : [],
           skills: Array.isArray(response.data.skills) ? [...response.data.skills] : [],
           summary: response.data.summary ?? ''
         })
@@ -155,6 +164,18 @@ const Edit = ({ resumeId, onUpdate }) => {
 
           {/* SCROLL BODY */}
           <Box sx={{ p: 3, overflowY: 'auto' }}>
+            {/* TEMPLATE & ACCENT PICKER */}
+            <Section title="Design &amp; Layout">
+              <TemplatePicker
+                currentTemplate={resumeData.template || 'classic'}
+                currentAccent={resumeData.accentColor || '#3d0066'}
+                onTemplateChange={(tpl) => setResumeData((prev) => ({ ...prev, template: tpl }))}
+                onAccentChange={(hex) => setResumeData((prev) => ({ ...prev, accentColor: hex }))}
+              />
+            </Section>
+
+            <Divider sx={{ my: 3 }} />
+
             {sections.map((section) => (
               <Box key={section.key}>
                 <Section title={section.title}>

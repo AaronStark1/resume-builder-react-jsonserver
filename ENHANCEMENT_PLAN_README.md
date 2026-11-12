@@ -370,29 +370,29 @@ Refreshing the page loses everything.
 ## 8. Phase 6 — Feature enhancements (do after Phases 0–5 are green)
 
 ### 8.1 Multiple templates + accent color *(advertised in README "Future Enhancements")*
-- [ ] Add `template: 'classic' | 'modern' | 'minimal'` and `accentColor` (hex) to the resume model, with defaults in `normalizeResume` (`'classic'`, `#3d0066`).
-- [ ] Turn `ResumeTemplate` into a dispatcher for three layouts:
+- [x] Add `template: 'classic' | 'modern' | 'minimal'` and `accentColor` (hex) to the resume model, with defaults in `normalizeResume` (`'classic'`, `#3d0066`).
+- [x] Turn `ResumeTemplate` into a dispatcher for three layouts:
   - **classic** is the current centered layout.
   - **modern** has a colored left sidebar (contact and skills) with the main column on the right.
   - **minimal** is left-aligned with thin rules and generous whitespace.
-- [ ] Add a template picker (thumbnail cards) and 6 accent swatches on the Review step and in the final Preview. Changing them animates with a crossfade.
+- [x] Add a template picker (thumbnail cards) and 6 accent swatches on the Review step and in the final Preview. Changing them animates with a crossfade.
 
 ### 8.2 Multiple education & experience entries
-- [ ] Support arrays: `educationList[]` and `experienceList[]`, each experience with `bullets[]` (achievements). Use add/remove/reorder UI (up/down buttons are enough).
-- [ ] **Backward compatibility:** `normalizeResume` converts the old single-object `education` and `professionalDetails` into one-item arrays. Keep writing the new shape only.
-- [ ] Add optional sections: Projects (name, link, description) and Certifications (name, issuer, year). The current "Skills and Certifications" step label implies certifications.
+- [x] Support arrays: `educationList[]` and `experienceList[]`, each experience with `bullets[]` (achievements). Use add/remove/reorder UI (up/down buttons are enough).
+- [x] **Backward compatibility:** `normalizeResume` converts the old single-object `education` and `professionalDetails` into one-item arrays. Keep writing the new shape only.
+- [x] Add optional sections: Projects (name, link, description) and Certifications (name, issuer, year). The current "Skills and Certifications" step label implies certifications.
 
 ### 8.3 Resume completeness score
-- [ ] Add a small, purely client-side score (0–100) shown as a circular progress ring next to the preview. It is based on filled fields, summary length, skills count (≥5), and having at least one experience with bullets. Show 2–3 actionable tips. *(This covers the README's "Resume scoring system" item honestly, without AI.)*
+- [x] Add a small, purely client-side score (0–100) shown as a circular progress ring next to the preview. It is based on filled fields, summary length, skills count (≥5), and having at least one experience with bullets. Show 2–3 actionable tips. *(This covers the README's "Resume scoring system" item honestly, without AI.)*
 
 ### 8.4 Optional
 - [ ] Dark mode toggle for the app chrome (not the resume page itself). Store it in `localStorage` and respect `prefers-color-scheme` by default.
 - [ ] Add Vitest + React Testing Library with a few tests: `normalizeResume`, validators, and FormSteps navigation and validation.
 
 ### 8.5 Server notes (`server/`)
-- [ ] `server/db.json` currently contains real-looking personal contact data and is committed. Replace the seed records with clearly fake sample data (e.g. "Alex Sample", `alex@example.com`).
-- [ ] Add `"engines": { "node": ">=18" }` to `server/package.json`.
-- [ ] Document in the README that Render's free tier has an **ephemeral filesystem**, so created resumes reset on redeploy or restart. This is acceptable for a demo but should be stated.
+- [x] `server/db.json` currently contains real-looking personal contact data and is committed. Replace the seed records with clearly fake sample data (e.g. "Alex Sample", `alex@example.com`).
+- [x] Add `"engines": { "node": ">=18" }` to `server/package.json`.
+- [x] Document in the README that Render's free tier has an **ephemeral filesystem**, so created resumes reset on redeploy or restart. This is acceptable for a demo but should be stated.
 
 ---
 

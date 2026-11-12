@@ -9,6 +9,9 @@
   },
   "author": "Aaron",
   "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "json-server": "^0.17.4"
   }

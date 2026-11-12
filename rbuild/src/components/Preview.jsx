@@ -15,6 +15,8 @@ import { addHistoryAPI } from '../services/allAPIs'
 import Edit from './Edit'
 import ResumeTemplate from './resume/ResumeTemplate'
 import ScaledPage from './resume/ScaledPage'
+import TemplatePicker from './resume/TemplatePicker'
+import ResumeScore from './resume/ResumeScore'
 
 const slugify = (text = '') => {
   return text
@@ -30,6 +32,18 @@ const Preview = ({ formData, resumeId, mode = 'final', onUpdate }) => {
   const [downloading, setDownloading] = useState(false)
   const resumeContainerRef = useRef(null)
 
+  const handleTemplateChange = (tplId) => {
+    if (onUpdate) {
+      onUpdate({ ...formData, template: tplId })
+    }
+  }
+
+  const handleAccentChange = (hex) => {
+    if (onUpdate) {
+      onUpdate({ ...formData, accentColor: hex })
+    }
+  }
+
   const handlePdfDownload = async () => {
     if (!resumeId) {
       Swal.fire('Notice', 'Please submit your resume form before downloading.', 'info')
@@ -38,7 +52,7 @@ const Preview = ({ formData, resumeId, mode = 'final', onUpdate }) => {
 
     setDownloading(true)
     try {
-      // Lazy load html2canvas and jspdf to reduce initial bundle
+      // Lazy load html2canvas and jspdf
       const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
         import('html2canvas'),
         import('jspdf')
@@ -119,65 +133,88 @@ const Preview = ({ formData, resumeId, mode = 'final', onUpdate }) => {
 
   return (
     <Box>
-      {/* ACTION BAR */}
+      {/* COMPLETENESS SCORE */}
+      <ResumeScore data={formData} />
+
+      {/* ACTION BAR IN FINAL MODE */}
       {mode === 'final' ? (
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="center"
-          mb={3}
-          flexWrap="wrap"
-          className="no-print"
-        >
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            startIcon={downloading ? <CircularProgress size={18} color="inherit" /> : <DownloadIcon />}
-            onClick={handlePdfDownload}
-            disabled={downloading || !resumeId}
-            sx={{ fontWeight: 'bold', px: 3 }}
+        <Box sx={{ mb: 4 }} className="no-print">
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="center"
+            mb={3}
+            flexWrap="wrap"
+            sx={{ gap: 1 }}
           >
-            {downloading ? 'Exporting PDF...' : 'Download PDF'}
-          </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="large"
+              startIcon={downloading ? <CircularProgress size={18} color="inherit" /> : <DownloadIcon />}
+              onClick={handlePdfDownload}
+              disabled={downloading || !resumeId}
+              sx={{ fontWeight: 'bold', px: 3 }}
+            >
+              {downloading ? 'Exporting PDF...' : 'Download PDF'}
+            </Button>
 
-          <Button
-            variant="outlined"
-            size="large"
-            startIcon={<PrintIcon />}
-            onClick={handlePrint}
-            title="Browser print produces selectable text and clickable links"
-          >
-            Print / ATS PDF
-          </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              title="Browser print produces selectable text and clickable links"
+            >
+              Print / ATS PDF
+            </Button>
 
-          <Edit
-            resumeId={resumeId}
-            onUpdate={onUpdate}
+            <Edit
+              resumeId={resumeId}
+              onUpdate={onUpdate}
+            />
+
+            <Button
+              component={Link}
+              to="/history"
+              variant="outlined"
+              size="large"
+              startIcon={<HistoryIcon />}
+            >
+              History
+            </Button>
+          </Stack>
+
+          {/* TEMPLATE PICKER IN FINAL PREVIEW */}
+          <TemplatePicker
+            currentTemplate={formData.template || 'classic'}
+            currentAccent={formData.accentColor || '#3d0066'}
+            onTemplateChange={handleTemplateChange}
+            onAccentChange={handleAccentChange}
           />
-
-          <Button
-            component={Link}
-            to="/history"
-            variant="outlined"
-            size="large"
-            startIcon={<HistoryIcon />}
-          >
-            History
-          </Button>
-        </Stack>
+        </Box>
       ) : (
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="subtitle2" color="primary.main" fontWeight={700}>
-            Live Resume Preview
-          </Typography>
-          <Tooltip title="Complete and submit the form to download as PDF or save to history">
-            <span>
-              <Button size="small" variant="text" disabled>
-                PDF available after submit
-              </Button>
-            </span>
-          </Tooltip>
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="subtitle2" color="primary.main" fontWeight={700}>
+              Live Resume Preview
+            </Typography>
+            <Tooltip title="Complete and submit the form to download as PDF or save to history">
+              <span>
+                <Button size="small" variant="text" disabled>
+                  PDF available after submit
+                </Button>
+              </span>
+            </Tooltip>
+          </Box>
+
+          {/* TEMPLATE & ACCENT PICKER DURING LIVE FORM EDITING */}
+          <TemplatePicker
+            currentTemplate={formData.template || 'classic'}
+            currentAccent={formData.accentColor || '#3d0066'}
+            onTemplateChange={handleTemplateChange}
+            onAccentChange={handleAccentChange}
+          />
         </Box>
       )}
 

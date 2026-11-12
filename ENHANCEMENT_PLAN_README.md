@@ -245,23 +245,23 @@ Refreshing the page loses everything.
 
 ### 5.1 Extract a shared `ResumeTemplate`
 `Preview.jsx` and `History.jsx` each hand-render the resume with different markup.
-- [ ] Create `rbuild/src/components/resume/ResumeTemplate.jsx`, a pure component `({ data, placeholders = false })` that renders one resume at **true A4 size: 794 × 1123 px**. Use it in both Preview and History.
-- [ ] Hide empty contact links instead of rendering `href="#"` placeholders when not in placeholder mode. Separate items with `•` only between present values.
-- [ ] Add a `normalizeResume(data)` helper in `rbuild/src/utils/normalizeResume.js` that fills missing keys with defaults. Apply it to every resume fetched from the API, so older and partial records never crash rendering.
+- [x] Create `rbuild/src/components/resume/ResumeTemplate.jsx`, a pure component `({ data, placeholders = false })` that renders one resume at **true A4 size: 794 × 1123 px**. Use it in both Preview and History.
+- [x] Hide empty contact links instead of rendering `href="#"` placeholders when not in placeholder mode. Separate items with `•` only between present values.
+- [x] Add a `normalizeResume(data)` helper in `rbuild/src/utils/normalizeResume.js` that fills missing keys with defaults. Apply it to every resume fetched from the API, so older and partial records never crash rendering.
 
 ### 5.2 Responsive scaling
 `Paper width: 700` overflows on phones and in the split view.
-- [ ] Wrap the template in a `ScaledPage` component. It measures its container with `ResizeObserver` and applies `transform: scale(containerWidth / 794)` with `transformOrigin: 'top left'`, and sets the wrapper's height to `1123 * scale` so the layout doesn't jump.
-- [ ] History thumbnails reuse `ScaledPage` (e.g. a 280px-wide card gives a real miniature of the actual resume).
+- [x] Wrap the template in a `ScaledPage` component. It measures its container with `ResizeObserver` and applies `transform: scale(containerWidth / 794)` with `transformOrigin: 'top left'`, and sets the wrapper's height to `1123 * scale` so the layout doesn't jump.
+- [x] History thumbnails reuse `ScaledPage` (e.g. a 280px-wide card gives a real miniature of the actual resume).
 
 ### 5.3 PDF download
-- [ ] **Lazy-load** `html2canvas` and `jspdf` inside the click handler (`const { jsPDF } = await import('jspdf')`). This removes ~200 kB+ from the initial bundle.
-- [ ] Capture the **unscaled** page: `html2canvas(el, { scale: 2, backgroundColor: '#fff', useCORS: true, onclone: (doc) => { doc.getElementById('resume-scaler').style.transform = 'none' } })`.
-- [ ] **Multi-page support:** if the canvas height exceeds one A4 page, slice it across pages (loop with `pdf.addPage()` and a negative y offset) instead of overflowing the first page.
-- [ ] Filename: `${slugify(name) || 'resume'}-rbuild.pdf`.
-- [ ] Use JPEG at quality 0.92 instead of PNG for much smaller files.
-- [ ] Record history **only after** the save succeeds. Store `createdAt: new Date().toISOString()` alongside `formattedDate` (kept for old records).
-- [ ] *(Optional, recommended)* Add a secondary **"Print / ATS-friendly PDF"** button using `react-to-print` v3 (`useReactToPrint({ contentRef, documentTitle })`) with `@page { size: A4; margin: 0 }` print CSS. Browser print gives **selectable text and clickable links**, which applicant-tracking systems can parse. The canvas PDF cannot.
+- [x] **Lazy-load** `html2canvas` and `jspdf` inside the click handler (`const { jsPDF } = await import('jspdf')`). This removes ~200 kB+ from the initial bundle.
+- [x] Capture the **unscaled** page: `html2canvas(el, { scale: 2, backgroundColor: '#fff', useCORS: true, onclone: (doc) => { doc.getElementById('resume-scaler').style.transform = 'none' } })`.
+- [x] **Multi-page support:** if the canvas height exceeds one A4 page, slice it across pages (loop with `pdf.addPage()` and a negative y offset) instead of overflowing the first page.
+- [x] Filename: `${slugify(name) || 'resume'}-rbuild.pdf`.
+- [x] Use JPEG at quality 0.92 instead of PNG for much smaller files.
+- [x] Record history **only after** the save succeeds. Store `createdAt: new Date().toISOString()` alongside `formattedDate` (kept for old records).
+- [x] *(Optional, recommended)* Add a secondary **"Print / ATS-friendly PDF"** button using `react-to-print` v3 (`useReactToPrint({ contentRef, documentTitle })`) with `@page { size: A4; margin: 0 }` print CSS. Browser print gives **selectable text and clickable links**, which applicant-tracking systems can parse. The canvas PDF cannot.
 
 ---
 

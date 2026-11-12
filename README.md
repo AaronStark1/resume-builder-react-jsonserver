@@ -107,6 +107,8 @@ npm run dev
 
 Application runs at: http://localhost:5173
 
+> **Note for Deployment:** Vercel must define `VITE_API_URL=https://resume-builder-jsonserver.onrender.com` in environment variables.
+
 ------------------------------------------------------------------------
 
 ## 🎯 Future Enhancements

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Typography,
@@ -8,42 +7,47 @@ import {
   Card,
   CardContent,
   Container,
-  Avatar
-} from "@mui/material";
-import { Link } from "react-router-dom";
+} from "@mui/material"
+import { Link } from "react-router-dom"
+import DescriptionIcon from "@mui/icons-material/Description"
+import PreviewIcon from "@mui/icons-material/Preview"
+import DownloadIcon from "@mui/icons-material/Download"
+import EditIcon from "@mui/icons-material/Edit"
+import HistoryIcon from "@mui/icons-material/History"
+import SaveIcon from "@mui/icons-material/Save"
 
 const features = [
   {
-    title: "Smart Resume Builder",
-    desc: "Generate professional resumes with AI powered suggestions."
+    title: "Guided Step Form",
+    desc: "Create your resume with an easy step-by-step guided form.",
+    icon: <DescriptionIcon />,
   },
   {
-    title: "Modern Templates",
-    desc: "Beautiful recruiter-friendly designs that stand out."
+    title: "Live Preview",
+    desc: "See your resume update in real time as you type.",
+    icon: <PreviewIcon />,
   },
   {
     title: "Instant PDF Export",
-    desc: "Download high quality resumes in one click."
-  },
-  {
-    title: "Skill Optimization",
-    desc: "Highlight the right skills to match job descriptions."
+    desc: "Download high quality resumes in one click.",
+    icon: <DownloadIcon />,
   },
   {
     title: "Easy Editing",
-    desc: "Update resumes anytime with simple drag & edit flow."
+    desc: "Update your resume anytime with a simple modal editor.",
+    icon: <EditIcon />,
   },
   {
-    title: "Fast Hiring Results",
-    desc: "Users report getting interviews faster."
-  }
-];
-
-const testimonials = [
-  { name: "Arjun", role: "Frontend Dev" },
-  { name: "Meera", role: "Designer" },
-  { name: "Rahul", role: "Backend Eng" }
-];
+    title: "Resume History",
+    desc: "Track all your previously generated resumes.",
+    icon: <HistoryIcon />,
+  },
+  {
+    title: "Autosave Drafts",
+    desc: "Never lose your progress — drafts are saved automatically.",
+    icon: <SaveIcon />,
+  },
+]
 
 const LandingPage = () => {
   return (
@@ -51,20 +55,19 @@ const LandingPage = () => {
 
       {/* HERO */}
       <Box
-        sx={{
+        sx={(theme) => ({
           minHeight: "92vh",
           display: "flex",
           alignItems: "center",
-          background:
-            "linear-gradient(120deg,#14002b,#3d0066)",
-          color: "white"
-        }}
+          background: theme.custom.gradient,
+          color: "white",
+        })}
       >
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
 
             {/* LEFT */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Stack spacing={3}>
                 <Typography variant="h2" fontWeight="bold">
                   Build a Resume <br /> That Gets You Hired 🚀
@@ -76,83 +79,108 @@ const LandingPage = () => {
                 </Typography>
 
                 <Stack direction="row" spacing={2}>
-                  <Link to="/resume">
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        bgcolor: "#ff7b00",
-                        px: 5,
-                        borderRadius: 3,
-                        fontWeight: "bold",
-                        ":hover": { bgcolor: "#e56a00" }
-                      }}
-                    >
-                      Create Resume
-                    </Button>
-                  </Link>
-                  <Link to="/history">
                   <Button
+                    component={Link}
+                    to="/resume"
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    sx={{
+                      px: 5,
+                      borderRadius: 3,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Create Resume
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/history"
                     variant="outlined"
                     size="large"
                     sx={{
                       color: "white",
                       borderColor: "white",
                       borderRadius: 3,
-                      ":hover": { bgcolor: "#e56a00" }
+                      ":hover": { bgcolor: "rgba(255,255,255,0.1)", borderColor: "white" }
                     }}
                   >
                     View History
                   </Button>
-                  </Link>
                 </Stack>
               </Stack>
             </Grid>
 
-            {/* RIGHT IMAGE */}
-<Grid item xs={12} md={6}>
-  <Box
-    component="img"
-    src="https://images.unsplash.com/photo-1586281380349-632531db7ed4"
-    sx={{
-      width: "100%",
-      borderRadius: 2,
-      boxShadow: 10,
-      mb: 4,          // margin-bottom
-      // or pb: 4,    // padding-bottom
-    }}
-  />
-</Grid>
-
+            {/* RIGHT — placeholder for animated resume in Phase 5 */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Box
+                component="img"
+                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1200&q=75"
+                alt="Person working on a resume at a desk"
+                loading="lazy"
+                width={600}
+                height={400}
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: 2,
+                  boxShadow: '0 4px 24px rgba(20,0,43,0.3)',
+                  mb: 4,
+                }}
+              />
+            </Grid>
 
           </Grid>
         </Container>
       </Box>
 
-      {/* TRUST STRIP */}
-      <Box sx={{ py: 5, bgcolor: "#fafafa" }}>
+      {/* HOW IT WORKS */}
+      <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: "background.default" }}>
         <Container maxWidth="md">
-          <Typography align="center" color="text.secondary" mb={3}>
-            Trusted by job seekers from
+          <Typography variant="h4" align="center" fontWeight="bold" mb={2}>
+            How It Works
+          </Typography>
+          <Typography align="center" color="text.secondary" mb={6}>
+            Three simple steps to your perfect resume
           </Typography>
 
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            flexWrap="wrap"
-            spacing={3}
-          >
-            <Typography fontWeight="bold">Google</Typography>
-            <Typography fontWeight="bold">Amazon</Typography>
-            <Typography fontWeight="bold">Infosys</Typography>
-            <Typography fontWeight="bold">TCS</Typography>
-            <Typography fontWeight="bold">Accenture</Typography>
-          </Stack>
+          <Grid container spacing={4}>
+            {[
+              { step: "1", title: "Fill", desc: "Enter your details in a guided step-by-step form." },
+              { step: "2", title: "Preview", desc: "See a live preview update as you type." },
+              { step: "3", title: "Download", desc: "Export your resume as a professional PDF." },
+            ].map((item) => (
+              <Grid size={{ xs: 12, md: 4 }} key={item.step}>
+                <Box textAlign="center">
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: "50%",
+                      bgcolor: "primary.main",
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto",
+                      mb: 2,
+                      fontSize: 24,
+                      fontWeight: 800,
+                    }}
+                  >
+                    {item.step}
+                  </Box>
+                  <Typography variant="h6" fontWeight="bold" mb={1}>{item.title}</Typography>
+                  <Typography color="text.secondary">{item.desc}</Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
         </Container>
       </Box>
 
       {/* FEATURES */}
-      <Box sx={{ py: 10 }}>
+      <Box sx={{ py: { xs: 8, md: 14 } }}>
         <Container maxWidth="lg">
           <Typography variant="h3" align="center" fontWeight="bold" mb={7}>
             Everything you need to get hired
@@ -160,21 +188,33 @@ const LandingPage = () => {
 
           <Grid container spacing={4}>
             {features.map((f) => (
-              <Grid item xs={12} sm={6} md={4} key={f.title}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={f.title}>
                 <Card
                   sx={{
                     height: "100%",
                     p: 2,
-                    borderRadius: 4,
-                    boxShadow: 3,
+                    transition: "0.3s",
                     ":hover": {
                       transform: "translateY(-6px)",
-                      boxShadow: 8
                     },
-                    transition: "0.3s"
                   }}
                 >
                   <CardContent>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 3,
+                        bgcolor: "primary.main",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mb: 2,
+                      }}
+                    >
+                      {f.icon}
+                    </Box>
                     <Typography variant="h6" fontWeight="bold" mb={1}>
                       {f.title}
                     </Typography>
@@ -189,100 +229,58 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* RESUME PREVIEW SECTION */}
-      <Box sx={{ py: 10, bgcolor: "#fafafa" }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
-
-            <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-                sx={{ width: "100%", borderRadius: 4, boxShadow: 6 }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Typography variant="h4" fontWeight="bold" mb={3}>
-                Create Stunning Resumes Effortlessly
-              </Typography>
-
-              <Typography color="text.secondary" mb={3}>
-                Choose from professionally designed templates,
-                customize sections easily and export instantly.
-              </Typography>
-
-              <Link to="/resume">
-                <Button
-                  variant="contained"
-                  sx={{
-                    bgcolor: "#3d0066",
-                    borderRadius: 3,
-                    px: 4
-                  }}
-                >
-                  Start Building
-                </Button>
-              </Link>
-            </Grid>
-
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* TESTIMONIALS */}
-      <Box sx={{ py: 10 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h3" align="center" fontWeight="bold" mb={7}>
-            Loved by Professionals ❤️
+      {/* TECH STRIP */}
+      <Box sx={{ py: 5, bgcolor: "background.default" }}>
+        <Container maxWidth="md">
+          <Typography align="center" color="text.secondary" mb={3}>
+            Built with
           </Typography>
 
-          <Grid container spacing={4}>
-            {testimonials.map((t) => (
-              <Grid item xs={12} md={4} key={t.name}>
-                <Card sx={{ p: 4, borderRadius: 4, textAlign: "center", boxShadow: 3 }}>
-                  <Avatar
-                    sx={{ width: 70, height: 70, mx: "auto", mb: 2 }}
-                    src={`https://i.pravatar.cc/150?u=${t.name}`}
-                  />
-                  <Typography fontWeight="bold">{t.name}</Typography>
-                  <Typography variant="body2" color="text.secondary" mb={2}>
-                    {t.role}
-                  </Typography>
-                  <Typography variant="body2">
-                    This platform helped me create a resume that actually got recruiter attention.
-                  </Typography>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            flexWrap="wrap"
+            gap={3}
+          >
+            <Typography fontWeight="bold">React 19</Typography>
+            <Typography fontWeight="bold">MUI v7</Typography>
+            <Typography fontWeight="bold">Vite</Typography>
+            <Typography fontWeight="bold">json-server</Typography>
+          </Stack>
         </Container>
       </Box>
 
       {/* FINAL CTA */}
-      <Box sx={{ py: 10, bgcolor: "#14002b", color: "white", textAlign: "center" }}>
+      <Box
+        sx={(theme) => ({
+          py: { xs: 8, md: 14 },
+          background: theme.custom.gradient,
+          color: "white",
+          textAlign: "center",
+        })}
+      >
         <Typography variant="h3" fontWeight="bold" mb={3}>
           Your Dream Job is One Resume Away
         </Typography>
 
-        <Link to="/resume">
-          <Button
-            variant="contained"
-            size="large"
-            sx={{
-              bgcolor: "#ff7b00",
-              px: 6,
-              borderRadius: 3,
-              fontWeight: "bold"
-            }}
-          >
-            Build Resume Now
-          </Button>
-        </Link>
+        <Button
+          component={Link}
+          to="/resume"
+          variant="contained"
+          color="secondary"
+          size="large"
+          sx={{
+            px: 6,
+            borderRadius: 3,
+            fontWeight: "bold",
+          }}
+        >
+          Build Resume Now
+        </Button>
       </Box>
 
     </Box>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage

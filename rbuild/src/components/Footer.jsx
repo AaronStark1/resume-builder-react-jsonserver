@@ -1,27 +1,28 @@
-import React from "react";
 import {
   Box,
   Typography,
   Stack,
   IconButton,
   Grid,
-  Container
-} from "@mui/material";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+  Container,
+  Button
+} from "@mui/material"
+import { Link } from "react-router-dom"
+import EmailIcon from "@mui/icons-material/Email"
+import GitHubIcon from "@mui/icons-material/GitHub"
+import FavoriteIcon from "@mui/icons-material/Favorite"
+import HomeIcon from "@mui/icons-material/Home"
+import DescriptionIcon from "@mui/icons-material/Description"
+import HistoryIcon from "@mui/icons-material/History"
 
 const Footer = () => (
   <Box
     component="footer"
     sx={{
-      bgcolor: "#14002b",
+      bgcolor: "primary.dark",
       color: "white",
-      pt: 2,
-      pb: 2,
+      pt: 6,
+      pb: 3,
       mt: 0
     }}
   >
@@ -30,9 +31,9 @@ const Footer = () => (
       <Grid container spacing={5} alignItems="flex-start">
 
         {/* BRAND */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="h5" fontWeight="bold" mb={2}>
-            ResumeBuilder
+            rBuild
           </Typography>
 
           <Typography sx={{ opacity: 0.7 }}>
@@ -41,61 +42,69 @@ const Footer = () => (
           </Typography>
         </Grid>
 
-        {/* CONTACT */}
-        <Grid item xs={12} md={4}>
+        {/* QUICK LINKS */}
+        <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="h6" fontWeight="bold" mb={2}>
-            Contact
+            Quick Links
+          </Typography>
+
+          <Stack spacing={1.5}>
+            <Button
+              component={Link}
+              to="/"
+              startIcon={<HomeIcon />}
+              sx={{ color: "white", justifyContent: "flex-start", opacity: 0.8, ":hover": { opacity: 1 } }}
+            >
+              Home
+            </Button>
+            <Button
+              component={Link}
+              to="/form"
+              startIcon={<DescriptionIcon />}
+              sx={{ color: "white", justifyContent: "flex-start", opacity: 0.8, ":hover": { opacity: 1 } }}
+            >
+              Create Resume
+            </Button>
+            <Button
+              component={Link}
+              to="/history"
+              startIcon={<HistoryIcon />}
+              sx={{ color: "white", justifyContent: "flex-start", opacity: 0.8, ":hover": { opacity: 1 } }}
+            >
+              History
+            </Button>
+          </Stack>
+        </Grid>
+
+        {/* CONNECT */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Typography variant="h6" fontWeight="bold" mb={2}>
+            Connect
           </Typography>
 
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1} alignItems="center">
-              <EmailIcon sx={{ fontSize: 20 }} />
+              <EmailIcon sx={{ fontSize: 20, opacity: 0.8 }} />
               <Typography sx={{ opacity: 0.8 }}>
-                rbuilder@gmail.com
-              </Typography>
-            </Stack>
-
-            <Stack direction="row" spacing={1} alignItems="center">
-              <PhoneIcon sx={{ fontSize: 20 }} />
-              <Typography sx={{ opacity: 0.8 }}>
-                +91 98989 89898
+                {/* TODO: Replace with real contact email */}
+                contact@rbuild.app
               </Typography>
             </Stack>
           </Stack>
-        </Grid>
 
-        {/* SOCIAL */}
-        <Grid item xs={12} md={4}>
-          <Typography variant="h6" fontWeight="bold" mb={2}>
-            Follow Us
-          </Typography>
-
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} mt={2}>
             <IconButton
+              component="a"
+              href="https://github.com/AaronStark1/resume-builder-react-jsonserver"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub repository"
               sx={{
                 bgcolor: "rgba(255,255,255,0.08)",
-                ":hover": { bgcolor: "#ff7b00" }
+                ":hover": { bgcolor: "secondary.main" }
               }}
             >
-              <WhatsAppIcon sx={{ color: "white" }} />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                bgcolor: "rgba(255,255,255,0.08)",
-                ":hover": { bgcolor: "#ff7b00" }
-              }}
-            >
-              <InstagramIcon sx={{ color: "white" }} />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                bgcolor: "rgba(255,255,255,0.08)",
-                ":hover": { bgcolor: "#ff7b00" }
-              }}
-            >
-              <LinkedInIcon sx={{ color: "white" }} />
+              <GitHubIcon sx={{ color: "white" }} />
             </IconButton>
           </Stack>
         </Grid>
@@ -116,7 +125,7 @@ const Footer = () => (
           Designed with{" "}
           <FavoriteIcon
             fontSize="small"
-            sx={{ color: "#ff7b00", verticalAlign: "middle" }}
+            sx={{ color: "secondary.main", verticalAlign: "middle" }}
           />{" "}
           using React
         </Typography>
@@ -124,6 +133,6 @@ const Footer = () => (
 
     </Container>
   </Box>
-);
+)
 
-export default Footer;
+export default Footer

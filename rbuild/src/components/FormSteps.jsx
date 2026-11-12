@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
@@ -19,7 +19,7 @@ const steps = [
   'Review and Submit'
 ]
 
-const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeId }) => {
+const FormSteps = ({ formData, setFormData, setIsFinished, setResumeId }) => {
 
   const { personalDetails, contactDetails, education, professionalDetails, skills, summary } = formData
 
@@ -51,8 +51,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
     setSkipped(prev => new Set(prev).add(activeStep))
   }
 
-  const handleReset = () => setActiveStep(0)
-
   const addSkill = (skill) => {
     if (!skill) return
     if (skills.includes(skill)) {
@@ -80,7 +78,7 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
       } else {
         Swal.fire("Error", "Submission failed", "error")
       }
-    } catch (err) {
+    } catch {
       Swal.fire("Error", "Something went wrong", "error")
     }
   }
@@ -99,7 +97,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   personalDetails: { ...personalDetails, name: e.target.value }
                 })}
               label="Full Name"
-              variant="standard"
               fullWidth
             />
 
@@ -111,7 +108,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   personalDetails: { ...personalDetails, title: e.target.value }
                 })}
               label="Job Title"
-              variant="standard"
               fullWidth
             />
 
@@ -123,7 +119,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   personalDetails: { ...personalDetails, location: e.target.value }
                 })}
               label="Location"
-              variant="standard"
               fullWidth
             />
           </Stack>
@@ -140,7 +135,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   contactDetails: { ...contactDetails, email: e.target.value }
                 })}
               label="Email"
-              variant="standard"
               fullWidth
             />
 
@@ -152,7 +146,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   contactDetails: { ...contactDetails, phoneNumber: e.target.value }
                 })}
               label="Phone Number"
-              variant="standard"
               fullWidth
             />
 
@@ -164,7 +157,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   contactDetails: { ...contactDetails, github: e.target.value }
                 })}
               label="Github Profile"
-              variant="standard"
               fullWidth
             />
 
@@ -176,7 +168,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   contactDetails: { ...contactDetails, linkedIn: e.target.value }
                 })}
               label="LinkedIn Profile"
-              variant="standard"
               fullWidth
             />
 
@@ -188,7 +179,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   contactDetails: { ...contactDetails, portfolio: e.target.value }
                 })}
               label="Portfolio"
-              variant="standard"
               fullWidth
             />
           </Stack>
@@ -205,7 +195,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   education: { ...education, course: e.target.value }
                 })}
               label="Course"
-              variant="standard"
               fullWidth
             />
 
@@ -217,7 +206,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   education: { ...education, college: e.target.value }
                 })}
               label="College"
-              variant="standard"
               fullWidth
             />
 
@@ -229,7 +217,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   education: { ...education, university: e.target.value }
                 })}
               label="University"
-              variant="standard"
               fullWidth
             />
 
@@ -241,7 +228,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   education: { ...education, year: e.target.value }
                 })}
               label="Year"
-              variant="standard"
               fullWidth
             />
           </Stack>
@@ -258,7 +244,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   professionalDetails: { ...professionalDetails, jobTitle: e.target.value }
                 })}
               label="Job Title"
-              variant="standard"
               fullWidth
             />
 
@@ -270,7 +255,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   professionalDetails: { ...professionalDetails, company: e.target.value }
                 })}
               label="Company"
-              variant="standard"
               fullWidth
             />
 
@@ -282,7 +266,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   professionalDetails: { ...professionalDetails, location: e.target.value }
                 })}
               label="Location"
-              variant="standard"
               fullWidth
             />
 
@@ -294,7 +277,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                   professionalDetails: { ...professionalDetails, duration: e.target.value }
                 })}
               label="Duration"
-              variant="standard"
               fullWidth
             />
           </Stack>
@@ -308,7 +290,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
                 value={inputSkill}
                 onChange={(e) => setInputSkill(e.target.value)}
                 label="Add Skill"
-                variant="standard"
                 fullWidth
               />
               <Button onClick={() => addSkill(inputSkill)}>Add</Button>
@@ -344,7 +325,6 @@ const FormSteps = ({ formData, setFormData, isFinished, setIsFinished,setResumeI
             multiline
             rows={4}
             label="Professional Summary"
-            variant="standard"
             fullWidth
           />
         )

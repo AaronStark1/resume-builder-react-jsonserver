@@ -1,10 +1,8 @@
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import CircularProgress from '@mui/material/CircularProgress'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
+import { useId } from 'react'
+import { motion } from 'motion/react'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import LightbulbIcon from '@mui/icons-material/Lightbulb'
+
+import '../../studio/controls.css'
 
 const calculateResumeScore = (resume = {}) => {
   let score = 0
@@ -95,91 +93,95 @@ const calculateResumeScore = (resume = {}) => {
   }
 }
 
-const ResumeScore = ({ data }) => {
-  const { score, tips } = calculateResumeScore(data)
+const SEAL_TEXT = 'Completeness seal · ATS-friendly structure · '
 
-  const getScoreColor = (val) => {
-    if (val >= 80) return 'success.main'
-    if (val >= 50) return 'secondary.main'
-    return 'error.main'
-  }
+// Milestones: the seal straightens up as the resume fills in, and catches the light at 100.
+const tierOf = (score) => (score === 100 ? 'complete' : score >= 80 ? 'strong' : score >= 50 ? 'steady' : 'early')
+const TILT = { early: -16, steady: -10, strong: -4, complete: 0 }
+
+/**
+ * Completeness score as an embossed stamp. The score and tips come from `calculateResumeScore`
+ * (unchanged); `compact` is the tighter layout used in the builder's live pane.
+ */
+const ResumeScore = ({ data, compact = false }) => {
+  const { score, tips } = calculateResumeScore(data)
+  const tier = tierOf(score)
+  const ringId = `st-seal-ring-${useId().replace(/[^\w-]/g, '')}`
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 2.5,
-        borderRadius: 3,
-        bgcolor: 'background.paper',
-        mb: 3,
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, mb: tips.length > 0 ? 2 : 0 }}>
-        {/* CIRCULAR PROGRESS */}
-        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-          <CircularProgress
-            variant="determinate"
-            value={score}
-            size={56}
-            thickness={5}
-            sx={{ color: getScoreColor(score) }}
+    <section className="st-card st-score no-print" data-tier={tier} data-compact={compact ? '' : undefined}>
+      <motion.div
+        className="st-seal"
+        role="img"
+        aria-label={`Resume completeness score: ${score} percent`}
+        initial={false}
+        animate={{ rotate: TILT[tier] }}
+        transition={{ type: 'spring', stiffness: 160, damping: 14 }}
+      >
+        <svg viewBox="0 0 120 120" focusable="false" aria-hidden="true">
+          <defs>
+            <path id={ringId} d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0" />
+          </defs>
+          <circle className="st-seal__edge" cx="60" cy="60" r="57" />
+          <text className="st-seal__text">
+            <textPath href={`#${ringId}`} textLength="288" lengthAdjust="spacing">
+              {SEAL_TEXT}
+            </textPath>
+          </text>
+          <circle className="st-seal__track" cx="60" cy="60" r="35" />
+          <circle
+            className="st-seal__value"
+            cx="60"
+            cy="60"
+            r="35"
+            pathLength="100"
+            strokeDasharray={`${score} 100`}
+            transform="rotate(-90 60 60)"
           />
-          <Box
-            sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              position: 'absolute',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography variant="caption" component="div" fontWeight={800} color="text.primary">
-              {score}%
-            </Typography>
-          </Box>
-        </Box>
+        </svg>
+        <span className="st-seal__score lp-display" aria-hidden="true">
+          {score}
+          <small>%</small>
+        </span>
+        {tier === 'complete' ? (
+          <span className="st-seal__sheen" aria-hidden="true">
+            <motion.span
+              initial={{ x: '-140%' }}
+              animate={{ x: '140%' }}
+              transition={{ duration: 1.3, ease: 'easeInOut', delay: 0.25 }}
+            />
+          </span>
+        ) : null}
+      </motion.div>
 
+      <div className="st-score__copy">
         {/* SCORE LABEL */}
-        <Box>
-          <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-            Resume Completeness Score
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {score >= 80
-              ? 'Great job! Your resume covers all core sections.'
-              : score >= 50
-              ? 'Good progress. Follow the tips below to strengthen it.'
-              : 'Add more details to increase recruiter interest.'}
-          </Typography>
-        </Box>
-      </Box>
+        <h3 className="st-score__title">Resume Completeness Score</h3>
+        <p className="st-note">
+          {score >= 80
+            ? 'Great job! Your resume covers all core sections.'
+            : score >= 50
+            ? 'Good progress. Follow the tips below to strengthen it.'
+            : 'Add more details to increase recruiter interest.'}
+        </p>
 
-      {/* ACTIONABLE TIPS */}
-      {tips.length > 0 && (
-        <Stack spacing={1} sx={{ mt: 1, pt: 1.5, borderTop: 1, borderColor: 'divider' }}>
-          <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <LightbulbIcon fontSize="inherit" color="secondary" /> Actionable Tips:
-          </Typography>
-          {tips.map((tip, idx) => (
-            <Typography key={idx} variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.8 }}>
-              <span style={{ color: '#ff7b00', fontWeight: 'bold' }}>•</span> {tip}
-            </Typography>
-          ))}
-        </Stack>
-      )}
+        {/* ACTIONABLE TIPS */}
+        {tips.length > 0 && (
+          <ul className="st-score__tips" aria-label="Actionable tips">
+            {tips.map((tip, idx) => (
+              <li key={idx}>{tip}</li>
+            ))}
+          </ul>
+        )}
 
-      {score === 100 && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1.5, color: 'success.main' }}>
-          <CheckCircleIcon fontSize="small" />
-          <Typography variant="caption" fontWeight={700}>
+        {score === 100 && (
+          <p className="st-score__done">
+            <CheckCircleIcon />
             All recommended resume sections are complete!
-          </Typography>
-        </Box>
-      )}
-    </Paper>
+          </p>
+        )}
+      </div>
+    </section>
   )
 }
 

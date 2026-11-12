@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Studio launchpad (/resume): a night-toned stage with a live template preview.
+   The section re-points the surface tokens so shared controls (the template
+   picker) read correctly on the dark stage in either theme.
+   ========================================================================== */
+
+.st-launch {
+  --lp-text: var(--lp-cream);
+  --lp-text-soft: var(--lp-night-soft);
+  --lp-line: rgba(251, 246, 238, 0.24);
+  --lp-accent: var(--lp-orange-soft);
+  --lp-ring: var(--lp-orange-soft);
+  --st-wash: rgba(255, 255, 255, 0.07);
+  --st-desk: var(--lp-night);
+  --st-desk-line: rgba(255, 255, 255, 0.14);
+  position: relative;
+  min-height: calc(100vh - 4.3rem);
+  padding: clamp(2.5rem, 6vw, 5rem) var(--lp-gutter) clamp(3.5rem, 7vw, 6rem);
+  overflow: hidden;
+  background:
+    radial-gradient(60rem 40rem at 92% 12%, var(--lp-night-glow), transparent 70%),
+    radial-gradient(46rem 34rem at 0% 100%, var(--lp-night-glow), transparent 72%),
+    var(--lp-hero-bg);
+  color: var(--lp-cream);
+}
+
+.st-launch__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.st-launch__title {
+  font-size: clamp(3.2rem, 6.7vw, 6.9rem);
+  line-height: 0.86;
+}
+
+.st-launch .st-sub {
+  margin-top: 1.3rem;
+  color: var(--lp-orange-soft);
+  font-size: clamp(1.25rem, 2.1vw, 1.8rem);
+}
+
+.st-launch__panel {
+  max-width: 34rem;
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+  padding: 1.2rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.st-launch__cta {
+  display: grid;
+  justify-items: start;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+}
+
+.st-launch__points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 1.6rem;
+  max-width: 36rem;
+  margin: clamp(1.8rem, 3vw, 2.6rem) 0 0;
+  padding: 1.4rem 0 0;
+  border-top: 1px solid var(--st-desk-line);
+  color: var(--lp-text-soft);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  list-style: none;
+}
+
+.st-launch__points li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+}
+
+.st-launch__points span {
+  flex: none;
+  color: var(--lp-orange-soft);
+  font-size: 1.05rem;
+}
+
+/* The preview: a real template in a coloured frame, slightly tilted like a card on a desk. */
+.st-launch__stage {
+  display: grid;
+  justify-items: center;
+}
+
+.st-launch__frame {
+  width: min(100%, 27rem);
+  padding: 0.85rem;
+  border-radius: 1.5rem;
+  background: var(--frame);
+  color: var(--lp-ink);
+  box-shadow: 0 3rem 5rem -2rem rgba(0, 0, 0, 0.7);
+  rotate: 2deg;
+  transition: background-color 0.5s ease;
+}
+
+.st-launch__frame-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.1rem 0.3rem 0.75rem;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.st-launch__frame-head > span:first-child {
+  color: var(--lp-tomato-deep);
+}
+
+.st-launch__sample {
+  margin-left: auto;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.st-launch__frame .lp-paper {
+  box-shadow: 0 0.8rem 1.6rem -0.8rem rgba(20, 0, 43, 0.4);
+}
+
+@media (max-width: 991.98px) {
+  .st-launch__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .st-launch__title {
+    font-size: clamp(3.2rem, 14vw, 7rem);
+  }
+
+  .st-launch__frame {
+    rotate: 1.2deg;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .st-launch__points {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

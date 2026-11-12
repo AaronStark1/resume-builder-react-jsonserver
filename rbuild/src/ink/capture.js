@@ -12,6 +12,7 @@
  */
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
+const JPEG_SOURCE = /\.jpe?g(?:$|[?#])/i
 const DROP_SELECTOR = 'script, noscript, template, iframe, object, embed, link, style, [data-ink-ignore]'
 
 /** Font file URL -> Promise<data URL | null>. Fonts are embedded because SVG images can't fetch. */
@@ -147,7 +148,8 @@ function inlineImage(src, dst) {
       c.width = src.naturalWidth
       c.height = src.naturalHeight
       c.getContext('2d').drawImage(src, 0, 0)
-      data = c.toDataURL()
+      // Photographs stay JPEG: re-encoding one as PNG would add megabytes to every snapshot.
+      data = JPEG_SOURCE.test(url) ? c.toDataURL('image/jpeg', 0.86) : c.toDataURL()
     } catch {
       data = null // cross-origin without CORS: it will be missing from the snapshot
     }

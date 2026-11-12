@@ -1,289 +1,126 @@
-import { useState } from 'react'
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  Container,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Tooltip
-} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import CloseIcon from '@mui/icons-material/Close'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'motion/react'
 
+import { ease } from '../motion/variants'
 import { useColorMode } from '../context/useColorMode'
 import ThemeToggleIcon from './ThemeToggleIcon'
+import { CtaLink } from './studio/Bits'
 
+const LINKS = [
+  { label: 'Studio', to: '/form' },
+  { label: 'Archive', to: '/history' },
+  { label: 'Templates', to: '/resume' },
+]
+
+/** A saved resume (/resume/:id) belongs to the archive. */
+const sectionOf = (pathname) => (pathname.startsWith('/resume/') ? '/history' : pathname)
+
+/**
+ * Global header for the inner routes: the landing page's navigation language (wordmark, pill
+ * navigation, theme toggle, tomato call to action) as a sticky frosted bar. The landing page
+ * itself renders LandingNavigation instead (see App.jsx).
+ */
 const Header = () => {
-  const location = useLocation()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const { pathname } = useLocation()
   const { mode, toggleColorMode, prepareColorModeToggle } = useColorMode()
+  const [open, setOpen] = useState(false)
+  const menuButtonRef = useRef(null)
   const themeLabel = mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-  // Intent to toggle: lets the ink snapshot the page before the click lands.
-  const themeToggleProps = {
-    onClick: toggleColorMode,
-    onPointerEnter: prepareColorModeToggle,
-    onPointerDown: prepareColorModeToggle,
-    onFocus: prepareColorModeToggle,
-  }
+  const current = sectionOf(pathname)
 
-  const isActive = (path) => {
-    if (path === '/resume') {
-      return location.pathname === '/resume' || location.pathname === '/form'
+  useEffect(() => {
+    if (!open) return undefined
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return
+      setOpen(false)
+      menuButtonRef.current?.focus()
     }
-    return location.pathname === path
-  }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
 
-  const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Create Resume', path: '/resume' },
-    { label: 'History', path: '/history' },
-  ]
-
-  const navBtnStyle = (path) => ({
-    color: 'white',
-    fontWeight: 600,
-    fontSize: '0.95rem',
-    borderBottom: isActive(path) ? '2px solid' : '2px solid transparent',
-    borderBottomColor: isActive(path) ? 'secondary.main' : 'transparent',
-    borderRadius: 0,
-    mx: 1.5,
-    px: 1,
-    py: 1,
-    transition: '0.2s',
-    ':hover': {
-      background: 'rgba(255,255,255,0.08)',
-      borderBottomColor: isActive(path) ? 'secondary.main' : 'rgba(255,255,255,0.3)',
-    },
-  })
+  const close = () => setOpen(false)
 
   return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={(theme) => ({
-        background: theme.palette.mode === 'dark' ? 'rgba(12, 7, 20, 0.92)' : 'rgba(20, 0, 43, 0.92)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        zIndex: theme.zIndex.drawer + 1,
-      })}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 72 } }}>
+    <header className="lpn lpn--app">
+      <nav className="lpn__bar" aria-label="Primary">
+        <Link to="/" className="lpn__brand" aria-label="rBuild — home" onClick={close}>
+          <span className="lpn__mono" aria-hidden="true">
+            rB
+          </span>
+          rBuild
+        </Link>
 
-          {/* BRAND LOGO (Monogram + Wordmark) */}
-          <Box
-            component={Link}
-            to="/"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              color: 'white',
-              mr: 4,
-            }}
-          >
-            <Box
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 2,
-                bgcolor: 'secondary.main',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: 18,
-                mr: 1.5,
-                boxShadow: '0 2px 8px rgba(255,123,0,0.4)',
-              }}
-            >
-              rB
-            </Box>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 800,
-                letterSpacing: '-0.02em',
-                background: 'linear-gradient(90deg, #ffffff, #f0e6ff)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              rBuild
-            </Typography>
-          </Box>
-
-          {/* DESKTOP NAVIGATION */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-            {navLinks.map((link) => (
-              <Button
-                key={link.path}
-                component={Link}
-                to={link.path}
-                sx={navBtnStyle(link.path)}
-              >
+        <ul className="lpn__pill">
+          {LINKS.map((link) => (
+            <li key={link.to}>
+              <Link to={link.to} aria-current={current === link.to ? 'page' : undefined}>
                 {link.label}
-              </Button>
-            ))}
-          </Box>
-
-          {/* DESKTOP THEME TOGGLE & CTA */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
-            <Tooltip title={themeLabel}>
-              <IconButton
-                {...themeToggleProps}
-                aria-label={themeLabel}
-                sx={{
-                  color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
-                  bgcolor: 'rgba(255,255,255,0.08)',
-                  p: 1,
-                  transition: 'all 0.2s',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.18)',
-                    transform: 'rotate(15deg)',
-                  },
-                }}
-              >
-                <ThemeToggleIcon mode={mode} />
-              </IconButton>
-            </Tooltip>
-
-            <Button
-              component={Link}
-              to="/form"
-              variant="contained"
-              color="secondary"
-              sx={{
-                fontWeight: 'bold',
-                borderRadius: 2.5,
-                px: 3,
-                py: 1,
-                boxShadow: '0 4px 14px rgba(255,123,0,0.3)',
-                ':hover': {
-                  bgcolor: 'secondary.dark',
-                  transform: 'translateY(-1px)',
-                },
-                transition: '0.2s',
-              }}
-            >
-              Start Building
-            </Button>
-          </Box>
-
-          {/* MOBILE THEME TOGGLE & HAMBURGER */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto', alignItems: 'center', gap: 1 }}>
-            <IconButton
-              {...themeToggleProps}
-              aria-label={themeLabel}
-              sx={{
-                color: mode === 'dark' ? 'secondary.main' : 'rgba(255,255,255,0.9)',
-                bgcolor: 'rgba(255,255,255,0.08)',
-                p: 0.8,
-              }}
-            >
-              <ThemeToggleIcon mode={mode} />
-            </IconButton>
-
-            <IconButton
-              color="inherit"
-              aria-label="Open mobile menu"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              edge="end"
-            >
-              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-            </IconButton>
-          </Box>
-
-        </Toolbar>
-      </Container>
-
-      {/* MOBILE DRAWER */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        PaperProps={{
-          sx: (theme) => ({
-            width: 270,
-            bgcolor: theme.palette.mode === 'dark' ? '#140c22' : 'primary.dark',
-            color: 'white',
-            p: 3,
-            pt: 11, // start below the app bar, which sits above the drawer (zIndex drawer + 1)
-          }),
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Button
-            size="small"
-            {...themeToggleProps}
-            startIcon={<ThemeToggleIcon mode={mode} size={18} />}
-            sx={{
-              color: 'white',
-              bgcolor: 'rgba(255,255,255,0.08)',
-              px: 1.5,
-              py: 0.5,
-              fontSize: '0.8rem',
-              ':hover': { bgcolor: 'rgba(255,255,255,0.15)' }
-            }}
-          >
-            {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-          </Button>
-
-          <IconButton
-            onClick={() => setMobileOpen(false)}
-            sx={{ color: 'white' }}
-            aria-label="Close menu"
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        <List>
-          {navLinks.map((link) => (
-            <ListItem key={link.path} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                component={Link}
-                to={link.path}
-                onClick={() => setMobileOpen(false)}
-                sx={{
-                  borderRadius: 2,
-                  bgcolor: isActive(link.path) ? 'rgba(255,123,0,0.18)' : 'transparent',
-                  color: isActive(link.path) ? 'secondary.main' : 'white',
-                }}
-              >
-                <ListItemText
-                  primary={link.label}
-                  primaryTypographyProps={{ fontWeight: isActive(link.path) ? 700 : 500 }}
-                />
-              </ListItemButton>
-            </ListItem>
+              </Link>
+            </li>
           ))}
-        </List>
+        </ul>
 
-        <Box sx={{ mt: 4 }}>
-          <Button
-            component={Link}
-            to="/form"
-            variant="contained"
-            color="secondary"
-            fullWidth
-            onClick={() => setMobileOpen(false)}
-            sx={{ py: 1.2, fontWeight: 'bold' }}
+        <div className="lpn__actions">
+          {/* Intent to toggle (hover / focus / press) lets the ink snapshot the page before the click lands. */}
+          <button
+            type="button"
+            className="lpn__icon"
+            aria-label={themeLabel}
+            title={themeLabel}
+            onClick={toggleColorMode}
+            onPointerEnter={prepareColorModeToggle}
+            onPointerDown={prepareColorModeToggle}
+            onFocus={prepareColorModeToggle}
           >
-            Start Building
-          </Button>
-        </Box>
-      </Drawer>
-    </AppBar>
+            <ThemeToggleIcon mode={mode} size={18} />
+          </button>
+          <CtaLink to="/form" size="sm" className="lpn__cta" onClick={close}>
+            Start building
+          </CtaLink>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="lpn__icon lpn__menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="lpn-app-sheet"
+            data-open={open ? '' : undefined}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span aria-hidden="true" />
+          </button>
+        </div>
+      </nav>
+
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            id="lpn-app-sheet"
+            className="lpn__sheet"
+            initial={{ opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.28, ease }}
+          >
+            <ul>
+              {[{ label: 'Home', to: '/' }, ...LINKS].map((link, index) => (
+                <li key={link.to}>
+                  <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                  <Link to={link.to} onClick={close} aria-current={current === link.to ? 'page' : undefined}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <CtaLink to="/form" size="md" onClick={close}>
+              Start building
+            </CtaLink>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </header>
   )
 }
 

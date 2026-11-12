@@ -1,46 +1,18 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Container,
-  Stack,
-  Grid
-} from '@mui/material'
-import { Link } from 'react-router-dom'
-import { motion } from 'motion/react'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
 import { usePageTitle } from '../utils/usePageTitle'
+import { ease } from '../motion/variants'
 import ScaledPage from '../components/resume/ScaledPage'
 import ResumeTemplate from '../components/resume/ResumeTemplate'
+import TemplatePicker from '../components/resume/TemplatePicker'
+import SplitHeading from '../components/landing/SplitHeading'
+import { sampleResume } from '../components/landing/sampleData'
+import { CtaLink } from '../components/studio/Bits'
+import { accentName, templateName, DEFAULT_ACCENT, DEFAULT_TEMPLATE } from '../config/resumeDesign'
+import '../studio/launchpad.css'
 
-const sampleResume = {
-  personalDetails: {
-    name: 'David Miller',
-    title: 'Full Stack Web Developer',
-    location: 'Austin, TX'
-  },
-  contactDetails: {
-    email: 'david.miller@example.com',
-    phoneNumber: '+1 (555) 987-6543',
-    github: 'https://github.com/example',
-    linkedIn: 'https://linkedin.com/in/example',
-    portfolio: 'https://davidmiller.dev'
-  },
-  education: {
-    course: 'B.S. Software Engineering',
-    college: 'University of Texas at Austin',
-    year: '2022'
-  },
-  professionalDetails: {
-    jobTitle: 'Full Stack Engineer',
-    company: 'Stripe',
-    duration: '2022 - Present'
-  },
-  skills: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker', 'AWS'],
-  summary: 'Detail-oriented engineer experienced in designing scalable RESTful architectures and high-performance React frontends.'
-}
+const HEADLINE = [[{ text: 'The drafting' }], [{ text: 'studio' }]]
 
 const points = [
   'Structured 7-step guided input form',
@@ -48,118 +20,103 @@ const points = [
   'Multiple professional templates & accent colors',
   'Instant high-resolution PDF download',
   'Autosaved draft history in browser',
-  'Edit anytime with direct sync'
+  'Edit anytime with direct sync',
 ]
 
+const FRAMES = { classic: 'var(--lp-lavender)', modern: 'var(--lp-peach-soft)', minimal: 'var(--lp-sage)' }
+
+const rise = (delay) => ({
+  initial: { opacity: 0, y: 22 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.7, ease, delay },
+})
+
+/**
+ * Studio launchpad: pick a template and an accent on a live sample page, then carry that design
+ * into the builder (router state; Form applies it on top of any saved draft).
+ */
 const ResumeGeneratorPage = () => {
   usePageTitle('Create Resume')
+  const [template, setTemplate] = useState(DEFAULT_TEMPLATE)
+  const [accent, setAccent] = useState(DEFAULT_ACCENT)
+  const preview = useMemo(() => ({ ...sampleResume, template, accentColor: accent }), [template, accent])
 
   return (
-    <Box
-      sx={(theme) => ({
-        minHeight: '90vh',
-        display: 'flex',
-        alignItems: 'center',
-        background: theme.custom.gradient,
-        color: 'white',
-        py: { xs: 8, md: 12 },
-        position: 'relative',
-        overflow: 'hidden'
-      })}
-    >
-      <Container maxWidth="lg">
-        <Grid container spacing={6} alignItems="center">
+    <div className="st st-launch">
+      <div className="st-wrap st-launch__inner">
+        {/* LEFT: COPY & DESIGN CONTROLS */}
+        <div className="st-launch__copy">
+          <motion.p className="lp-eyebrow" {...rise(0.05)}>
+            Studio launchpad
+          </motion.p>
+          <SplitHeading as="h1" className="lp-display st-launch__title" lines={HEADLINE} mode="mount" delay={0.15} />
+          <motion.p className="st-sub" {...rise(0.75)}>
+            Engineered for recruiters. Tailored for you.
+          </motion.p>
 
-          {/* LEFT CONTENT */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Typography
-                variant="h2"
-                fontWeight={800}
-                sx={{
-                  fontSize: { xs: '2.4rem', md: '3.2rem' },
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.2,
-                  mb: 2.5
-                }}
-              >
-                Create Your Professional Resume
-              </Typography>
+          <motion.div className="st-launch__panel" {...rise(0.9)}>
+            <TemplatePicker
+              currentTemplate={template}
+              currentAccent={accent}
+              onTemplateChange={setTemplate}
+              onAccentChange={setAccent}
+            />
+          </motion.div>
 
-              <Typography variant="h6" sx={{ opacity: 0.88, mb: 4, lineHeight: 1.6, fontWeight: 400 }}>
-                Build a job-winning resume in minutes using our smart resume generator. Highlight your strengths, organize your experience, and make a lasting impression on recruiters.
-              </Typography>
+          <motion.div className="st-launch__cta" {...rise(1.05)}>
+            <CtaLink to="/form" state={{ template, accentColor: accent }}>
+              Enter Studio &amp; Start Drafting
+            </CtaLink>
+            <p className="st-note">
+              Starting with {templateName(template)} in {accentName(accent)} — you can change both at any time.
+            </p>
+          </motion.div>
 
-              <Stack spacing={2} mb={5}>
-                {points.map((pt) => (
-                  <Stack key={pt} direction="row" spacing={1.5} alignItems="center">
-                    <CheckCircleIcon sx={{ color: 'secondary.main', fontSize: 22 }} />
-                    <Typography variant="body1" fontWeight={500}>
-                      {pt}
-                    </Typography>
-                  </Stack>
-                ))}
-              </Stack>
+          <motion.ul className="st-launch__points" {...rise(1.2)}>
+            {points.map((pt, index) => (
+              <li key={pt}>
+                <span className="lp-display" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {pt}
+              </li>
+            ))}
+          </motion.ul>
+        </div>
 
-              <Button
-                component={Link}
-                to="/form"
-                variant="contained"
-                color="secondary"
-                size="large"
-                endIcon={<ArrowForwardIcon />}
-                sx={{
-                  px: 5,
-                  py: 1.8,
-                  borderRadius: 3,
-                  fontWeight: 'bold',
-                  fontSize: '1.05rem',
-                  boxShadow: '0 8px 24px rgba(255,123,0,0.35)'
-                }}
-              >
-                Launch Builder
-              </Button>
-            </motion.div>
-          </Grid>
-
-          {/* RIGHT INTERACTIVE PREVIEW */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -8, 0] }}
-              transition={{
-                opacity: { duration: 0.7 },
-                scale: { duration: 0.7 },
-                y: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
-              }}
-              style={{
-                display: 'flex',
-                justifyContent: 'center'
-              }}
-            >
-              <Box
-                sx={{
-                  width: '100%',
-                  maxWidth: 380,
-                  boxShadow: '0 24px 60px rgba(0,0,0,0.45)',
-                  borderRadius: 4,
-                  overflow: 'hidden'
-                }}
-              >
-                <ScaledPage targetWidth={380}>
-                  <ResumeTemplate data={sampleResume} />
-                </ScaledPage>
-              </Box>
-            </motion.div>
-          </Grid>
-
-        </Grid>
-      </Container>
-    </Box>
+        {/* RIGHT: LIVE TEMPLATE PREVIEW */}
+        <motion.div
+          className="st-launch__stage"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease, delay: 0.4 }}
+        >
+          <div className="st-launch__frame" style={{ '--frame': FRAMES[template] }}>
+            <div className="st-launch__frame-head">
+              <span>{templateName(template)}</span>
+              {accentName(accent)}
+              <span className="st-launch__sample">A4 · Sample content</span>
+            </div>
+            <div className="lp-paper" role="img" aria-label={`Sample resume in the ${templateName(template)} template`}>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={template}
+                  inert
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.22 }}
+                >
+                  <ScaledPage>
+                    <ResumeTemplate data={preview} />
+                  </ScaledPage>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   )
 }
 

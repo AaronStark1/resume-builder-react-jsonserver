@@ -1,28 +1,17 @@
 import { useState, useMemo } from 'react'
-import Stepper from '@mui/material/Stepper'
-import Step from '@mui/material/Step'
-import StepLabel from '@mui/material/StepLabel'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import { AnimatePresence, motion } from 'motion/react'
 import TextField from '@mui/material/TextField'
-import Stack from '@mui/material/Stack'
-import CircularProgress from '@mui/material/CircularProgress'
-import Chip from '@mui/material/Chip'
-import Paper from '@mui/material/Paper'
-import Divider from '@mui/material/Divider'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
-import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AddIcon from '@mui/icons-material/Add'
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import CloseIcon from '@mui/icons-material/Close'
 
 import { addResumeAPI } from '../services/allAPIs'
 import Swal from 'sweetalert2'
@@ -30,16 +19,43 @@ import { sections } from '../config/resumeFields'
 import SectionFields from './SectionFields'
 import { validateStep, normalizeUrl } from '../utils/validation'
 import { getSkillSuggestions } from '../utils/skillSuggestions'
+import { ease } from '../motion/variants'
+import { CtaButton } from './studio/Bits'
+import DossierCard from './studio/DossierCard'
+import StudioStepper from './studio/StudioStepper'
 
-const stepLabels = [
-  'Basics',
-  'Contact',
-  'Education',
-  'Experience',
-  'Skills',
-  'Summary',
-  'Review'
+const steps = [
+  { label: 'Identity', line: 'who you are, in a line' },
+  { label: 'Contact', line: 'how they reach you' },
+  { label: 'Education', line: 'where you learned your craft' },
+  { label: 'Experience', line: 'the work behind the title', optional: true },
+  { label: 'Skills', line: 'what you bring to the table' },
+  { label: 'Summary', line: 'your story, distilled' },
+  { label: 'Review', line: 'one last read-through' },
 ]
+const LAST_STEP = steps.length - 1
+
+const chipMotion = {
+  layout: true,
+  initial: { opacity: 0, scale: 0.6 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.6 },
+  transition: { type: 'spring', stiffness: 520, damping: 22 },
+}
+
+/** A read-only block on the review stage, with a jump back to its stage. */
+const ReviewBlock = ({ label, onEdit, children }) => (
+  <section className="st-review">
+    <div className="st-review__main">
+      <h3 className="st-review__label">{label}</h3>
+      {children}
+    </div>
+    <button type="button" className="st-btn st-btn--quiet st-btn--sm" onClick={onEdit}>
+      <EditIcon />
+      Edit
+    </button>
+  </section>
+)
 
 const FormSteps = ({
   formData,
@@ -61,6 +77,9 @@ const FormSteps = ({
   } = formData
 
   const [activeStep, setActiveStep] = useState(0)
+  const [furthestStep, setFurthestStep] = useState(0) // the latest stage visited so far
+  const [openEducation, setOpenEducation] = useState(0)
+  const [openExperience, setOpenExperience] = useState(0)
   const [skipped, setSkipped] = useState(new Set())
   const [submitting, setSubmitting] = useState(false)
   const [inputSkill, setInputSkill] = useState('')
@@ -68,7 +87,7 @@ const FormSteps = ({
   const [errors, setErrors] = useState({})
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' })
 
-  const isStepOptional = (step) => step === 3 // Experience can be skipped for freshers
+  const isStepOptional = (step) => Boolean(steps[step]?.optional) // Experience can be skipped for freshers
   const isStepSkipped = (step) => skipped.has(step)
 
   const suggestions = useMemo(() => {
@@ -94,6 +113,7 @@ const FormSteps = ({
       list.push({ course: '', college: '', university: '', year: '' })
       return { ...prev, educationList: list }
     })
+    setOpenEducation(educationList.length) // open the new entry
   }
 
   const removeEducationItem = (index) => {
@@ -126,6 +146,7 @@ const FormSteps = ({
       list.push({ jobTitle: '', company: '', location: '', duration: '', bullets: [] })
       return { ...prev, experienceList: list }
     })
+    setOpenExperience(experienceList.length) // open the new entry
   }
 
   const removeExperienceItem = (index) => {
@@ -198,6 +219,7 @@ const FormSteps = ({
     const { isValid, errors: stepErrors } = validateStep(activeStep, formData)
     if (!isValid) {
       setErrors(stepErrors)
+      if (activeStep === 2) setOpenEducation(0) // the validated fields live in the first entry
       return
     }
 
@@ -220,7 +242,23 @@ const FormSteps = ({
       newSkipped.delete(activeStep)
     }
     setActiveStep((prev) => prev + 1)
+    setFurthestStep((prev) => Math.max(prev, activeStep + 1))
     setSkipped(newSkipped)
+  }
+
+  /** Stepper / review jumps. Going back is free; going forward re-validates the current stage. */
+  const goToStep = (target) => {
+    if (target === activeStep || target > furthestStep) return
+    if (target > activeStep) {
+      const { isValid, errors: stepErrors } = validateStep(activeStep, formData)
+      if (!isValid) {
+        setErrors(stepErrors)
+        if (activeStep === 2) setOpenEducation(0)
+        return
+      }
+    }
+    setErrors({})
+    setActiveStep(target)
   }
 
   const handleBack = () => {
@@ -232,6 +270,7 @@ const FormSteps = ({
     if (!isStepOptional(activeStep)) return
     setErrors({})
     setActiveStep((prev) => prev + 1)
+    setFurthestStep((prev) => Math.max(prev, activeStep + 1))
     setSkipped((prev) => new Set(prev).add(activeStep))
   }
 
@@ -327,32 +366,37 @@ const FormSteps = ({
       const currentList = educationList.length > 0 ? educationList : [formData.education]
 
       return (
-        <Box>
-          <Typography variant="body2" color="text.secondary" mb={3}>
+        <div>
+          <p className="st-note st-step-note">
             Add degrees, certifications, or educational programs in reverse chronological order.
-          </Typography>
+          </p>
 
-          <Stack spacing={3}>
+          <div className="st-dossiers">
             {currentList.map((ed, idx) => (
-              <Paper key={idx} variant="outlined" sx={{ p: 2.5, borderRadius: 2.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-                    Education #{idx + 1}
-                  </Typography>
-                  {currentList.length > 1 && (
-                    <IconButton
-                      size="small"
-                      color="error"
+              <DossierCard
+                key={idx}
+                index={idx}
+                title={ed.course}
+                organisation={ed.college || ed.university}
+                placeholder="Untitled degree"
+                open={openEducation === idx}
+                onToggle={() => setOpenEducation(openEducation === idx ? -1 : idx)}
+                actions={
+                  currentList.length > 1 ? (
+                    <button
+                      type="button"
+                      className="st-iconbtn st-iconbtn--danger"
                       onClick={() => removeEducationItem(idx)}
                       aria-label="Remove education entry"
                     >
-                      <DeleteOutlineIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                </Box>
-
-                <Stack spacing={2}>
+                      <DeleteOutlineIcon />
+                    </button>
+                  ) : null
+                }
+              >
+                <div className="st-fields">
                   <TextField
+                    className="st-fields__wide"
                     label="Course / Degree"
                     value={ed.course || ''}
                     onChange={(e) => updateEducationItem(idx, 'course', e.target.value)}
@@ -381,22 +425,16 @@ const FormSteps = ({
                     helperText={idx === 0 ? errors.year : ''}
                     fullWidth
                   />
-                </Stack>
-              </Paper>
+                </div>
+              </DossierCard>
             ))}
-          </Stack>
+          </div>
 
-          <Box mt={2.5}>
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={addEducationItem}
-              size="small"
-            >
-              Add Another Degree
-            </Button>
-          </Box>
-        </Box>
+          <button type="button" className="st-add" onClick={addEducationItem}>
+            <AddIcon />
+            Add another degree
+          </button>
+        </div>
       )
     }
 
@@ -405,43 +443,63 @@ const FormSteps = ({
       const currentList = experienceList.length > 0 ? experienceList : [formData.professionalDetails]
 
       return (
-        <Box>
-          <Typography variant="body2" color="text.secondary" mb={3}>
+        <div>
+          <p className="st-note st-step-note">
             Add your professional roles, internships, or relevant work experience. Freshers may skip this step.
-          </Typography>
+          </p>
 
-          <Stack spacing={3}>
+          <div className="st-dossiers">
             {currentList.map((exp, idx) => (
-              <Paper key={idx} variant="outlined" sx={{ p: 2.5, borderRadius: 2.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={700} color="primary.main">
-                    Role #{idx + 1}
-                  </Typography>
-                  <Stack direction="row" spacing={0.5}>
+              <DossierCard
+                key={idx}
+                index={idx}
+                title={exp.jobTitle}
+                organisation={exp.company}
+                placeholder="Untitled role"
+                open={openExperience === idx}
+                onToggle={() => setOpenExperience(openExperience === idx ? -1 : idx)}
+                actions={
+                  <>
                     {idx > 0 && (
-                      <IconButton size="small" onClick={() => moveExperience(idx, -1)} aria-label="Move up">
-                        <ArrowUpwardIcon fontSize="small" />
-                      </IconButton>
+                      <button
+                        type="button"
+                        className="st-iconbtn"
+                        onClick={() => {
+                          moveExperience(idx, -1)
+                          setOpenExperience(idx - 1)
+                        }}
+                        aria-label="Move up"
+                      >
+                        <ArrowUpwardIcon />
+                      </button>
                     )}
                     {idx < currentList.length - 1 && (
-                      <IconButton size="small" onClick={() => moveExperience(idx, 1)} aria-label="Move down">
-                        <ArrowDownwardIcon fontSize="small" />
-                      </IconButton>
+                      <button
+                        type="button"
+                        className="st-iconbtn"
+                        onClick={() => {
+                          moveExperience(idx, 1)
+                          setOpenExperience(idx + 1)
+                        }}
+                        aria-label="Move down"
+                      >
+                        <ArrowDownwardIcon />
+                      </button>
                     )}
                     {currentList.length > 1 && (
-                      <IconButton
-                        size="small"
-                        color="error"
+                      <button
+                        type="button"
+                        className="st-iconbtn st-iconbtn--danger"
                         onClick={() => removeExperienceItem(idx)}
                         aria-label="Remove role"
                       >
-                        <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
+                        <DeleteOutlineIcon />
+                      </button>
                     )}
-                  </Stack>
-                </Box>
-
-                <Stack spacing={2}>
+                  </>
+                }
+              >
+                <div className="st-fields">
                   <TextField
                     label="Job Title"
                     value={exp.jobTitle || ''}
@@ -470,84 +528,71 @@ const FormSteps = ({
                     placeholder="e.g. Jan 2023 - Present"
                     fullWidth
                   />
+                </div>
 
-                  {/* BULLET POINTS / ACHIEVEMENTS */}
-                  <Box sx={{ mt: 1, pt: 1, borderTop: '1px dashed #e0e0e0' }}>
-                    <Typography variant="caption" fontWeight={700} color="text.secondary" mb={1} display="block">
-                      Key Responsibilities &amp; Achievements (Bullets)
-                    </Typography>
+                {/* BULLET POINTS / ACHIEVEMENTS */}
+                <div className="st-bullets">
+                  <p className="st-bullets__label">Key responsibilities &amp; achievements</p>
 
-                    <Stack spacing={1} mb={1.5}>
+                  {(exp.bullets || []).length > 0 && (
+                    <ul className="st-bullets__list">
                       {(exp.bullets || []).map((b, bIdx) => (
-                        <Box
-                          key={bIdx}
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            bgcolor: 'action.hover',
-                            px: 1.5,
-                            py: 0.8,
-                            borderRadius: 1.5,
-                          }}
-                        >
-                          <Typography variant="body2" sx={{ pr: 1 }}>
-                            • {b}
-                          </Typography>
-                          <IconButton
-                            size="small"
+                        <li key={bIdx}>
+                          <span>{b}</span>
+                          <button
+                            type="button"
+                            className="st-iconbtn st-iconbtn--danger"
                             onClick={() => removeBulletPoint(idx, bIdx)}
                             aria-label="Remove bullet point"
                           >
-                            <DeleteOutlineIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
+                            <CloseIcon />
+                          </button>
+                        </li>
                       ))}
-                    </Stack>
+                    </ul>
+                  )}
 
-                    <Stack direction="row" spacing={1}>
-                      <TextField
-                        size="small"
-                        placeholder="Add an achievement bullet point..."
-                        value={bulletInputs[idx] || ''}
-                        onChange={(e) => setBulletInputs({ ...bulletInputs, [idx]: e.target.value })}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault()
-                            addBulletPoint(idx)
-                          }
-                        }}
-                        fullWidth
-                      />
-                      <Button size="small" variant="outlined" onClick={() => addBulletPoint(idx)}>
-                        Add
-                      </Button>
-                    </Stack>
-                  </Box>
-                </Stack>
-              </Paper>
+                  <div className="st-inline">
+                    <TextField
+                      size="small"
+                      placeholder="Add an achievement bullet point..."
+                      value={bulletInputs[idx] || ''}
+                      onChange={(e) => setBulletInputs({ ...bulletInputs, [idx]: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          addBulletPoint(idx)
+                        }
+                      }}
+                      slotProps={{ htmlInput: { 'aria-label': 'Achievement bullet point' } }}
+                      fullWidth
+                    />
+                    <button type="button" className="st-btn" onClick={() => addBulletPoint(idx)}>
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </DossierCard>
             ))}
-          </Stack>
+          </div>
 
-          <Box mt={2.5}>
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={addExperienceItem}
-              size="small"
-            >
-              Add Another Role
-            </Button>
-          </Box>
-        </Box>
+          <button type="button" className="st-add" onClick={addExperienceItem}>
+            <AddIcon />
+            Add another position
+          </button>
+        </div>
       )
     }
 
     if (step === 4) {
       // Skills
+      const openSuggestions = suggestions.filter(
+        (item) => !skills.some((s) => s.toLowerCase() === item.toLowerCase()),
+      )
+
       return (
-        <Box>
-          <Stack direction="row" spacing={1} mb={2}>
+        <div>
+          <div className="st-inline">
             <TextField
               value={inputSkill}
               onChange={(e) => setInputSkill(e.target.value)}
@@ -561,51 +606,50 @@ const FormSteps = ({
               placeholder="e.g. React, TypeScript, Docker"
               fullWidth
             />
-            <Button
-              variant="contained"
-              onClick={() => addSkill(inputSkill)}
-              sx={{ px: 3 }}
-            >
+            <button type="button" className="st-btn st-btn--solid" onClick={() => addSkill(inputSkill)}>
               Add
-            </Button>
-          </Stack>
+            </button>
+          </div>
 
-          <Typography variant="subtitle2" mt={3} mb={1} color="text.secondary" fontWeight={600}>
-            Suggested for {personalDetails.title || 'your profile'}
-          </Typography>
-          <Stack direction="row" flexWrap="wrap" gap={1}>
-            {suggestions
-              .filter((item) => !skills.some((s) => s.toLowerCase() === item.toLowerCase()))
-              .map((item) => (
-                <Chip
-                  key={item}
-                  label={`+ ${item}`}
-                  clickable
-                  variant="outlined"
-                  onClick={() => addSkill(item)}
-                />
+          <h3 className="st-tray__label">
+            On your resume <span>{skills.length}</span>
+          </h3>
+          <div className="st-tray" data-empty={skills.length === 0 ? '' : undefined}>
+            <AnimatePresence mode="popLayout" initial={false}>
+              {skills.map((item) => (
+                <motion.span key={item} className="st-chip" {...chipMotion}>
+                  {item}
+                  <button type="button" onClick={() => removeSkill(item)} aria-label={`Remove ${item}`}>
+                    <CloseIcon />
+                  </button>
+                </motion.span>
               ))}
-          </Stack>
+            </AnimatePresence>
+            {skills.length === 0 && <p className="st-note">No skills added yet. Add at least 3-5 key skills.</p>}
+          </div>
 
-          <Typography variant="subtitle2" mt={4} mb={1} color="text.secondary" fontWeight={600}>
-            Added Skills ({skills.length})
-          </Typography>
-          <Stack direction="row" flexWrap="wrap" gap={1}>
-            {skills.map((item) => (
-              <Chip
-                key={item}
-                label={item}
-                color="primary"
-                onDelete={() => removeSkill(item)}
-              />
-            ))}
-            {skills.length === 0 && (
-              <Typography variant="body2" color="text.secondary">
-                No skills added yet. Add at least 3-5 key skills.
-              </Typography>
-            )}
-          </Stack>
-        </Box>
+          {openSuggestions.length > 0 && (
+            <>
+              <h3 className="st-tray__label">Suggested for {personalDetails.title || 'your profile'}</h3>
+              <div className="st-tray st-tray--open">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {openSuggestions.map((item) => (
+                    <motion.button
+                      key={item}
+                      type="button"
+                      className="st-chip st-chip--ghost"
+                      onClick={() => addSkill(item)}
+                      {...chipMotion}
+                    >
+                      <AddIcon />
+                      {item}
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </>
+          )}
+        </div>
       )
     }
 
@@ -615,57 +659,32 @@ const FormSteps = ({
       const isOptimal = charCount >= 300 && charCount <= 600
 
       return (
-        <Box>
+        <div>
           <TextField
             value={summary}
             onChange={(e) => updateSectionField('summary', null, e.target.value)}
             multiline
-            rows={5}
+            rows={6}
             label="Professional Summary"
             placeholder="Write a concise overview of your background, core strengths, and what you bring to the table..."
             fullWidth
           />
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            <Typography variant="caption" color={isOptimal ? 'success.main' : 'text.secondary'}>
-              Recommended: 300–600 characters
-            </Typography>
-            <Typography variant="caption" color={isOptimal ? 'success.main' : 'text.secondary'} fontWeight={600}>
-              {charCount} characters
-            </Typography>
-          </Box>
+          <div className="st-count" data-optimal={isOptimal ? '' : undefined}>
+            <span>Recommended: 300–600 characters</span>
+            <strong>{charCount} characters</strong>
+          </div>
 
-          <Box mt={3}>
-            <Typography variant="subtitle2" color="primary.main" fontWeight={600} mb={1.5} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <AutoAwesomeIcon fontSize="small" color="secondary" /> Starter Templates (Click to insert)
-            </Typography>
-            <Stack spacing={1.5}>
-              {summaryTemplates.map((tpl, idx) => (
-                <Paper
-                  key={idx}
-                  variant="outlined"
-                  sx={{
-                    p: 1.5,
-                    cursor: 'pointer',
-                    transition: '0.2s',
-                    ':hover': {
-                      borderColor: 'secondary.main',
-                      bgcolor: 'rgba(255, 123, 0, 0.04)'
-                    }
-                  }}
-                  onClick={() => applySummaryTemplate(tpl.text)}
-                >
-                  <Typography variant="caption" fontWeight="bold" color="secondary.main">
-                    {tpl.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    {tpl.text}
-                  </Typography>
-                </Paper>
-              ))}
-            </Stack>
-          </Box>
-        </Box>
+          <h3 className="st-tray__label">Starter drafts — click to insert</h3>
+          <div className="st-starters">
+            {summaryTemplates.map((tpl, idx) => (
+              <button key={idx} type="button" className="st-starter" onClick={() => applySummaryTemplate(tpl.text)}>
+                <span className="lp-serif st-starter__title">{tpl.title}</span>
+                <span className="st-starter__text">{tpl.text}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       )
     }
 
@@ -675,218 +694,142 @@ const FormSteps = ({
       const currentExpList = experienceList.length > 0 ? experienceList : [formData.professionalDetails]
 
       return (
-        <Box>
-          <Typography variant="h6" fontWeight="bold" mb={1} color="primary.main">
-            Review Your Resume Details
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mb={3}>
-            Review your information below before generating your final resume.
-          </Typography>
+        <div>
+          <p className="st-note st-step-note">Review your information below before generating your final resume.</p>
 
-          <Stack spacing={2.5}>
-            {/* Basics Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main">
-                    Basic Information
-                  </Typography>
-                  <Typography variant="body1" fontWeight={600} mt={0.5}>
-                    {personalDetails.name || 'Not provided'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {personalDetails.title || 'No designation'} • {personalDetails.location || 'No location'}
-                  </Typography>
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(0)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
+          <div className="st-reviews">
+            <ReviewBlock label="Basic Information" onEdit={() => setActiveStep(0)}>
+              <p className="st-review__lead">{personalDetails.name || 'Not provided'}</p>
+              <p className="st-review__meta">
+                {personalDetails.title || 'No designation'} • {personalDetails.location || 'No location'}
+              </p>
+            </ReviewBlock>
 
-            {/* Contact Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main">
-                    Contact Details
-                  </Typography>
-                  <Typography variant="body2" mt={0.5}>
-                    Email: <strong>{contactDetails.email || 'None'}</strong>
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Phone: {contactDetails.phoneNumber || 'None'}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {[contactDetails.github, contactDetails.linkedIn, contactDetails.portfolio]
-                      .filter(Boolean)
-                      .join(' | ') || 'No profile links added'}
-                  </Typography>
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(1)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
+            <ReviewBlock label="Contact Details" onEdit={() => setActiveStep(1)}>
+              <p className="st-review__lead">Email: {contactDetails.email || 'None'}</p>
+              <p className="st-review__meta">Phone: {contactDetails.phoneNumber || 'None'}</p>
+              <p className="st-review__meta">
+                {[contactDetails.github, contactDetails.linkedIn, contactDetails.portfolio]
+                  .filter(Boolean)
+                  .join(' | ') || 'No profile links added'}
+              </p>
+            </ReviewBlock>
 
-            {/* Education Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main">
-                    Education ({currentEdList.length})
-                  </Typography>
-                  {currentEdList.map((ed, idx) => (
-                    <Box key={idx} sx={{ mt: 1 }}>
-                      <Typography variant="body2" fontWeight={600}>
-                        {ed.course || 'Degree not specified'}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {[ed.college, ed.university, ed.year].filter(Boolean).join(' • ')}
-                      </Typography>
-                    </Box>
+            <ReviewBlock label={`Education (${currentEdList.length})`} onEdit={() => setActiveStep(2)}>
+              {currentEdList.map((ed, idx) => (
+                <div key={idx} className="st-review__entry">
+                  <p className="st-review__lead">{ed.course || 'Degree not specified'}</p>
+                  <p className="st-review__meta">{[ed.college, ed.university, ed.year].filter(Boolean).join(' • ')}</p>
+                </div>
+              ))}
+            </ReviewBlock>
+
+            <ReviewBlock label={`Work Experience (${currentExpList.length})`} onEdit={() => setActiveStep(3)}>
+              {currentExpList.map((exp, idx) => (
+                <div key={idx} className="st-review__entry">
+                  <p className="st-review__lead">{exp.jobTitle || 'Role not specified'}</p>
+                  <p className="st-review__meta">
+                    {[exp.company, exp.location, exp.duration].filter(Boolean).join(' • ')}
+                  </p>
+                </div>
+              ))}
+            </ReviewBlock>
+
+            <ReviewBlock label={`Skills (${skills.length})`} onEdit={() => setActiveStep(4)}>
+              {skills.length > 0 ? (
+                <div className="st-tray st-tray--flat">
+                  {skills.map((s) => (
+                    <span key={s} className="st-chip st-chip--sm">
+                      {s}
+                    </span>
                   ))}
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(2)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
+                </div>
+              ) : (
+                <p className="st-review__meta">No skills listed</p>
+              )}
+            </ReviewBlock>
 
-            {/* Experience Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main">
-                    Work Experience ({currentExpList.length})
-                  </Typography>
-                  {currentExpList.map((exp, idx) => (
-                    <Box key={idx} sx={{ mt: 1 }}>
-                      <Typography variant="body2" fontWeight={600}>
-                        {exp.jobTitle || 'Role not specified'}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {[exp.company, exp.location, exp.duration].filter(Boolean).join(' • ')}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(3)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
-
-            {/* Skills Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main" mb={1}>
-                    Skills ({skills.length})
-                  </Typography>
-                  <Stack direction="row" flexWrap="wrap" gap={0.5}>
-                    {skills.map((s) => (
-                      <Chip key={s} label={s} size="small" />
-                    ))}
-                    {skills.length === 0 && (
-                      <Typography variant="body2" color="text.secondary">
-                        No skills listed
-                      </Typography>
-                    )}
-                  </Stack>
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(4)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
-
-            {/* Summary Review */}
-            <Paper variant="outlined" sx={{ p: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box sx={{ flex: 1, pr: 2 }}>
-                  <Typography variant="subtitle2" fontWeight="bold" color="primary.main">
-                    Professional Summary
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" mt={0.5} sx={{ whiteSpace: 'pre-wrap' }}>
-                    {summary || 'No summary provided.'}
-                  </Typography>
-                </Box>
-                <Button size="small" startIcon={<EditIcon />} onClick={() => setActiveStep(5)}>
-                  Edit
-                </Button>
-              </Box>
-            </Paper>
-          </Stack>
-        </Box>
+            <ReviewBlock label="Professional Summary" onEdit={() => setActiveStep(5)}>
+              <p className="st-review__meta st-review__meta--pre">{summary || 'No summary provided.'}</p>
+            </ReviewBlock>
+          </div>
+        </div>
       )
     }
 
     return null
   }
 
+  const current = steps[activeStep]
+
   return (
-    <Box sx={{ width: '100%' }}>
-      {/* HEADER WITH DRAFT INDICATOR */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="body2" color="text.secondary">
-          Step {activeStep + 1} of {stepLabels.length}: <strong>{stepLabels[activeStep]}</strong>
-        </Typography>
-        {isDraftSaved && (
-          <Chip
-            icon={<CheckCircleOutlineIcon fontSize="small" />}
-            label="Draft saved"
-            size="small"
-            color="success"
-            variant="outlined"
-          />
+    <div className="st-form">
+      {/* STUDIO STEPPER */}
+      <StudioStepper
+        steps={steps}
+        active={activeStep}
+        furthest={furthestStep}
+        skipped={skipped}
+        onSelect={goToStep}
+      />
+
+      {/* STAGE HEADER WITH DRAFT INDICATOR */}
+      <div className="st-stage">
+        <div>
+          <p className="lp-eyebrow">
+            Stage {String(activeStep + 1).padStart(2, '0')} of {String(steps.length).padStart(2, '0')}
+            {isStepOptional(activeStep) ? ' · Optional' : ''}
+          </p>
+          <h2 className="lp-display st-stage__title">
+            {current.label} <span className="lp-serif">{current.line}</span>
+          </h2>
+        </div>
+        {isMobile && isDraftSaved && (
+          <span className="st-pill">
+            <span className="st-pill__dot" data-state="saved" />
+            Draft saved
+          </span>
         )}
-      </Box>
+      </div>
 
-      {/* STEPPER */}
-      <Stepper activeStep={activeStep} orientation={isMobile ? 'vertical' : 'horizontal'}>
-        {stepLabels.map((label, index) => (
-          <Step key={label}>
-            <StepLabel optional={isStepOptional(index) && <Typography variant="caption">Optional</Typography>}>
-              {label}
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      <Box sx={{ mt: 4, mb: 4 }}>{renderStepContent(activeStep)}</Box>
-
-      <Divider sx={{ mb: 3 }} />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={activeStep}
+          className="st-stage__body"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.25, ease }}
+        >
+          {renderStepContent(activeStep)}
+        </motion.div>
+      </AnimatePresence>
 
       {/* NAVIGATION BUTTONS */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button disabled={activeStep === 0 || submitting} onClick={handleBack}>
+      <div className="st-formnav">
+        <button
+          type="button"
+          className="st-btn st-btn--quiet"
+          disabled={activeStep === 0 || submitting}
+          onClick={handleBack}
+        >
+          <ArrowBackIcon />
           Back
-        </Button>
-        <Box sx={{ flex: 1 }} />
+        </button>
+        <span className="st-formnav__space" />
         {isStepOptional(activeStep) && (
-          <Button disabled={submitting} onClick={handleSkip} sx={{ mr: 1.5 }}>
+          <button type="button" className="st-btn" disabled={submitting} onClick={handleSkip}>
             Skip
-          </Button>
+          </button>
         )}
-        {activeStep === stepLabels.length - 1 ? (
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            onClick={handleAddResume}
-            disabled={submitting}
-            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{ px: 4, fontWeight: 'bold' }}
-          >
+        {activeStep === LAST_STEP ? (
+          <CtaButton onClick={handleAddResume} busy={submitting}>
             {submitting ? 'Creating Resume...' : 'Submit & Finish'}
-          </Button>
+          </CtaButton>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleNext} sx={{ px: 3 }}>
-            Next
-          </Button>
+          <CtaButton onClick={handleNext}>Next</CtaButton>
         )}
-      </Box>
+      </div>
 
       {/* SNACKBAR FEEDBACK */}
       <Snackbar
@@ -903,7 +846,7 @@ const FormSteps = ({
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </div>
   )
 }
 

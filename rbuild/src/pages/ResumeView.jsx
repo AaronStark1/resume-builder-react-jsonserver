@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -11,12 +7,22 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { getAResumeAPI } from '../services/allAPIs'
 import { normalizeResume } from '../utils/normalizeResume'
 import Preview from '../components/Preview'
+import { usePageTitle } from '../utils/usePageTitle'
+
+const BackToArchive = () => (
+  <Link to="/history" className="st-back">
+    <ArrowBackIcon />
+    Back to archive
+  </Link>
+)
 
 const ResumeView = () => {
   const { id } = useParams()
   const [resumeData, setResumeData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const name = resumeData?.personalDetails?.name
+  usePageTitle(name ? `${name} — Resume` : 'Resume')
 
   useEffect(() => {
     let isMounted = true
@@ -54,56 +60,35 @@ const ResumeView = () => {
   }, [id])
 
   return (
-    <Box sx={{ minHeight: '90vh', bgcolor: 'background.default', py: 4 }}>
-      <Container maxWidth="lg">
-        {/* TOP BAR */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Button
-            component={Link}
-            to="/history"
-            startIcon={<ArrowBackIcon />}
-            variant="outlined"
-          >
-            Back to History
-          </Button>
-          <Typography variant="h5" fontWeight="bold" color="primary.main">
-            {resumeData?.personalDetails?.name
-              ? `${resumeData.personalDetails.name}'s Resume`
-              : 'Resume Details'}
-          </Typography>
-        </Box>
-
+    <div className="st st-page st-gallery">
+      <div className="st-wrap">
         {loading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-            <CircularProgress color="primary" />
-          </Box>
+          <div className="st-state">
+            <CircularProgress color="secondary" />
+          </div>
         )}
 
         {error && (
-          <Box sx={{ py: 6, textAlign: 'center' }}>
-            <Alert severity="error" sx={{ mb: 3, maxWidth: 600, mx: 'auto' }}>
+          <div className="st-state">
+            <Alert severity="error" sx={{ maxWidth: 600 }}>
               {error}
             </Alert>
-            <Button component={Link} to="/history" variant="contained">
-              Go back to History
-            </Button>
-          </Box>
+            <BackToArchive />
+          </div>
         )}
 
         {!loading && !error && resumeData && (
-          <Box sx={{ width: '100%' }}>
-            <Preview
-              formData={resumeData}
-              resumeId={Number(id) || id}
-              mode="final"
-              onUpdate={(updated) => setResumeData(normalizeResume(updated))}
-            />
-          </Box>
+          <Preview
+            formData={resumeData}
+            resumeId={Number(id) || id}
+            mode="final"
+            lead={<BackToArchive />}
+            onUpdate={(updated) => setResumeData(normalizeResume(updated))}
+          />
         )}
-      </Container>
-    </Box>
+      </div>
+    </div>
   )
 }
 
 export default ResumeView
-

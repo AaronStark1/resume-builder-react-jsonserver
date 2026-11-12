@@ -1,13 +1,6 @@
 import { useState, useRef } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Tooltip from '@mui/material/Tooltip'
 import { Link } from 'react-router-dom'
 import PrintIcon from '@mui/icons-material/Print'
-import DownloadIcon from '@mui/icons-material/Download'
 import HistoryIcon from '@mui/icons-material/History'
 import Swal from 'sweetalert2'
 
@@ -17,6 +10,9 @@ import ResumeTemplate from './resume/ResumeTemplate'
 import ScaledPage from './resume/ScaledPage'
 import TemplatePicker from './resume/TemplatePicker'
 import ResumeScore from './resume/ResumeScore'
+import { CtaButton } from './studio/Bits'
+import { accentName, templateName, DEFAULT_ACCENT, DEFAULT_TEMPLATE } from '../config/resumeDesign'
+import '../studio/easel.css'
 
 const slugify = (text = '') => {
   return text
@@ -28,7 +24,14 @@ const slugify = (text = '') => {
     .replace(/--+/g, '-')
 }
 
-const Preview = ({ formData, resumeId, mode = 'final', onUpdate }) => {
+/**
+ * The resume on its easel.
+ *   mode="live"  — the builder's side pane: status, completeness seal, design controls, live page.
+ *   mode="final" — the presentation view: a floating toolbar (optional `lead` slot, document title,
+ *                  edit / print / export actions), design controls and the finished A4 page.
+ * Everything except the page itself is marked `no-print`.
+ */
+const Preview = ({ formData, resumeId, mode = 'final', onUpdate, lead = null, draftSaved = false }) => {
   const [downloading, setDownloading] = useState(false)
   const resumeContainerRef = useRef(null)
 
@@ -131,100 +134,106 @@ const Preview = ({ formData, resumeId, mode = 'final', onUpdate }) => {
     window.print()
   }
 
+  const template = formData.template || DEFAULT_TEMPLATE
+  const accent = formData.accentColor || DEFAULT_ACCENT
+
+  const picker = (compact) => (
+    <TemplatePicker
+      compact={compact}
+      currentTemplate={template}
+      currentAccent={accent}
+      onTemplateChange={handleTemplateChange}
+      onAccentChange={handleAccentChange}
+    />
+  )
+
+  if (mode !== 'final') {
+    return (
+      <div className="st-live">
+        <div className="st-live__bar">
+          <span className="st-pill">
+            <span className="st-pill__dot" data-state={draftSaved ? 'saved' : 'saving'} />
+            Live draft • {draftSaved ? 'Autosaved' : 'Unsaved'}
+          </span>
+          <span className="st-note" title="Complete and submit the form to download as PDF or save to history">
+            PDF available after submit
+          </span>
+        </div>
+
+        {/* COMPLETENESS SCORE */}
+        <ResumeScore data={formData} compact />
+
+        {/* TEMPLATE & ACCENT PICKER DURING LIVE FORM EDITING */}
+        {picker(true)}
+
+        {/* RESPONSIVE SCALED RESUME DISPLAY */}
+        <div className="st-mat" ref={resumeContainerRef}>
+          <div className="st-sheet">
+            <ScaledPage>
+              <ResumeTemplate data={formData} placeholders />
+            </ScaledPage>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <Box>
-      {/* COMPLETENESS SCORE */}
-      <ResumeScore data={formData} />
+    <div className="st-view">
+      {/* FLOATING TOOLBAR */}
+      <div className="st-toolbar no-print">
+        {lead ? <div className="st-toolbar__lead">{lead}</div> : null}
 
-      {/* ACTION BAR IN FINAL MODE */}
-      {mode === 'final' ? (
-        <Box sx={{ mb: 4 }} className="no-print">
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="center"
-            mb={3}
-            flexWrap="wrap"
-            sx={{ gap: 1 }}
+        <div className="st-toolbar__title">
+          <strong className="lp-display">{formData.personalDetails?.name || 'Untitled resume'}</strong>
+          <span className="st-pill">
+            {templateName(template)} • {accentName(accent)}
+          </span>
+        </div>
+
+        <div className="st-toolbar__actions">
+          <Edit resumeId={resumeId} onUpdate={onUpdate} />
+
+          <button
+            type="button"
+            className="st-btn"
+            onClick={handlePrint}
+            title="Browser print produces selectable text and clickable links"
           >
-            <Button
-              variant="contained"
-              color="secondary"
-              size="large"
-              startIcon={downloading ? <CircularProgress size={18} color="inherit" /> : <DownloadIcon />}
-              onClick={handlePdfDownload}
-              disabled={downloading || !resumeId}
-              sx={{ fontWeight: 'bold', px: 3 }}
-            >
-              {downloading ? 'Exporting PDF...' : 'Download PDF'}
-            </Button>
+            <PrintIcon />
+            Print ATS PDF
+          </button>
 
-            <Button
-              variant="outlined"
-              size="large"
-              startIcon={<PrintIcon />}
-              onClick={handlePrint}
-              title="Browser print produces selectable text and clickable links"
-            >
-              Print / ATS PDF
-            </Button>
+          <Link to="/history" className="st-btn st-btn--quiet">
+            <HistoryIcon />
+            Archive
+          </Link>
 
-            <Edit
-              resumeId={resumeId}
-              onUpdate={onUpdate}
-            />
+          <CtaButton size="sm" onClick={handlePdfDownload} busy={downloading} disabled={!resumeId}>
+            {downloading ? 'Exporting PDF...' : 'Download High-Res PDF'}
+          </CtaButton>
+        </div>
+      </div>
 
-            <Button
-              component={Link}
-              to="/history"
-              variant="outlined"
-              size="large"
-              startIcon={<HistoryIcon />}
-            >
-              History
-            </Button>
-          </Stack>
+      <div className="st-view__body">
+        <aside className="st-view__side no-print">
+          {/* COMPLETENESS SCORE */}
+          <ResumeScore data={formData} />
 
           {/* TEMPLATE PICKER IN FINAL PREVIEW */}
-          <TemplatePicker
-            currentTemplate={formData.template || 'classic'}
-            currentAccent={formData.accentColor || '#3d0066'}
-            onTemplateChange={handleTemplateChange}
-            onAccentChange={handleAccentChange}
-          />
-        </Box>
-      ) : (
-        <Box sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="subtitle2" color="primary.main" fontWeight={700}>
-              Live Resume Preview
-            </Typography>
-            <Tooltip title="Complete and submit the form to download as PDF or save to history">
-              <span>
-                <Button size="small" variant="text" disabled>
-                  PDF available after submit
-                </Button>
-              </span>
-            </Tooltip>
-          </Box>
+          <div className="st-card st-view__design">{picker(false)}</div>
+        </aside>
 
-          {/* TEMPLATE & ACCENT PICKER DURING LIVE FORM EDITING */}
-          <TemplatePicker
-            currentTemplate={formData.template || 'classic'}
-            currentAccent={formData.accentColor || '#3d0066'}
-            onTemplateChange={handleTemplateChange}
-            onAccentChange={handleAccentChange}
-          />
-        </Box>
-      )}
-
-      {/* RESPONSIVE SCALED RESUME DISPLAY */}
-      <Box ref={resumeContainerRef} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <ScaledPage>
-          <ResumeTemplate data={formData} placeholders={mode === 'live'} />
-        </ScaledPage>
-      </Box>
-    </Box>
+        {/* RESPONSIVE SCALED RESUME DISPLAY */}
+        <div className="st-view__stage" ref={resumeContainerRef}>
+          <div className="st-sheet st-sheet--hero">
+            <ScaledPage>
+              <ResumeTemplate data={formData} />
+            </ScaledPage>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

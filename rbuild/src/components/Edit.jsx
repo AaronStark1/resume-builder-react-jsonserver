@@ -10,6 +10,7 @@ import {
   Chip,
   CircularProgress
 } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
 import { getAResumeAPI, updateAResumeAPI } from '../services/allAPIs'
 import Swal from 'sweetalert2'
 import { sections } from '../config/resumeFields'
@@ -24,8 +25,9 @@ const modalStyle = {
   width: { xs: '95%', sm: 600, md: 800 },
   maxHeight: '90vh',
   overflow: 'hidden',
-  bgcolor: 'background.paper',
+  bgcolor: 'var(--st-desk)',
   color: 'text.primary',
+  border: '1px solid var(--st-desk-line)',
   borderRadius: 4,
   boxShadow: 24,
   display: 'flex',
@@ -35,9 +37,7 @@ const modalStyle = {
 // Module-level Section wrapper to avoid React remount / focus loss
 const Section = ({ title, children }) => (
   <Box sx={{ mb: 4 }}>
-    <Typography variant="h6" fontWeight="bold" mb={2} color="primary.main">
-      {title}
-    </Typography>
+    <h3 className="lp-eyebrow">{title}</h3>
     {children}
   </Box>
 )
@@ -144,23 +144,19 @@ const Edit = ({ resumeId, onUpdate }) => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setOpen(true)}
-        disabled={!resumeId}
-      >
-        Edit
-      </Button>
+      <button type="button" className="st-btn st-btn--solid" onClick={() => setOpen(true)} disabled={!resumeId}>
+        <EditIcon />
+        Edit in Studio
+      </button>
 
       <Modal open={open} onClose={() => !submitting && setOpen(false)}>
-        <Box sx={modalStyle}>
+        <Box sx={modalStyle} className="st">
 
           {/* HEADER */}
-          <Box sx={{ p: 3, borderBottom: '1px solid #eee' }}>
-            <Typography variant="h6" fontWeight="bold">
-              Edit Resume
-            </Typography>
+          <Box sx={{ p: 3, borderBottom: '1px solid var(--st-desk-line)' }}>
+            <h2 className="lp-display" style={{ fontSize: '2.1rem' }}>
+              Edit <span className="lp-serif">resume</span>
+            </h2>
           </Box>
 
           {/* SCROLL BODY */}
@@ -205,7 +201,7 @@ const Edit = ({ resumeId, onUpdate }) => {
                   }}
                   fullWidth
                 />
-                <Button variant="outlined" onClick={addSkill}>Add</Button>
+                <Button variant="outlined" onClick={addSkill} sx={{ alignSelf: 'flex-end', height: 40 }}>Add</Button>
               </Stack>
 
               <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -245,7 +241,7 @@ const Edit = ({ resumeId, onUpdate }) => {
           <Box
             sx={{
               p: 2,
-              borderTop: '1px solid #eee',
+              borderTop: '1px solid var(--st-desk-line)',
               display: 'flex',
               justifyContent: 'flex-end',
               gap: 2
@@ -256,6 +252,7 @@ const Edit = ({ resumeId, onUpdate }) => {
             </Button>
             <Button
               variant="contained"
+              color="secondary"
               onClick={handleUpdate}
               disabled={submitting}
               startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}

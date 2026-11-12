@@ -11,13 +11,15 @@ export const getAppTheme = (mode = 'light') => {
         light: isDark ? '#d8b4fe' : '#6a1b9a',
         dark: isDark ? '#7c3aed' : '#14002b',
       },
+      // Signature tomato accent (CTAs, active states); ink text keeps it AA-readable.
       secondary: {
-        main: isDark ? '#ff9100' : '#ff7b00',
-        light: isDark ? '#ffa726' : '#ffa040',
-        dark: '#e56a00',
+        main: isDark ? '#fa653d' : '#ef4a23',
+        light: '#ff895f',
+        dark: '#c5361a',
+        contrastText: '#14002b',
       },
       background: {
-        default: isDark ? '#0c0714' : '#f7f7fb',
+        default: isDark ? '#0c0714' : '#f8f3ea', // warm studio paper
         paper: isDark ? '#171024' : '#ffffff',
       },
       text: {
@@ -68,10 +70,64 @@ export const getAppTheme = (mode = 'light') => {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 12,
+            borderRadius: 999,
             textTransform: 'none',
             fontWeight: 600,
           },
+        },
+      },
+      // Editorial fields: a small tracked label above the input, a tomato ring and a warm
+      // paper shift on focus, helper text as a quiet note.
+      MuiInputLabel: {
+        defaultProps: { shrink: true },
+        styleOverrides: {
+          root: {
+            '&.MuiInputLabel-root': {
+              position: 'relative',
+              transform: 'none',
+              maxWidth: '100%',
+              marginBottom: 6,
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              lineHeight: 1.4,
+              textTransform: 'uppercase',
+              color: isDark ? '#a79fb7' : '#5c546b',
+            },
+            '&.MuiInputLabel-root.Mui-focused': { color: isDark ? '#ff895f' : '#c5361a' },
+            '&.MuiInputLabel-root.Mui-error': { color: isDark ? '#ff8a80' : '#c62828' },
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        defaultProps: { notched: false },
+        styleOverrides: {
+          root: {
+            borderRadius: 12,
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#ffffff',
+            transition: 'background-color 0.25s ease',
+            '& .MuiOutlinedInput-notchedOutline': {
+              top: 0,
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(20, 0, 43, 0.18)',
+              transition: 'border-color 0.25s ease',
+            },
+            '& .MuiOutlinedInput-notchedOutline legend': { display: 'none' },
+            '&:hover:not(.Mui-focused):not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.34)' : 'rgba(20, 0, 43, 0.42)',
+            },
+            '&.Mui-focused': {
+              backgroundColor: isDark ? 'rgba(255, 137, 95, 0.07)' : '#fbf6ee',
+            },
+            '&.Mui-focused:not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+              borderWidth: 2,
+              borderColor: isDark ? '#fa653d' : '#ef4a23',
+            },
+          },
+        },
+      },
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: { marginLeft: 2, marginTop: 6, fontSize: '0.76rem', lineHeight: 1.4 },
         },
       },
       MuiCard: {
@@ -107,11 +163,11 @@ export const getAppTheme = (mode = 'light') => {
           body: {
             margin: 0,
             padding: 0,
-            backgroundColor: isDark ? '#0c0714' : '#f7f7fb',
+            backgroundColor: isDark ? '#0c0714' : '#f8f3ea',
             color: isDark ? '#f5f3f9' : '#14002b',
           },
           '*:focus-visible': {
-            outline: isDark ? '2px solid #ff9100' : '2px solid #3d0066',
+            outline: isDark ? '2px solid #ff895f' : '2px solid #3d0066',
             outlineOffset: '2px',
           },
         },

@@ -1,0 +1,195 @@
+/* ==========================================================================
+   The career vault (/history): archive header, search, portfolio folios.
+   ========================================================================== */
+
+.st-vault__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.6rem 3rem;
+  margin-bottom: clamp(2rem, 4vw, 3.2rem);
+}
+
+.st-vault__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem 0.8rem;
+  max-width: 34rem;
+}
+
+.st-vault__search {
+  flex: 1 1 15rem;
+}
+
+.st-vault__search .MuiOutlinedInput-root {
+  border-radius: 999px;
+}
+
+.st-vault__count {
+  flex-basis: 100%;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  color: var(--lp-text-soft);
+}
+
+.st-vault__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19.5rem), 1fr));
+  gap: clamp(1.2rem, 2.4vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A folio: name and role, a window onto the real A4 page, actions. */
+.st-folio {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem;
+  transition:
+    transform 0.45s var(--lp-ease),
+    box-shadow 0.45s var(--lp-ease),
+    border-color 0.3s ease;
+}
+
+.st-folio__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.st-folio__id {
+  min-width: 0;
+}
+
+.st-folio__name {
+  overflow: hidden;
+  font-size: 1.7rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-folio__role {
+  margin: 0.3rem 0 0;
+  overflow: hidden;
+  color: var(--lp-accent);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-folio__window {
+  aspect-ratio: 794 / 880;
+  padding: 1rem 1rem 0;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background: var(--st-mat);
+}
+
+.st-folio__paper {
+  box-shadow: 0 1rem 2rem -0.8rem var(--st-shadow);
+  transform-origin: 50% 0;
+  transition: transform 0.6s var(--lp-ease);
+}
+
+.st-folio__missing {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  height: 100%;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.st-folio__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.st-folio__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+}
+
+@media (hover: hover) {
+  .st-folio:hover {
+    border-color: var(--lp-line);
+    box-shadow: 0 2.2rem 3.6rem -2rem var(--st-shadow);
+    transform: translateY(-6px);
+  }
+
+  .st-folio:hover .st-folio__paper {
+    transform: scale(1.02);
+  }
+}
+
+/* Empty archive */
+.st-vault__empty {
+  border: 1.5px dashed var(--lp-line);
+  border-radius: 2rem;
+}
+
+.st-vault__empty h2 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+}
+
+.st-vault__empty .st-sub {
+  max-width: 28rem;
+  margin: 0 0 0.6rem;
+}
+
+.st-vault__easel {
+  width: 9.5rem;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st-vault__easel-legs {
+  stroke: var(--lp-text-soft);
+  stroke-width: 3;
+}
+
+.st-vault__easel-sheet {
+  fill: #ffffff;
+  stroke: var(--lp-line);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0.5rem 0.6rem var(--st-shadow));
+}
+
+.st-vault__easel-marks {
+  stroke: var(--lp-line);
+  stroke-width: 2;
+  stroke-dasharray: 2 5;
+}
+
+.st-vault__easel-dot {
+  fill: var(--lp-tomato);
+}
+
+@media (max-width: 699.98px) {
+  .st-vault__tools {
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .st-vault__count {
+    justify-content: flex-start;
+  }
+}

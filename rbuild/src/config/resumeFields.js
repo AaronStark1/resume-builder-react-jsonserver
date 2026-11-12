@@ -3,8 +3,8 @@ export const sections = [
     key: 'personalDetails',
     title: 'Basic Information',
     fields: [
-      { name: 'name', label: 'Full Name', required: true },
-      { name: 'title', label: 'Job Title' },
+      { name: 'name', label: 'Full Name', required: true, wide: true, hint: 'As it should read at the top of the page.' },
+      { name: 'title', label: 'Job Title', hint: 'Also tunes your skill suggestions.' },
       { name: 'location', label: 'Location' },
     ],
   },
@@ -16,14 +16,14 @@ export const sections = [
       { name: 'phoneNumber', label: 'Phone Number', type: 'tel' },
       { name: 'github', label: 'GitHub URL', type: 'url' },
       { name: 'linkedIn', label: 'LinkedIn URL', type: 'url' },
-      { name: 'portfolio', label: 'Portfolio URL', type: 'url' },
+      { name: 'portfolio', label: 'Portfolio URL', type: 'url', hint: 'Links are optional — https:// is added for you.' },
     ],
   },
   {
     key: 'education',
     title: 'Education Details',
     fields: [
-      { name: 'course', label: 'Course / Degree', required: true },
+      { name: 'course', label: 'Course / Degree', required: true, wide: true },
       { name: 'college', label: 'College / School' },
       { name: 'university', label: 'University / Board' },
       { name: 'year', label: 'Graduation Year' },

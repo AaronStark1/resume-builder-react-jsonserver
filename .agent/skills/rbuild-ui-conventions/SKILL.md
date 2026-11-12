@@ -6,11 +6,19 @@ description: Design-system and motion conventions for the rBuild resume builder 
 # rBuild UI conventions
 
 ## Tokens
-- Never hard-code brand colors. Use the MUI theme in `rbuild/src/theme.js`:
-  primary #3d0066 (dark #14002b), secondary/accent #ff7b00 (dark #e56a00),
-  gradient `theme.custom.gradient`. Orange *text* on white uses #c25e00 for contrast.
-- Fonts: Plus Jakarta Sans (headings), Inter (UI/body). Buttons: no uppercase, weight 600.
-- Radius 12 (cards 16). 8-pt spacing. Soft layered shadows + 1px rgba(20,0,43,.08) borders.
+- Never hard-code brand colors. Use the MUI theme in `rbuild/src/theme.js` and the studio tokens in
+  `rbuild/src/studio/tokens.js` (CSS custom properties on `<body>`, light/dark aware):
+  primary #3d0066 (dark #14002b), secondary/accent tomato #ef4a23 (dark #c5361a, ink text on it),
+  warm paper background #f8f3ea, gradient `theme.custom.gradient`.
+  Tomato *text* on light surfaces uses `--lp-accent-text` for contrast.
+- Fonts: Archivo Variable condensed (`.lp-display`, headlines) + Playfair italic (`.lp-serif`,
+  editorial accents); Plus Jakarta Sans / Inter for functional UI, labels and inputs.
+- Shared primitives live in `rbuild/src/studio/studio.css` (`lp-` type/CTA/link/paper, `lpn-`
+  navigation, `st-` inner routes, `stf-` footer); route styles sit beside it
+  (`builder.css`, `easel.css`, `controls.css`, `vault.css`, `launchpad.css`).
+- Primary actions: `CtaLink` / `CtaButton` from `components/studio/Bits.jsx`; secondary: `.st-btn`.
+- Buttons are pills, no uppercase, weight 600. Cards radius 16–24. 8-pt spacing. Soft shadows +
+  1px `--st-desk-line` borders. The A4 resume is always white paper with dark ink.
 
 ## Components
 - Use MUI v7 APIs: `<Grid size={{ xs: 12, md: 6 }}>` (never `item`/`xs` props).

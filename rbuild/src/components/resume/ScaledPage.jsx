@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import Box from '@mui/material/Box'
 
 const A4_WIDTH = 794
@@ -8,7 +8,8 @@ const ScaledPage = ({ children, targetWidth, sx = {} }) => {
   const containerRef = useRef(null)
   const [scale, setScale] = useState(1)
 
-  useEffect(() => {
+  // Layout effect: the scale is applied before the first paint, so a preview never flashes unscaled.
+  useLayoutEffect(() => {
     if (targetWidth) {
       setScale(targetWidth / A4_WIDTH)
       return

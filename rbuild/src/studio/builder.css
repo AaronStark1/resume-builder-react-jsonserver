@@ -1,0 +1,755 @@
+/* ==========================================================================
+   The drafting studio (/form): page header, the desk (form) and the easel
+   (live preview), the stage ribbon, dossier cards, the skills tray, review.
+   ========================================================================== */
+
+.st-builder__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.4rem 3rem;
+  margin-bottom: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.st-builder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Profile completeness: a slim print-style gauge. */
+.st-meter {
+  width: min(100%, 19rem);
+}
+
+.st-meter__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  color: var(--lp-text-soft);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.st-meter__row strong {
+  color: var(--lp-text);
+  font-size: 2rem;
+  letter-spacing: 0;
+}
+
+.st-meter__bar {
+  position: relative;
+  height: 0.5rem;
+  margin-top: 0.45rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--st-wash);
+  box-shadow: inset 0 0 0 1px var(--st-desk-line);
+}
+
+.st-meter__bar span {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lp-tomato);
+  transform-origin: left;
+  transition:
+    transform 0.6s var(--lp-ease),
+    background-color 0.4s ease;
+}
+
+.st-meter__bar[data-complete] span {
+  background: var(--st-good);
+}
+
+/* Two panes: the desk and the easel. */
+.st-builder__panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.2rem, 2.4vw, 2.2rem);
+}
+
+.st-desk {
+  padding: clamp(1.1rem, 2.6vw, 2.2rem);
+}
+
+.st-easel {
+  position: sticky;
+  top: 5.3rem;
+  max-height: calc(100vh - 6.3rem);
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.5rem;
+  background: var(--st-desk);
+  box-shadow: 0 1.5rem 3rem -2rem var(--st-shadow);
+  scrollbar-width: thin;
+}
+
+@media (max-width: 899.98px) {
+  .st-builder__panes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Stage ribbon ---------- */
+
+.st-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin: 0 0 1.9rem;
+  padding: 0;
+  border-top: 1px solid var(--lp-line);
+  list-style: none;
+}
+
+/* Registration ticks along the rule. */
+.st-steps::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 0.35rem;
+  background: repeating-linear-gradient(90deg, var(--lp-line) 0 1px, transparent 1px calc(100% / 28));
+  pointer-events: none;
+}
+
+.st-step {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 1rem 0.2rem 0.75rem;
+  border: 0;
+  background: none;
+  color: var(--lp-text-soft);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.st-step:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.st-step__num {
+  position: relative;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.st-step__label {
+  font-weight: 600;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.st-steps__item[data-state='active'] .st-step {
+  color: var(--lp-text);
+}
+
+.st-step__badge {
+  position: absolute;
+  top: -0.3rem;
+  left: calc(100% + 0.15rem);
+  display: grid;
+  place-items: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  background: var(--lp-sage);
+  color: var(--lp-ink);
+}
+
+.st-step__badge .MuiSvgIcon-root {
+  font-size: 0.7rem;
+}
+
+/* The tomato stamp under the active stage; it slides between stages (shared layout). */
+.st-step__mark {
+  position: absolute;
+  bottom: 0;
+  left: 0.2rem;
+  width: 2.3rem;
+  height: 0.25rem;
+  border-radius: 0.25rem;
+  background: var(--lp-tomato);
+}
+
+@media (hover: hover) {
+  .st-step:not(:disabled):hover {
+    color: var(--lp-text);
+  }
+}
+
+@media (max-width: 599.98px) {
+  .st-steps {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .st-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .st-steps__item {
+    flex: 0 0 5.4rem;
+  }
+}
+
+/* ---------- Stage header and body ---------- */
+
+.st-stage {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.st-stage .lp-eyebrow {
+  margin-bottom: 0.7rem;
+  color: var(--lp-text-soft);
+}
+
+.st-stage__title {
+  font-size: clamp(2.1rem, 3.4vw, 2.9rem);
+  line-height: 0.95;
+}
+
+.st-stage__title .lp-serif {
+  display: inline-block;
+  color: var(--lp-accent);
+  font-size: 0.6em;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.st-stage__body {
+  min-height: 13rem;
+}
+
+/* Small screens: the draft indicator sits above the stage title instead of beside it. */
+@media (max-width: 899.98px) {
+  .st-stage {
+    flex-direction: column-reverse;
+    gap: 0.9rem;
+  }
+}
+
+.st-step-note {
+  margin-bottom: 1.3rem;
+}
+
+.st-formnav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--lp-line);
+}
+
+.st-formnav__space {
+  flex: 1;
+}
+
+/* ---------- Dossier cards (education, experience) ---------- */
+
+.st-dossiers {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.st-dossier {
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.1rem;
+  background: var(--st-wash);
+  transition: border-color 0.3s ease;
+}
+
+.st-dossier[data-open] {
+  border-color: var(--lp-line);
+}
+
+.st-dossier__head {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding-right: 0.6rem;
+}
+
+.st-dossier__toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  padding: 0.85rem 0.4rem 0.85rem 0.9rem;
+  border: 0;
+  border-radius: 1.1rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.st-dossier__tab {
+  flex: none;
+  padding: 0.32rem 0.55rem 0.28rem;
+  border: 1px solid currentColor;
+  border-radius: 0.45rem;
+  color: var(--lp-accent);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.st-dossier__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-dossier__org {
+  color: var(--lp-text-soft);
+  font-size: 1.06em;
+  letter-spacing: 0;
+}
+
+.st-dossier__empty {
+  color: var(--lp-text-soft);
+  font-weight: 500;
+}
+
+.st-dossier__chevron {
+  flex: none;
+  color: var(--lp-text-soft);
+  transition: transform 0.4s var(--lp-ease);
+}
+
+.st-dossier[data-open] .st-dossier__chevron {
+  transform: rotate(180deg);
+}
+
+.st-dossier__actions {
+  display: flex;
+  gap: 0.1rem;
+}
+
+/* Collapsing with grid rows keeps the fields mounted and animates to their natural height. */
+.st-dossier__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--lp-ease);
+}
+
+.st-dossier[data-open] .st-dossier__body {
+  grid-template-rows: 1fr;
+}
+
+.st-dossier__inner {
+  min-height: 0;
+  padding: 0 1rem;
+  overflow: hidden;
+}
+
+.st-dossier__inner > :first-child {
+  margin-top: 0.35rem;
+}
+
+.st-dossier__inner > :last-child {
+  margin-bottom: 1.1rem;
+}
+
+.st-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 1rem;
+  border: 1.5px dashed var(--lp-line);
+  border-radius: 1.1rem;
+  background: none;
+  color: var(--lp-text-soft);
+  font-family: var(--lp-font-ui);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    transform 0.4s var(--lp-ease),
+    border-color 0.25s ease,
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.st-add .MuiSvgIcon-root {
+  color: var(--lp-accent);
+  font-size: 1.2rem;
+}
+
+@media (hover: hover) {
+  .st-add:hover {
+    border-color: var(--lp-tomato);
+    background: var(--st-wash);
+    color: var(--lp-text);
+    transform: translateY(-3px);
+  }
+}
+
+.st-bullets {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--lp-line);
+}
+
+.st-bullets__label,
+.st-tray__label {
+  margin: 0 0 0.6rem;
+  color: var(--lp-text-soft);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.st-bullets__list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+
+.st-bullets__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.4rem 0.3rem 0.4rem 0.8rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 0.7rem;
+  background: var(--st-desk);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.st-bullets__list li::before {
+  content: '';
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: 0.62rem;
+  border-radius: 50%;
+  background: var(--lp-tomato);
+}
+
+.st-bullets__list li span {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.28rem;
+  overflow-wrap: anywhere;
+}
+
+.st-bullets__list .st-iconbtn {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+/* ---------- Skills: the tray and its chips ---------- */
+
+.st-tray__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+}
+
+.st-tray__label span {
+  display: grid;
+  place-items: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
+.st-tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0.5rem;
+  min-height: 3.7rem;
+  padding: 0.8rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.1rem;
+  background: var(--st-wash);
+}
+
+.st-tray--open {
+  border-style: dashed;
+  background: none;
+}
+
+.st-tray--flat {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.st-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.1rem;
+  padding: 0 0.35rem 0 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lp-violet);
+  color: var(--lp-cream);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 2px 0 rgba(20, 0, 43, 0.25);
+  font-family: var(--lp-font-ui);
+  font-weight: 600;
+  font-size: 0.84rem;
+  white-space: nowrap;
+}
+
+.st-chip > button {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.st-chip > button .MuiSvgIcon-root {
+  font-size: 0.9rem;
+}
+
+.st-chip--sm {
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--st-desk-line);
+  background: var(--st-desk);
+  color: var(--lp-text);
+  box-shadow: none;
+  font-size: 0.76rem;
+}
+
+.st-chip--ghost {
+  padding: 0 0.9rem 0 0.55rem;
+  border: 1.5px dashed var(--lp-line);
+  background: none;
+  color: var(--lp-text);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.st-chip--ghost .MuiSvgIcon-root {
+  color: var(--lp-accent);
+  font-size: 1rem;
+}
+
+@media (hover: hover) {
+  .st-chip > button:hover {
+    background: var(--lp-tomato);
+    color: var(--lp-ink);
+  }
+
+  .st-chip--ghost:hover {
+    border-color: var(--lp-tomato);
+    background: var(--st-wash);
+  }
+}
+
+/* ---------- Summary ---------- */
+
+.st-count {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  color: var(--lp-text-soft);
+  font-size: 0.78rem;
+}
+
+.st-count[data-optimal] {
+  color: var(--st-good);
+}
+
+.st-starters {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.st-starter {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1rem;
+  background: var(--st-wash);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    transform 0.4s var(--lp-ease);
+}
+
+.st-starter__title {
+  color: var(--lp-accent);
+  font-size: 1.12rem;
+  letter-spacing: 0;
+}
+
+.st-starter__text {
+  color: var(--lp-text-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+@media (hover: hover) {
+  .st-starter:hover {
+    border-color: var(--lp-tomato);
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- Review ---------- */
+
+.st-reviews {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.st-review {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0.8rem 1rem 1.1rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1rem;
+  background: var(--st-wash);
+}
+
+.st-review__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-review__label {
+  margin: 0 0 0.45rem;
+  color: var(--lp-accent);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.st-review__lead {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.st-review__meta {
+  margin: 0.15rem 0 0;
+  color: var(--lp-text-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.st-review__meta--pre {
+  white-space: pre-wrap;
+}
+
+.st-review__entry + .st-review__entry {
+  margin-top: 0.6rem;
+}
+
+/* ---------- Mobile: full-screen easel ---------- */
+
+.st-sheetdialog {
+  min-height: 100%;
+  background: var(--lp-surface);
+  color: var(--lp-text);
+}
+
+.st-sheetdialog__bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  background: var(--lp-night);
+  color: var(--lp-cream);
+}
+
+.st-sheetdialog__bar h2 {
+  font-size: 1.7rem;
+}
+
+.st-sheetdialog__bar .lp-serif {
+  color: var(--lp-orange-soft);
+}
+
+.st-sheetdialog__bar .st-iconbtn {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.st-easel--dialog {
+  position: static;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}

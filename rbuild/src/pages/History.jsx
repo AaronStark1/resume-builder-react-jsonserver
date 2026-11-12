@@ -1,31 +1,24 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  Stack,
-  IconButton,
-  Button,
-  TextField,
-  Skeleton,
-  Alert,
-  InputAdornment
-} from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
+import { useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import Skeleton from '@mui/material/Skeleton'
+import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import SearchIcon from '@mui/icons-material/Search'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import DownloadIcon from '@mui/icons-material/Download'
-import AddIcon from '@mui/icons-material/Add'
-import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import Swal from 'sweetalert2'
 
 import { deleteHistoryAPI, getHistoryAPI, getResumesAPI } from '../services/allAPIs'
 import { normalizeResume } from '../utils/normalizeResume'
 import ScaledPage from '../components/resume/ScaledPage'
 import ResumeTemplate from '../components/resume/ResumeTemplate'
+import { CtaLink } from '../components/studio/Bits'
+import { ease } from '../motion/variants'
+import { usePageTitle } from '../utils/usePageTitle'
+import '../studio/vault.css'
 
 const formatDate = (item) => {
   if (item.createdAt) {
@@ -41,7 +34,50 @@ const formatDate = (item) => {
   return item.formattedDate || 'Recently'
 }
 
+const RELATIVE_UNITS = [
+  ['year', 31536000000],
+  ['month', 2592000000],
+  ['week', 604800000],
+  ['day', 86400000],
+  ['hour', 3600000],
+  ['minute', 60000],
+]
+
+/** "2 hours ago" for records that carry a timestamp; older records fall back to their saved label. */
+const relativeTime = (item) => {
+  const then = item.createdAt ? new Date(item.createdAt).getTime() : NaN
+  if (Number.isNaN(then)) return null
+  const diff = then - Date.now()
+  try {
+    const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+    for (const [unit, ms] of RELATIVE_UNITS) {
+      if (Math.abs(diff) >= ms) return formatter.format(Math.round(diff / ms), unit)
+    }
+    return 'just now'
+  } catch {
+    return null
+  }
+}
+
+const cardMotion = {
+  initial: { opacity: 0, y: 28 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.6, ease },
+}
+
+/** Blank sheet on an easel, for the empty archive. */
+const EmptyEasel = () => (
+  <svg className="st-vault__easel" viewBox="0 0 220 240" aria-hidden="true" focusable="false">
+    <path className="st-vault__easel-legs" d="M110 18v206M62 228 96 60M158 228 124 60M52 178h116" />
+    <rect className="st-vault__easel-sheet" x="58" y="34" width="104" height="138" rx="3" />
+    <path className="st-vault__easel-marks" d="M72 58h44M72 74h76M72 86h76M72 98h52" />
+    <circle className="st-vault__easel-dot" cx="148" cy="58" r="5" />
+  </svg>
+)
+
 const History = () => {
+  usePageTitle('Archive')
   const navigate = useNavigate()
   const [historyItems, setHistoryItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -114,7 +150,7 @@ const History = () => {
       text: 'This will remove the snapshot record from your history.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
+      confirmButtonColor: '#c5361a',
       cancelButtonColor: '#3d0066',
       confirmButtonText: 'Yes, delete it'
     })
@@ -146,62 +182,48 @@ const History = () => {
     })
   }, [historyItems, searchTerm])
 
-  return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-        py: { xs: 4, md: 6 }
-      }}
-    >
-      <Container maxWidth="lg">
-        {/* HEADER & SEARCH */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 4,
-            flexWrap: 'wrap',
-            gap: 2
-          }}
-        >
-          <Box>
-            <Typography variant="h4" fontWeight="bold" color="primary.main">
-              Resume History
-            </Typography>
-            <Typography color="text.secondary">
-              Review and manage your previously generated resumes
-            </Typography>
-          </Box>
+  const total = historyItems.length
+  const ready = !loading && !error
 
-          <Stack direction="row" spacing={2} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+  return (
+    <div className="st st-page st-vault">
+      <div className="st-wrap">
+        {/* HEADER & SEARCH */}
+        <header className="st-vault__head">
+          <div>
+            <p className="lp-eyebrow">The career vault</p>
+            <h1 className="lp-display st-title">Your archive</h1>
+            <p className="st-sub">Every chapter, preserved.</p>
+          </div>
+
+          <div className="st-vault__tools">
             <TextField
               size="small"
               placeholder="Search by name or title..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" />
-                  </InputAdornment>
-                )
+              slotProps={{
+                htmlInput: { 'aria-label': 'Search the archive by name or title' },
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
-              sx={{ bgcolor: 'background.paper', borderRadius: 2, minWidth: { sm: 260 } }}
+              className="st-vault__search"
             />
-            <Button
-              component={Link}
-              to="/form"
-              variant="contained"
-              color="secondary"
-              startIcon={<AddIcon />}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
+            <CtaLink to="/form" size="sm">
               New Resume
-            </Button>
-          </Stack>
-        </Box>
+            </CtaLink>
+            {ready && total > 0 && (
+              <span className="st-pill st-vault__count" role="status">
+                Showing {filteredItems.length} of {total} {total === 1 ? 'document' : 'documents'}
+              </span>
+            )}
+          </div>
+        </header>
 
         {slowServerNotice && (
           <Alert severity="info" sx={{ mb: 3 }}>
@@ -223,197 +245,122 @@ const History = () => {
           </Alert>
         )}
 
-        {/* LOADING STATE WITH A4 SKELETON CARDS */}
+        {/* LOADING STATE WITH A4 SKELETON FOLIOS */}
         {loading && (
-          <Grid container spacing={4}>
+          <ul className="st-vault__grid" aria-label="Loading archive">
             {[1, 2, 3].map((i) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
-                <Paper sx={{ p: 2, borderRadius: 3 }}>
-                  <Skeleton variant="text" width="60%" sx={{ mb: 1 }} />
-                  <Skeleton
-                    variant="rectangular"
-                    sx={{ width: '100%', height: 420, borderRadius: 2 }}
-                  />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                    <Skeleton variant="rectangular" width={70} height={32} sx={{ borderRadius: 1 }} />
-                    <Skeleton variant="rectangular" width={70} height={32} sx={{ borderRadius: 1 }} />
-                  </Box>
-                </Paper>
-              </Grid>
+              <li key={i} className="st-card st-folio">
+                <Skeleton variant="text" width="62%" height={34} />
+                <Skeleton variant="text" width="40%" sx={{ mb: 1.5 }} />
+                <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: '794 / 880', borderRadius: 2 }} />
+                <Skeleton variant="rounded" width="55%" height={36} sx={{ mt: 2, ml: 'auto', borderRadius: 999 }} />
+              </li>
             ))}
-          </Grid>
+          </ul>
         )}
 
-        {/* EMPTY STATE */}
-        {!loading && !error && historyItems.length === 0 && (
-          <Paper
-            elevation={0}
-            sx={{
-              textAlign: 'center',
-              py: 10,
-              px: 3,
-              borderRadius: 4,
-              border: '2px dashed rgba(20,0,43,0.12)',
-              bgcolor: 'transparent'
-            }}
-          >
-            <HistoryToggleOffIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h5" fontWeight="bold" color="primary.main" mb={1}>
-              No resumes yet
-            </Typography>
-            <Typography color="text.secondary" maxWidth={450} mx="auto" mb={3}>
-              You haven&apos;t downloaded or created any resumes yet. Start building your first professional resume in minutes!
-            </Typography>
-            <Button
-              component={Link}
-              to="/form"
-              variant="contained"
-              color="secondary"
-              size="large"
-              startIcon={<AddIcon />}
-              sx={{ px: 4, fontWeight: 'bold' }}
-            >
-              Build Your First Resume
-            </Button>
-          </Paper>
+        {/* EMPTY VAULT */}
+        {ready && total === 0 && (
+          <div className="st-state st-vault__empty">
+            <EmptyEasel />
+            <h2 className="lp-display">The archive is empty</h2>
+            <p className="st-sub">Your next career milestone starts with a single sheet.</p>
+            <CtaLink to="/form">Draft Your First Resume</CtaLink>
+          </div>
         )}
 
         {/* NO SEARCH RESULTS */}
-        {!loading && !error && historyItems.length > 0 && filteredItems.length === 0 && (
-          <Box textAlign="center" py={8}>
-            <Typography variant="h6" color="text.secondary" mb={2}>
-              No resumes matching &ldquo;{searchTerm}&rdquo;
-            </Typography>
-            <Button variant="outlined" onClick={() => setSearchTerm('')}>
+        {ready && total > 0 && filteredItems.length === 0 && (
+          <div className="st-state">
+            <p className="st-sub">No resumes matching &ldquo;{searchTerm}&rdquo;</p>
+            <button type="button" className="st-btn" onClick={() => setSearchTerm('')}>
               Clear Search
-            </Button>
-          </Box>
+            </button>
+          </div>
         )}
 
-        {/* MASONRY / RESPONSIVE GRID OF A4 THUMBNAILS */}
-        {!loading && !error && filteredItems.length > 0 && (
-          <Grid container spacing={4}>
+        {/* RESPONSIVE GRID OF FOLIOS WITH LIVE A4 THUMBNAILS */}
+        {ready && filteredItems.length > 0 && (
+          <ul className="st-vault__grid">
             {filteredItems.map((item) => {
               const resume = item.resume
+              const when = relativeTime(item)
 
               return (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
-                  <Paper
-                    sx={{
-                      borderRadius: 3,
-                      p: 2,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      transition: 'all 0.3s ease',
-                      ':hover': {
-                        transform: 'translateY(-6px)',
-                        boxShadow: '0 12px 24px rgba(20,0,43,0.1)'
-                      }
-                    }}
-                  >
-                    {/* CARD HEADER */}
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        mb: 1.5
-                      }}
+                <motion.li key={item.id} className="st-card st-folio" {...cardMotion}>
+                  {/* FOLIO HEADER */}
+                  <header className="st-folio__head">
+                    <div className="st-folio__id">
+                      <h2 className="lp-display st-folio__name">
+                        {resume?.personalDetails?.name || 'Untitled Resume'}
+                      </h2>
+                      <p className="lp-serif st-folio__role">
+                        {resume?.personalDetails?.title || (resume ? 'No title yet' : 'Record without a resume')}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="st-iconbtn st-iconbtn--danger"
+                      aria-label="Delete history entry"
+                      onClick={() => handleDelete(item.id)}
                     >
-                      <Box sx={{ overflow: 'hidden', pr: 1 }}>
-                        <Typography variant="subtitle2" fontWeight={700} noWrap color="primary.main">
-                          {resume?.personalDetails?.name || 'Untitled Resume'}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {formatDate(item)}
-                        </Typography>
-                      </Box>
+                      <DeleteOutlineIcon />
+                    </button>
+                  </header>
 
-                      <IconButton
-                        size="small"
-                        color="error"
-                        aria-label="Delete history entry"
-                        onClick={() => handleDelete(item.id)}
+                  {/* MINI A4 PREVIEW */}
+                  <div className="st-folio__window">
+                    {resume ? (
+                      <div
+                        className="lp-paper st-folio__paper"
+                        role="img"
+                        aria-label={`Preview of ${resume.personalDetails?.name || 'this'} resume`}
                       >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-
-                    {/* MINI A4 PREVIEW THUMBNAIL */}
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: 380,
-                        overflow: 'hidden',
-                        borderRadius: 2,
-                        bgcolor: '#ffffff',
-                        border: '1px solid rgba(0,0,0,0.06)',
-                        position: 'relative'
-                      }}
-                    >
-                      {resume ? (
-                        <ScaledPage targetWidth={270}>
-                          <ResumeTemplate data={resume} />
-                        </ScaledPage>
-                      ) : (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                            p: 3,
-                            textAlign: 'center'
-                          }}
-                        >
-                          <Typography variant="body2" color="text.secondary" mb={2}>
-                            Resume details no longer available
-                          </Typography>
-                          <Button
-                            size="small"
-                            color="error"
-                            variant="outlined"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            Remove Record
-                          </Button>
-                        </Box>
-                      )}
-                    </Box>
-
-                    {/* CARD ACTIONS */}
-                    {resume && (
-                      <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          fullWidth
-                          startIcon={<VisibilityIcon />}
-                          onClick={() => navigate(`/resume/${item.resumeId}`)}
-                        >
-                          Open
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="secondary"
-                          fullWidth
-                          startIcon={<DownloadIcon />}
-                          onClick={() => navigate(`/resume/${item.resumeId}`)}
-                        >
-                          Download
-                        </Button>
-                      </Stack>
+                        <div inert>
+                          <ScaledPage>
+                            <ResumeTemplate data={resume} />
+                          </ScaledPage>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="st-folio__missing">
+                        <p className="st-note">Resume details no longer available</p>
+                        <button type="button" className="st-btn st-btn--sm" onClick={() => handleDelete(item.id)}>
+                          Remove Record
+                        </button>
+                      </div>
                     )}
-                  </Paper>
-                </Grid>
+                  </div>
+
+                  {/* FOLIO ACTIONS */}
+                  <footer className="st-folio__foot">
+                    <span className="st-note" title={formatDate(item)}>
+                      {when ? `Exported ${when}` : formatDate(item)}
+                    </span>
+                    {resume && (
+                      <div className="st-folio__actions">
+                        <button
+                          type="button"
+                          className="st-btn st-btn--sm"
+                          title="Opens the resume with its print and PDF export actions"
+                          onClick={() => navigate(`/resume/${item.resumeId}`)}
+                        >
+                          <FileDownloadOutlinedIcon />
+                          View PDF
+                        </button>
+                        <CtaLink to={`/resume/${item.resumeId}`} size="sm">
+                          Open Studio
+                        </CtaLink>
+                      </div>
+                    )}
+                  </footer>
+                </motion.li>
               )
             })}
-          </Grid>
+          </ul>
         )}
-      </Container>
-    </Box>
+      </div>
+    </div>
   )
 }
 

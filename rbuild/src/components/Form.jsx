@@ -1,23 +1,17 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
-import LinearProgress from '@mui/material/LinearProgress'
 import Fab from '@mui/material/Fab'
 import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
+import { useLocation } from 'react-router-dom'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CloseIcon from '@mui/icons-material/Close'
 
 import { usePageTitle } from '../utils/usePageTitle'
+import '../studio/builder.css'
+import { isAccentHex, isTemplateId } from '../config/resumeDesign'
 import Preview from './Preview'
 import FormSteps from './FormSteps'
 
@@ -52,8 +46,14 @@ const Form = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false)
+  const location = useLocation()
 
   const [formData, setFormData] = useState(() => {
+    // A design picked on the landing page or the launchpad (router state) is applied here, draft or not.
+    const requested = {
+      ...(isTemplateId(location.state?.template) ? { template: location.state.template } : null),
+      ...(isAccentHex(location.state?.accentColor) ? { accentColor: location.state.accentColor } : null),
+    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
@@ -67,12 +67,13 @@ const Form = () => {
           professionalDetails: { ...initialFormState.professionalDetails, ...parsed.professionalDetails },
           skills: Array.isArray(parsed.skills) ? parsed.skills : [],
           summary: parsed.summary ?? '',
+          ...requested,
         }
       }
     } catch {
       // Fallback
     }
-    return initialFormState
+    return { ...initialFormState, ...requested }
   })
 
   const [resumeId, setResumeId] = useState(null)
@@ -151,131 +152,85 @@ const Form = () => {
   }
 
   return (
-    <Box sx={{ px: { xs: 2, md: 5 }, py: 4, maxWidth: 1400, mx: 'auto' }}>
-      {/* HEADER & TOP BAR */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 2,
-          flexWrap: 'wrap',
-          gap: 2,
-        }}
-      >
-        <Typography variant="h4" fontWeight="bold" color="primary.main">
-          {isFinished ? 'Your Resume is Ready! 🎉' : 'Smart Resume Builder'}
-        </Typography>
+    <div className="st st-page st-builder">
+      <div className="st-wrap">
+        {/* HEADER & TOP BAR */}
+        <header className="st-builder__head no-print">
+          <div>
+            <p className="lp-eyebrow">{isFinished ? 'Fresh off the press' : 'The drafting studio'}</p>
+            <h1 className="lp-display st-title">
+              {isFinished ? (
+                <>
+                  Your resume is <span className="lp-serif">ready</span>
+                </>
+              ) : (
+                <>
+                  Draft your <span className="lp-serif">resume</span>
+                </>
+              )}
+            </h1>
+          </div>
 
-        {isFinished && (
-          <Stack direction="row" spacing={1.5}>
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={handleBackToEditing}
-            >
-              Back to Editing
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<AddIcon />}
-              onClick={handleCreateAnother}
-            >
-              Create Another Resume
-            </Button>
-          </Stack>
-        )}
-      </Box>
-
-      {/* COMPLETION PROGRESS BAR (Above form when editing) */}
-      {!isFinished && (
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>
-              Profile Completeness
-            </Typography>
-            <Typography variant="caption" color="primary.main" fontWeight={700}>
-              {completionPercentage}%
-            </Typography>
-          </Box>
-          <LinearProgress
-            variant="determinate"
-            value={completionPercentage}
-            sx={{
-              height: 6,
-              borderRadius: 3,
-              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(61, 0, 102, 0.08)',
-              '& .MuiLinearProgress-bar': {
-                bgcolor: completionPercentage === 100 ? 'success.main' : 'secondary.main',
-                borderRadius: 3,
-              },
-            }}
-          />
-        </Box>
-      )}
-
-      {/* TWO-PANE WORK AREA */}
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={4}
-        sx={{ alignItems: 'flex-start' }}
-      >
-        {isFinished ? (
-          <Box sx={{ width: '100%' }}>
-            <Preview
-              formData={formData}
-              resumeId={resumeId}
-              mode="final"
-              onUpdate={(updated) => setFormData(updated)}
-            />
-          </Box>
-        ) : (
-          <>
-            {/* FORM CARD (LEFT PANE) */}
-            <Box sx={{ flex: 1, width: '100%' }}>
-              <Paper
-                elevation={0}
-                sx={(theme) => ({
-                  p: { xs: 2.5, sm: 4 },
-                  borderRadius: 3,
-                  border: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(20,0,43,0.08)',
-                  bgcolor: 'background.paper',
-                })}
+          {isFinished ? (
+            <div className="st-builder__actions">
+              <button type="button" className="st-btn" onClick={handleBackToEditing}>
+                <EditIcon />
+                Back to Editing
+              </button>
+              <button type="button" className="st-btn st-btn--solid" onClick={handleCreateAnother}>
+                <AddIcon />
+                Create Another Resume
+              </button>
+            </div>
+          ) : (
+            /* COMPLETION PROGRESS (above the form while editing) */
+            <div className="st-meter">
+              <div className="st-meter__row">
+                <span id="st-meter-label">Profile completeness</span>
+                <strong className="lp-display">{completionPercentage}%</strong>
+              </div>
+              <div
+                className="st-meter__bar"
+                role="progressbar"
+                aria-labelledby="st-meter-label"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={completionPercentage}
+                data-complete={completionPercentage === 100 ? '' : undefined}
               >
-                <FormSteps
-                  formData={formData}
-                  setFormData={setFormData}
-                  setIsFinished={handleFinished}
-                  setResumeId={setResumeId}
-                  isDraftSaved={isDraftSaved}
-                />
-              </Paper>
-            </Box>
+                <span style={{ transform: `scaleX(${completionPercentage / 100})` }} />
+              </div>
+            </div>
+          )}
+        </header>
+
+        {isFinished ? (
+          <Preview formData={formData} resumeId={resumeId} mode="final" onUpdate={(updated) => setFormData(updated)} />
+        ) : (
+          /* TWO-PANE WORK AREA: the drafting desk and the easel */
+          <div className="st-builder__panes">
+            {/* FORM CARD (LEFT PANE) */}
+            <section className="st-card st-desk" aria-label="Resume details">
+              <FormSteps
+                formData={formData}
+                setFormData={setFormData}
+                setIsFinished={handleFinished}
+                setResumeId={setResumeId}
+                isDraftSaved={isDraftSaved}
+              />
+            </section>
 
             {/* STICKY LIVE PREVIEW (RIGHT PANE, DESKTOP >= md) */}
             {!isMobile && (
-              <Box
-                sx={(theme) => ({
-                  flex: 1.2,
-                  width: '100%',
-                  position: 'sticky',
-                  top: 88,
-                  maxHeight: 'calc(100vh - 104px)',
-                  overflowY: 'auto',
-                  p: 2.5,
-                  borderRadius: 3,
-                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#fafafa',
-                  border: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(20,0,43,0.08)',
-                })}
-              >
+              <aside className="st-easel" aria-label="Live resume preview">
                 <Preview
                   formData={formData}
                   resumeId={resumeId}
                   mode="live"
+                  draftSaved={isDraftSaved}
                   onUpdate={(updated) => setFormData(updated)}
                 />
-              </Box>
+              </aside>
             )}
 
             {/* FLOATING FAB FOR MOBILE (< md) */}
@@ -288,7 +243,7 @@ const Form = () => {
                   position: 'fixed',
                   bottom: 24,
                   right: 24,
-                  boxShadow: '0 8px 24px rgba(255,123,0,0.4)',
+                  boxShadow: '0 8px 24px rgba(239, 74, 35, 0.4)',
                   zIndex: theme.zIndex.speedDial,
                 }}
               >
@@ -297,46 +252,36 @@ const Form = () => {
             )}
 
             {/* FULLSCREEN PREVIEW DIALOG FOR MOBILE (< md) */}
-            <Dialog
-              fullScreen
-              open={isMobile && mobilePreviewOpen}
-              onClose={() => setMobilePreviewOpen(false)}
-            >
-              <DialogTitle
-                sx={{
-                  bgcolor: 'primary.dark',
-                  color: 'white',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  p: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  Resume Preview
-                </Typography>
-                <IconButton
-                  edge="end"
-                  color="inherit"
-                  onClick={() => setMobilePreviewOpen(false)}
-                  aria-label="Close preview"
-                >
-                  <CloseIcon />
-                </IconButton>
-              </DialogTitle>
-              <DialogContent sx={{ p: 2, bgcolor: 'background.default' }}>
-                <Preview
-                  formData={formData}
-                  resumeId={resumeId}
-                  mode="live"
-                  onUpdate={(updated) => setFormData(updated)}
-                />
-              </DialogContent>
+            <Dialog fullScreen open={isMobile && mobilePreviewOpen} onClose={() => setMobilePreviewOpen(false)}>
+              <div className="st st-sheetdialog">
+                <div className="st-sheetdialog__bar">
+                  <h2 className="lp-display">
+                    On the <span className="lp-serif">easel</span>
+                  </h2>
+                  <button
+                    type="button"
+                    className="st-iconbtn"
+                    onClick={() => setMobilePreviewOpen(false)}
+                    aria-label="Close preview"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+                <div className="st-easel st-easel--dialog">
+                  <Preview
+                    formData={formData}
+                    resumeId={resumeId}
+                    mode="live"
+                    draftSaved={isDraftSaved}
+                    onUpdate={(updated) => setFormData(updated)}
+                  />
+                </div>
+              </div>
             </Dialog>
-          </>
+          </div>
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   )
 }
 

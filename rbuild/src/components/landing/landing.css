@@ -1,0 +1,1452 @@
+/* ==========================================================================
+   rBuild landing page — editorial motion experience
+   Shared primitives (type, tones, CTA, links, paper, navigation) live in
+   src/studio/studio.css; colour tokens come from src/studio/tokens.js.
+   Transforms driven by Motion live in inline styles; static offsets and tilts
+   use the individual `translate` / `rotate` properties so the two never collide.
+   ========================================================================== */
+
+.lp {
+  position: relative;
+  overflow-x: clip; /* not `hidden`: that would break the sticky (pinned) sections */
+  background: var(--lp-night);
+  color: var(--lp-text);
+}
+
+.lp :focus-visible,
+.lpn :focus-visible {
+  outline: 2px solid var(--lp-ring, var(--lp-orange-soft));
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Section one — hero
+   ========================================================================== */
+
+.lph {
+  --lp-accent: var(--lp-orange-soft);
+  --lph-pad-bottom: clamp(4.2rem, 9.5vh, 6.2rem); /* includes the 2rem the next section overlaps */
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  min-height: max(100svh, 40rem);
+  overflow: hidden;
+  background: var(--lp-hero-bg);
+  color: var(--lp-cream);
+}
+
+/* Duotone photograph: the image only contributes luminosity to the brand purple beneath it. */
+.lph__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--lp-hero-base);
+}
+
+.lph__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 32%;
+  filter: grayscale(1) contrast(1.12);
+  mix-blend-mode: luminosity;
+  opacity: var(--lp-hero-photo);
+}
+
+.lph__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--lp-hero-veil);
+}
+
+.lph__inner {
+  width: 100%;
+  padding: 7rem var(--lp-gutter) var(--lph-pad-bottom);
+}
+
+/* The copy block reaches the hero's left and bottom edges and carries some headroom: it is the
+   zone in which the cursor card steps aside (see ResumeCursorCard). */
+.lph__copy {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  max-width: calc(100% + var(--lp-gutter));
+  margin: -4.5rem 0 calc(var(--lph-pad-bottom) * -1) calc(var(--lp-gutter) * -1);
+  padding: 4.5rem 2.5rem var(--lph-pad-bottom) var(--lp-gutter);
+}
+
+.lph__title {
+  font-size: clamp(3.4rem, 9.6vw, 10.4rem);
+  line-height: 0.86;
+}
+
+.lph__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.5rem clamp(1.5rem, 4vw, 4rem);
+  margin-top: clamp(1.4rem, 3.6vh, 2.5rem);
+}
+
+.lph__lede {
+  flex: 0 1 23rem;
+  margin: 0;
+  color: rgba(251, 246, 238, 0.84);
+  font-size: clamp(1rem, 1.15vw, 1.14rem);
+  line-height: 1.58;
+}
+
+.lph__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.1rem 1.7rem;
+}
+
+/* Static, art-directed resume composition (also what touch devices get instead of the cursor card). */
+.lph__stage {
+  position: absolute;
+  z-index: 1;
+  top: 47%;
+  right: calc(var(--lp-gutter) + 2vw);
+  width: clamp(14.5rem, 21.5vw, 24rem);
+  translate: 0 -50%;
+}
+
+.lph__float {
+  position: relative;
+}
+
+.lph__sheet {
+  border-radius: 0.4rem;
+}
+
+.lph__sheet--front {
+  position: relative;
+  box-shadow: 0 2.4rem 4.6rem -1.4rem rgba(8, 0, 20, 0.75);
+}
+
+.lph__sheet--back {
+  position: absolute;
+  inset: 0;
+  background: var(--lp-peach);
+  box-shadow: 0 1.6rem 3rem -1.2rem rgba(8, 0, 20, 0.6);
+  translate: -6% 1.5%;
+}
+
+.lph__score {
+  position: absolute;
+  left: -27%;
+  bottom: 9%;
+  padding: 0.85rem 1.1rem 0.85rem 0.9rem;
+  border-radius: 1.1rem;
+  background: var(--tone);
+  color: var(--tone-ink);
+  box-shadow: 0 1.4rem 2.6rem -1rem rgba(8, 0, 20, 0.7);
+  font-size: 0.7rem;
+  rotate: -5deg;
+}
+
+.lph__tag {
+  position: absolute;
+  top: -1.1rem;
+  right: -9%;
+  display: flex;
+  gap: 0.55em;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+  box-shadow: 0 0.8rem 1.6rem -0.6rem rgba(8, 0, 20, 0.6);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  rotate: 7deg;
+}
+
+.lph__tag span {
+  opacity: 0.62;
+}
+
+@media (max-width: 991.98px) {
+  .lph {
+    align-items: stretch;
+    min-height: 100svh;
+  }
+
+  .lph__inner {
+    display: flex;
+    flex-direction: column;
+    padding-top: 6.6rem;
+    padding-bottom: 0;
+  }
+
+  .lph__copy {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .lph__title {
+    font-size: clamp(3.2rem, 15.4vw, 6.4rem);
+  }
+
+  .lph__row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lph__lede {
+    flex: none;
+    max-width: 26rem;
+  }
+
+  /* The resume rises out of the bottom edge of the hero, deliberately cropped. */
+  .lph__stage {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex: none;
+    width: min(58vw, 17rem);
+    height: clamp(14rem, 36svh, 20rem);
+    margin: auto auto 0;
+    padding-top: 3rem;
+    box-sizing: content-box;
+    translate: none;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 991.98px) {
+  .lph__title {
+    font-size: clamp(5rem, 13vw, 8rem);
+  }
+
+  .lph__stage {
+    width: 21rem;
+    height: clamp(18rem, 40svh, 27rem);
+    margin-right: 9%;
+  }
+}
+
+/* ---------- Cursor-following resume-insight card ---------- */
+
+.lp-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 14.5rem;
+  height: 20.5rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.lp-cursor__inner {
+  position: absolute;
+  inset: 0;
+}
+
+.lp-cursor__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0.7rem;
+  border-radius: 1.15rem;
+  background: var(--tone);
+  color: var(--tone-ink);
+  box-shadow: 0 1.8rem 3.4rem -1rem rgba(8, 0, 20, 0.7);
+  opacity: 0;
+  transform: scale(0.94) rotate(-3deg);
+  transition:
+    opacity 0.35s ease,
+    transform 0.55s var(--lp-ease);
+}
+
+.lp-cursor__face[data-tone='night'] {
+  border: 1px solid var(--lp-night-line);
+}
+
+.lp-cursor__face[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-cursor__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  margin: 0.1rem 0.15rem 0.6rem;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lp-cursor__head span {
+  color: var(--tone-accent);
+}
+
+.lp-cursor__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 0.3rem;
+  overflow: hidden;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.lp-cursor__body > .lp-paper {
+  flex: none;
+  margin: 0 -0.3rem auto;
+}
+
+/* ==========================================================================
+   Resume building blocks (identity, timeline, skills, achievements, score)
+   Sized in em: the parent's font-size scales the whole block.
+   ========================================================================== */
+
+.lpb {
+  font-family: var(--lp-font-ui);
+  line-height: 1.4;
+}
+
+.lpb .MuiSvgIcon-root {
+  flex: none;
+  font-size: 1.25em;
+}
+
+.lpb-label {
+  margin-bottom: 0.5em;
+  color: var(--tone-soft);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.78em;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* Identity */
+.lpb-id__top {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin-bottom: 1.1em;
+}
+
+.lpb-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.9em;
+  height: 2.9em;
+  border-radius: 50%;
+  background: var(--lp-violet);
+  color: var(--lp-cream);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 82%;
+  font-size: 1.15em;
+  letter-spacing: 0.02em;
+}
+
+.lpb-name {
+  font-family: var(--lp-font-display);
+  font-weight: 800;
+  font-stretch: 76%;
+  font-size: 1.75em;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lpb-role {
+  position: relative;
+  margin-top: 0.2em;
+  color: var(--tone-accent);
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-size: 1.18em;
+  line-height: 1.25;
+}
+
+.lpb-role__ghost {
+  visibility: hidden;
+}
+
+.lpb-role__typed {
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+}
+
+.lpb-caret {
+  display: inline-block;
+  width: 0.09em;
+  height: 1em;
+  margin-left: 0.1em;
+  background: currentColor;
+  vertical-align: -0.14em;
+  animation: lp-blink 0.8s steps(1) infinite;
+}
+
+@keyframes lp-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.lpb-contact {
+  display: grid;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0;
+  color: var(--tone-soft);
+  font-size: 0.92em;
+  list-style: none;
+}
+
+.lpb-contact li {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lpb-contact .MuiSvgIcon-root {
+  color: var(--tone-accent);
+}
+
+.lpb-summary {
+  margin: 1.1em 0 0;
+  padding-top: 1em;
+  border-top: 1px dashed var(--tone-line);
+  color: var(--tone-soft);
+  font-size: 0.9em;
+  line-height: 1.55;
+}
+
+/* Experience timeline */
+.lpb-tl {
+  position: relative;
+  display: grid;
+  gap: 1.15em;
+  padding-left: 1.7em;
+}
+
+.lpb-tl__line {
+  position: absolute;
+  top: 0.5em;
+  bottom: 0.5em;
+  left: 0.36em;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(var(--lp-tomato), var(--tone-line));
+  transform-origin: top;
+}
+
+.lpb-tl__row {
+  position: relative;
+}
+
+.lpb-tl__dot {
+  position: absolute;
+  top: 0.25em;
+  left: -1.7em;
+  box-sizing: border-box;
+  width: 0.85em;
+  height: 0.85em;
+  border: 0.2em solid var(--lp-tomato);
+  border-radius: 50%;
+  background: var(--tone);
+}
+
+.lpb-tl__row:first-of-type .lpb-tl__dot {
+  background: var(--lp-tomato);
+}
+
+.lpb-tl__role {
+  font-weight: 700;
+  font-size: 1.02em;
+  line-height: 1.25;
+}
+
+.lpb-tl__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  margin-top: 0.15em;
+  color: var(--tone-soft);
+  font-size: 0.86em;
+}
+
+.lpb-tl__meta span {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lpb-tl__note {
+  margin-top: 0.4em;
+  color: var(--tone-soft);
+  font-size: 0.86em;
+  line-height: 1.5;
+}
+
+/* Skills */
+.lpb-skills {
+  display: grid;
+  gap: 1.1em;
+}
+
+.lpb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+}
+
+.lpb-chip {
+  padding: 0.42em 0.85em;
+  border: 1px solid var(--tone-line);
+  border-radius: 999px;
+  background: var(--tone-chip);
+  font-weight: 500;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.lpb-chip--hot {
+  border-color: var(--lp-tomato);
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+  font-weight: 600;
+}
+
+/* Achievements */
+.lpb-ach {
+  display: grid;
+  gap: 1.1em;
+}
+
+.lpb-ach__cert {
+  display: flex;
+  align-items: center;
+  gap: 1.1em;
+}
+
+.lpb-seal {
+  display: block;
+  flex: none;
+  width: 4.4em;
+  filter: drop-shadow(0 0.35em 0.5em rgba(20, 0, 43, 0.28));
+  transform-origin: 50% 42%;
+}
+
+.lpb-seal svg {
+  display: block;
+  width: 100%;
+}
+
+.lpb-seal__disc { fill: var(--lp-tomato); }
+.lpb-seal__tail { fill: var(--lp-tomato-deep); }
+.lpb-seal__star { fill: var(--lp-cream); }
+
+.lpb-seal__ring {
+  fill: none;
+  stroke: var(--lp-cream);
+  stroke-width: 1.6;
+  stroke-dasharray: 2.5 3.5;
+}
+
+.lpb-ach__title {
+  font-weight: 700;
+  font-size: 1.02em;
+  line-height: 1.25;
+}
+
+.lpb-ach__meta {
+  margin-top: 0.2em;
+  color: var(--tone-soft);
+  font-size: 0.86em;
+}
+
+.lpb-ach__row {
+  padding-top: 1em;
+  border-top: 1px dashed var(--tone-line);
+}
+
+/* Score */
+.lpb-score {
+  display: flex;
+  align-items: center;
+  gap: 1.1em;
+}
+
+.lpb-score__ring {
+  position: relative;
+  flex: none;
+  width: 5.6em;
+  height: 5.6em;
+}
+
+.lpb-score__ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.lpb-score__track,
+.lpb-score__value {
+  fill: none;
+  stroke-width: 9;
+}
+
+.lpb-score__track { stroke: var(--tone-line); }
+
+.lpb-score__value {
+  stroke: var(--lp-tomato);
+  stroke-linecap: round;
+}
+
+.lpb-score__number {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--lp-font-display);
+  font-weight: 800;
+  font-stretch: 76%;
+  font-size: 2em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.lpb-score__list {
+  display: grid;
+  gap: 0.2em;
+  margin: 0;
+  padding: 0;
+  font-size: 0.92em;
+  list-style: none;
+}
+
+.lpb-score__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.lpb-score__list .MuiSvgIcon-root {
+  color: var(--tone-accent);
+  font-size: 1.15em;
+}
+
+/* ==========================================================================
+   Section two — featured templates
+   ========================================================================== */
+
+.lpt {
+  --lp-accent: var(--lp-accent-text);
+  --lp-ring: var(--lp-focus);
+  position: relative;
+  z-index: 1;
+  margin-top: -2rem;
+  border-radius: 2rem 2rem 0 0;
+  background: var(--lp-surface);
+  color: var(--lp-text);
+}
+
+.lpt__title {
+  font-size: clamp(2.9rem, 6.3vw, 6.8rem);
+}
+
+.lpt__title .lp-serif {
+  font-size: 0.8em;
+}
+
+.lpt__lede {
+  max-width: 27rem;
+  margin: 1.6rem 0 0;
+  color: var(--lp-text-soft);
+  font-size: clamp(1rem, 1.15vw, 1.14rem);
+  line-height: 1.6;
+}
+
+/* Desktop: a tall section whose 100vh child is pinned with position: sticky. */
+.lpt--pinned {
+  height: 340vh;
+}
+
+.lpt__sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  align-items: center;
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  height: 100vh;
+  padding: 5.5rem var(--lp-gutter) 1.5rem;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.lpt__active {
+  max-width: 30rem;
+  min-height: 11.5rem;
+  margin-top: clamp(1.4rem, 4vh, 2.8rem);
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--lp-line);
+}
+
+.lpt__ticks {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.lpt__ticks span {
+  width: 2.2rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--lp-line);
+  transition:
+    background-color 0.4s ease,
+    width 0.55s var(--lp-ease);
+}
+
+.lpt__ticks span[data-active] {
+  width: 4.4rem;
+  background: var(--lp-tomato);
+}
+
+.lpt__detail {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 1.2rem;
+}
+
+.lpt__index {
+  color: var(--lp-accent);
+  font-size: 3.4rem;
+  line-height: 0.9;
+}
+
+.lpt__name {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-weight: 800;
+  font-stretch: 78%;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.lpt__name .lp-serif {
+  color: var(--lp-text-soft);
+  font-size: 0.8em;
+  letter-spacing: -0.01em;
+}
+
+.lpt__blurb {
+  margin: 0.45rem 0 0.9rem;
+  color: var(--lp-text-soft);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.lpt__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  perspective: 1500px;
+}
+
+.lpt__stack {
+  --cw: min(22.5rem, 31vw, calc((100vh - 15.5rem) / 1.5));
+  display: grid;
+  width: var(--cw);
+  transform-style: preserve-3d;
+}
+
+.lpt__slot {
+  grid-area: 1 / 1;
+}
+
+.lpt__stack .lpt-card__name {
+  font-size: calc(var(--cw) * 0.15);
+}
+
+.lpt__badge {
+  position: absolute;
+  bottom: 8%;
+  left: 1%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: clamp(6rem, 8.4vw, 7.8rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+  box-shadow: 0 1.2rem 2.4rem -1rem var(--lp-card-shadow);
+}
+
+.lpt__badge > svg:first-child {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lpt__badge text {
+  fill: currentColor;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lpt__badge-mark {
+  width: 30%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+/* The template card: a coloured frame around a real A4 preview. */
+.lpt-card {
+  position: relative;
+  padding: 0.85rem;
+  border-radius: 1.5rem;
+  background: var(--frame);
+  color: var(--lp-ink);
+  box-shadow:
+    0 2.6rem 4.6rem -1.8rem var(--lp-card-shadow),
+    0 0 0 1px rgba(20, 0, 43, 0.06);
+}
+
+.lpt-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lpt-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.1rem 0.3rem 0.75rem;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lpt-card__head > span:first-child {
+  color: var(--lp-tomato-deep);
+}
+
+.lpt-card__tag {
+  margin-left: auto;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.lpt-card .lp-paper {
+  box-shadow: 0 0.8rem 1.6rem -0.8rem rgba(20, 0, 43, 0.4);
+}
+
+.lpt-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0.3rem 0.15rem;
+}
+
+.lpt-card__name {
+  display: block;
+  font-size: clamp(2.6rem, 11vw, 3.4rem);
+}
+
+.lpt-card .lp-arrow {
+  background: var(--lp-ink);
+  color: var(--lp-cream);
+  font-size: 0.9rem;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+@media (hover: hover) {
+  .lpt-card:hover .lp-arrow {
+    background: var(--lp-tomato);
+    color: var(--lp-ink);
+  }
+
+  .lpt-card:hover .lp-arrow svg:first-child {
+    transform: translate(170%, -170%);
+  }
+
+  .lpt-card:hover .lp-arrow svg:last-child {
+    transform: none;
+  }
+}
+
+/* Tablet, mobile, reduced motion: a layered vertical showcase in the normal flow. */
+.lpt--flow {
+  padding: clamp(5rem, 13vw, 7.5rem) var(--lp-gutter) clamp(5.5rem, 13vw, 8rem);
+}
+
+.lpt--flow .lpt__title {
+  font-size: clamp(2.9rem, 13.2vw, 6.4rem);
+}
+
+.lpt__list {
+  display: grid;
+  gap: 3.2rem;
+  margin: 3.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lpt__list > li {
+  justify-self: center;
+  width: min(100%, 23rem);
+}
+
+.lpt__list > li:nth-child(odd) .lpt-card { rotate: -1.3deg; }
+.lpt__list > li:nth-child(even) .lpt-card { rotate: 1.3deg; }
+
+.lpt__caption {
+  max-width: 19rem;
+  margin: 1.1rem 0.4rem 0;
+  color: var(--lp-text-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 600px) {
+  .lpt__list {
+    gap: 0;
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
+  .lpt__list > li:nth-child(odd) {
+    justify-self: start;
+  }
+
+  .lpt__list > li:nth-child(even) {
+    justify-self: end;
+  }
+
+  .lpt__list > li + li {
+    margin-top: -4rem;
+  }
+}
+
+/* ==========================================================================
+   Section three — resume journey
+   ========================================================================== */
+
+.lpj {
+  --lp-accent: var(--lp-orange-soft);
+  position: relative;
+  z-index: 2;
+  margin-top: -2rem;
+  padding-bottom: clamp(4.5rem, 9vw, 7rem);
+  border-radius: 2rem 2rem 0 0;
+  background:
+    radial-gradient(62rem 42rem at 88% 6%, var(--lp-night-glow), transparent 70%),
+    radial-gradient(52rem 38rem at 4% 46%, var(--lp-night-glow), transparent 70%),
+    radial-gradient(60rem 40rem at 60% 96%, var(--lp-night-glow), transparent 72%),
+    var(--lp-night);
+  color: var(--lp-cream);
+}
+
+.lpj__scene {
+  position: relative;
+}
+
+.lpj__head {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.lpj__head .lp-eyebrow {
+  margin-bottom: 1.4rem;
+}
+
+.lpj__title {
+  font-size: clamp(3rem, 7.6vw, 8rem);
+}
+
+.lpj__lede {
+  max-width: 27rem;
+  margin: 1.7rem auto 0;
+  color: var(--lp-night-soft);
+  font-size: clamp(1rem, 1.15vw, 1.14rem);
+  line-height: 1.6;
+}
+
+.lpj__cards {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lpj-card__body {
+  padding: 1.3rem 1.4rem 1.4rem;
+  border-radius: 1.4rem;
+  background: var(--tone);
+  color: var(--tone-ink);
+  box-shadow: 0 2.4rem 4rem -1.6rem rgba(0, 0, 0, 0.6);
+  font-size: 0.92rem;
+}
+
+.lpj-card[data-tone='night'] .lpj-card__body {
+  border: 1px solid var(--lp-night-line);
+}
+
+.lpj-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--tone-line);
+}
+
+.lpj-card__head .lp-display {
+  color: var(--tone-accent);
+  font-size: 2.2rem;
+}
+
+.lpj-card__head h3 {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.8rem;
+  letter-spacing: 0.17em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.lpj-card__caption {
+  margin: 1.15rem 0 0;
+  color: var(--tone-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* Desktop scene: the headline is pinned at the centre while the stages drift past on both
+   sides — some in front of it, the dark one behind it. */
+.lpj--scene .lpj__pin {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.lpj--scene .lpj__head {
+  max-width: min(46vw, 42rem);
+}
+
+.lpj--scene .lpj__cards {
+  position: relative;
+  height: 82rem;
+  margin-top: -34vh;
+}
+
+.lpj--scene .lpj-card {
+  position: absolute;
+  z-index: 3;
+}
+
+.lpj--scene .lpj-card__body {
+  font-size: clamp(0.8rem, 0.95vw, 0.92rem);
+}
+
+.lpj--scene .lpj-card[data-layer='back'] {
+  z-index: 1;
+}
+
+.lpj--scene .lpj-card[data-stage='identity'] {
+  top: 0;
+  left: calc(var(--lp-gutter) + 2.5%);
+  width: clamp(15.5rem, 24vw, 23rem);
+  rotate: -3deg;
+}
+
+.lpj--scene .lpj-card[data-stage='experience'] {
+  top: 21rem;
+  right: var(--lp-gutter);
+  width: clamp(16.5rem, 27vw, 26rem);
+  rotate: 2.5deg;
+}
+
+.lpj--scene .lpj-card[data-stage='skills'] {
+  top: 43rem;
+  left: calc(var(--lp-gutter) + 3%);
+  width: clamp(15.5rem, 25vw, 24rem);
+  rotate: 2deg;
+}
+
+.lpj--scene .lpj-card[data-stage='achievements'] {
+  top: 61rem;
+  right: calc(var(--lp-gutter) + 3%);
+  width: clamp(15.5rem, 24vw, 23rem);
+  rotate: -2.5deg;
+}
+
+.lpj__extras {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lpj-extra {
+  position: absolute;
+  z-index: 1;
+}
+
+.lpj-extra--page {
+  top: calc(66vh + 28.5rem);
+  left: 15%;
+  width: 10.5rem;
+  rotate: -8deg;
+}
+
+.lpj-extra--page .lp-paper {
+  height: 8rem;
+  aspect-ratio: auto;
+  box-shadow: 0 1.6rem 3rem -1.2rem rgba(0, 0, 0, 0.7);
+}
+
+.lpj-extra--pill {
+  top: calc(66vh + 3rem);
+  right: 15%;
+  rotate: 6deg;
+}
+
+.lpj-extra--pill span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.6rem 1rem 0.6rem 0.8rem;
+  border-radius: 999px;
+  background: var(--lp-peach);
+  color: var(--lp-ink);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lpj-extra--pill .MuiSvgIcon-root {
+  font-size: 1.2em;
+}
+
+.lpj-extra--mark {
+  top: calc(66vh + 70rem);
+  left: 23%;
+  width: 3.6rem;
+  rotate: 14deg;
+}
+
+.lpj-extra--mark svg {
+  display: block;
+  fill: none;
+  stroke: var(--lp-tomato);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+/* Flow: the same story as a stacked, lightly staggered column. */
+.lpj--flow {
+  padding-top: clamp(5.5rem, 14vw, 8rem);
+}
+
+.lpj--flow .lpj__head {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+}
+
+.lpj--flow .lpj__title {
+  font-size: clamp(3rem, 14.6vw, 7rem);
+}
+
+.lpj--flow .lpj__cards {
+  position: relative;
+  display: grid;
+  gap: 1.8rem;
+  max-width: 48rem;
+  margin: 3.6rem auto 0;
+  padding: 0 var(--lp-gutter);
+}
+
+.lpj--flow .lpj__cards::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  left: 50%;
+  border-left: 1px dashed var(--lp-night-line);
+}
+
+.lpj--flow .lpj-card {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 25rem);
+}
+
+.lpj--flow .lpj-card:nth-child(odd) { rotate: -1deg; }
+.lpj--flow .lpj-card:nth-child(even) { rotate: 1deg; }
+
+@media (min-width: 600px) {
+  .lpj--flow .lpj-card:nth-child(odd) {
+    justify-self: start;
+  }
+
+  .lpj--flow .lpj-card:nth-child(even) {
+    justify-self: end;
+  }
+
+  .lpj--flow .lpj-card + .lpj-card {
+    margin-top: -3.5rem;
+  }
+}
+
+/* Stage 05 — the finished resume */
+.lpj__final {
+  display: grid;
+  justify-items: center;
+  padding: clamp(5rem, 12vw, 9rem) var(--lp-gutter) 0;
+  text-align: center;
+}
+
+.lpj__final-title {
+  font-size: clamp(2.7rem, 6.4vw, 6.2rem);
+}
+
+.lpj-doc {
+  position: relative;
+  width: min(25rem, 72vw);
+  margin: clamp(3.2rem, 7vw, 5rem) auto 0;
+}
+
+.lpj-doc__sheet {
+  position: relative;
+  aspect-ratio: 794 / 1123;
+}
+
+.lpj-doc__blank,
+.lpj-doc__page,
+.lpj-doc__pieces,
+.lpj-doc__marks {
+  position: absolute;
+  inset: 0;
+}
+
+.lpj-doc__blank {
+  border: 1.5px dashed rgba(251, 246, 238, 0.36);
+  border-radius: 0.4rem;
+  background: rgba(251, 246, 238, 0.05);
+}
+
+.lpj-doc__page {
+  border-radius: 0.4rem;
+  box-shadow: 0 3rem 6rem -2rem rgba(0, 0, 0, 0.75);
+}
+
+.lpj-doc__piece {
+  position: absolute;
+  right: 6%;
+  left: 6%;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0 1em;
+  border-radius: 0.6rem;
+  background: var(--tone);
+  color: var(--tone-ink);
+  box-shadow: 0 1.2rem 2.2rem -1.2rem rgba(0, 0, 0, 0.6);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.76rem;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lpj-doc__piece[data-tone='night'] {
+  border: 1px solid var(--lp-night-line);
+}
+
+.lpj-doc__piece span {
+  color: var(--tone-accent);
+}
+
+.lpj-doc__marks {
+  pointer-events: none;
+}
+
+.lpj-doc__chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.6rem 0.95rem 0.6rem 0.75rem;
+  border-radius: 999px;
+  color: var(--lp-ink);
+  box-shadow: 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.6);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.74rem;
+  letter-spacing: 0.11em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lpj-doc__chip .MuiSvgIcon-root {
+  font-size: 1.3em;
+}
+
+.lpj-doc__chip--ats {
+  right: calc(100% - 1.3rem);
+  bottom: 15%;
+  background: var(--lp-sage);
+  rotate: -5deg;
+}
+
+.lpj-doc__chip--pdf {
+  top: 11%;
+  left: calc(100% - 1.5rem);
+  background: var(--lp-tomato);
+  rotate: 6deg;
+}
+
+.lpj-doc__stamp {
+  position: absolute;
+  bottom: 5%;
+  left: calc(100% - 2.6rem);
+  display: grid;
+  place-content: center;
+  width: 6.6rem;
+  aspect-ratio: 1;
+  border: 2.5px solid var(--lp-orange-soft);
+  border-radius: 50%;
+  outline: 1px dashed var(--lp-orange-soft);
+  outline-offset: -0.5rem;
+  background: rgba(20, 0, 43, 0.55);
+  color: var(--lp-orange-soft);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  line-height: 1.35;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.lpj-doc__stamp span {
+  display: block;
+  font-weight: 800;
+  font-stretch: 74%;
+  font-size: 1.55rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.lpj__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem 1.8rem;
+  margin-top: clamp(3.2rem, 7vw, 4.6rem);
+}
+
+.lpj__note {
+  margin: 2.2rem 0 0;
+  color: var(--lp-night-soft);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 599.98px) {
+  .lpj-doc__chip--ats {
+    right: auto;
+    left: -11%;
+  }
+
+  .lpj-doc__chip--pdf {
+    right: -11%;
+    left: auto;
+  }
+
+  .lpj-doc__stamp {
+    right: -9%;
+    left: auto;
+    width: 5.4rem;
+    font-size: 0.56rem;
+  }
+
+  .lpj-doc__stamp span { font-size: 1.25rem; }
+}
+
+/* ==========================================================================
+   Reduced motion: no transitions, no looping details. Motion-driven animation is
+   already disabled through <MotionConfig reducedMotion="user"> and component logic.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .lp *,
+  .lp *::before,
+  .lp *::after,
+  .lpn *,
+  .lpn *::before,
+  .lpn *::after {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+}

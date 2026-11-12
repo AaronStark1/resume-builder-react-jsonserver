@@ -1,0 +1,1082 @@
+/* ==========================================================================
+   rBuild studio — shared design primitives for every route
+   Colour tokens are CSS custom properties set on <body> from the MUI theme
+   (see src/studio/tokens.js), so everything follows the global light / dark
+   mode and the ink-bleed transition. Class prefixes: lp- (shared editorial
+   primitives, first built for the landing page), lpn- (navigation), st- (inner
+   studio routes), stf- (footer).
+   ========================================================================== */
+
+:root {
+  --lp-gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --lp-font-display: 'Archivo Variable', 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+  --lp-font-serif: 'Playfair Variable', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --lp-font-ui: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --lp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+
+.lp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Typography ---------- */
+
+.lp-display {
+  margin: 0;
+  font-family: var(--lp-font-display);
+  font-weight: 800;
+  font-stretch: 72%;
+  font-synthesis: none;
+  line-height: 0.88;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+}
+
+.lp-serif {
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: 100%;
+  letter-spacing: -0.035em;
+  text-transform: none;
+}
+
+.lp-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  margin: 0 0 1.2rem;
+  font-family: var(--lp-font-display);
+  font-weight: 600;
+  font-stretch: 90%;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.lp-eyebrow::before {
+  content: '';
+  flex: none;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--lp-tomato);
+}
+
+/* Split headings: each word is a mask; padding keeps descenders and italic overhangs visible. */
+.lp-split,
+.lp-line {
+  display: block;
+}
+
+.lp-word {
+  display: inline-block;
+  overflow: hidden;
+  overflow: clip; /* keeps the text baseline, so sans and serif words still align */
+  padding: 0.12em 0.07em 0.24em;
+  margin: -0.12em -0.07em -0.24em;
+}
+
+.lp-ch {
+  display: inline-block;
+}
+
+.lp-seg[data-accent] {
+  color: var(--lp-accent);
+}
+
+.lp-seg.lp-serif {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.lp-seg__underline {
+  position: absolute;
+  left: 1%;
+  bottom: -0.03em;
+  width: 98%;
+  height: 0.15em;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.lp-seg__underline path {
+  fill: none;
+  stroke: var(--lp-tomato);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+/* ---------- Shared tones (card surfaces) ---------- */
+
+[data-tone] {
+  --tone-ink: var(--lp-ink);
+  --tone-soft: rgba(20, 0, 43, 0.68);
+  --tone-line: rgba(20, 0, 43, 0.16);
+  --tone-chip: rgba(255, 255, 255, 0.62);
+  --tone-accent: var(--lp-tomato-deep);
+}
+
+[data-tone='lavender'] { --tone: var(--lp-lavender); }
+[data-tone='cream'] { --tone: var(--lp-cream); }
+[data-tone='peach'] { --tone: var(--lp-peach-soft); }
+[data-tone='sage'] { --tone: var(--lp-sage); }
+[data-tone='butter'] { --tone: var(--lp-butter); }
+[data-tone='pink'] { --tone: var(--lp-pink); }
+
+[data-tone='night'] {
+  --tone: var(--lp-night-raised);
+  --tone-ink: var(--lp-cream);
+  --tone-soft: rgba(251, 246, 238, 0.7);
+  --tone-line: rgba(251, 246, 238, 0.2);
+  --tone-chip: rgba(255, 255, 255, 0.1);
+  --tone-accent: var(--lp-orange-soft);
+}
+
+/* ---------- Arrow bead, CTA, editorial link ---------- */
+
+.lp-arrow {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 3.1em;
+  height: 3.1em;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.lp-arrow svg {
+  grid-area: 1 / 1;
+  width: 1.3em;
+  height: 1.3em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.55s var(--lp-ease);
+}
+
+.lp-arrow svg:last-child {
+  transform: translate(-170%, 170%);
+}
+
+.lp-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  color: var(--lp-ink);
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 1.06rem;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.lp-cta {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.lp-cta:disabled,
+.lp-cta[aria-disabled='true'] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.lp-cta--md { font-size: 0.96rem; }
+.lp-cta--sm { font-size: 0.9rem; }
+
+.lp-cta__label {
+  display: flex;
+  align-items: center;
+  height: 3.1em;
+  padding: 0 1.55em 0 1.75em;
+  border-radius: 999px;
+  background: var(--lp-tomato);
+  transition: background-color 0.3s ease;
+}
+
+.lp-cta__bead {
+  background: var(--lp-tomato);
+  transition:
+    background-color 0.3s ease,
+    transform 0.55s var(--lp-ease);
+}
+
+.lp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  color: inherit;
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-size: 1.22rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  padding: 0.55rem 0; /* comfortable touch target */
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-link__text {
+  position: relative;
+  padding-bottom: 0.3em;
+}
+
+.lp-underline {
+  position: absolute;
+  left: 0;
+  bottom: -0.05em;
+  width: 100%;
+  height: 0.42em;
+  overflow: visible;
+}
+
+.lp-underline path {
+  fill: none;
+  stroke: var(--lp-tomato);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.65s var(--lp-ease);
+}
+
+.lp-link__arrow {
+  font-size: 0.72rem;
+  border: 1px solid currentColor;
+}
+
+.lp-link:focus-visible .lp-underline path {
+  stroke-dashoffset: 0;
+}
+
+@media (hover: hover) {
+  :is(a, button):hover > .lp-arrow svg:first-child {
+    transform: translate(170%, -170%);
+  }
+
+  :is(a, button):hover > .lp-arrow svg:last-child {
+    transform: none;
+  }
+
+  .lp-cta:hover .lp-cta__label,
+  .lp-cta:hover .lp-cta__bead {
+    background: var(--lp-orange-soft);
+  }
+
+  .lp-cta:hover .lp-cta__bead {
+    transform: translateX(0.3em);
+  }
+
+  .lp-link:hover .lp-underline path {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* No hover available: the underline is simply there. */
+@media (hover: none) {
+  .lp-underline path {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- The paper: a real, scaled resume. Always white with dark ink. ---------- */
+
+.lp-paper {
+  aspect-ratio: 794 / 1123;
+  overflow: hidden;
+  border-radius: 0.3rem;
+  background: #ffffff;
+  color-scheme: light;
+  /* The document is isolated from the page around it: no inherited landing typography. */
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  letter-spacing: normal;
+  line-height: 1.5;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+.lpn {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 1100;
+  padding: 0.9rem var(--lp-gutter) 0;
+  padding-top: max(0.9rem, env(safe-area-inset-top));
+  font-family: var(--lp-font-display);
+  color: var(--lp-cream);
+  pointer-events: none;
+}
+
+.lpn__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lpn__bar > *,
+.lpn__sheet {
+  pointer-events: auto;
+}
+
+.lpn__brand,
+.lpn__pill,
+.lpn__icon {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(20, 0, 43, 0.66);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+
+.lpn__brand {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  height: 2.9rem;
+  padding: 0 1.15rem 0 1rem;
+  border-radius: 999px;
+  color: inherit;
+  font-weight: 800;
+  font-stretch: 74%;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.lpn__brand .lp-serif {
+  margin-right: 0.04em;
+  color: var(--lp-orange-soft);
+  font-size: 1.3em;
+  line-height: 0.8;
+  translate: 0 -0.04em;
+}
+
+.lpn__pill {
+  justify-self: center;
+  display: flex;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.3rem;
+  border-radius: 999px;
+  list-style: none;
+}
+
+.lpn__pill a {
+  display: block;
+  padding: 0.62rem 1.05rem;
+  border-radius: 999px;
+  color: inherit;
+  font-weight: 600;
+  font-stretch: 92%;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.lpn__actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.lpn__icon {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  padding: 0;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    transform 0.4s var(--lp-ease);
+}
+
+.lpn__menu {
+  display: none;
+}
+
+.lpn__menu span,
+.lpn__menu span::before {
+  display: block;
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.35s var(--lp-ease);
+}
+
+.lpn__menu span {
+  translate: 0 -3px;
+}
+
+.lpn__menu span::before {
+  content: '';
+  translate: 0 6px;
+}
+
+.lpn__menu[data-open] span {
+  transform: translateY(3px) rotate(45deg);
+}
+
+.lpn__menu[data-open] span::before {
+  transform: translateY(-6px) rotate(-90deg);
+}
+
+.lpn__sheet {
+  width: min(100%, 22rem);
+  margin: 0.6rem 0 0 auto;
+  padding: 0.6rem 1.25rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1.5rem;
+  background: rgba(20, 0, 43, 0.95);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  transform-origin: top right;
+}
+
+.lpn__sheet ul {
+  margin: 0 0 1.2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lpn__sheet li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.lpn__sheet li span {
+  color: var(--lp-orange-soft);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+
+.lpn__sheet li a {
+  flex: 1;
+  padding: 0.85rem 0 0.75rem;
+  color: inherit;
+  font-weight: 800;
+  font-stretch: 72%;
+  font-size: 2rem;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+@media (hover: hover) {
+  .lpn__pill a:hover {
+    background: var(--lp-cream);
+    color: var(--lp-ink);
+  }
+
+  .lpn__icon:hover {
+    background: rgba(20, 0, 43, 0.9);
+  }
+
+  .lpn__icon:not(.lpn__menu):hover {
+    transform: rotate(14deg);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .lpn__bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .lpn__pill {
+    display: none;
+  }
+
+  .lpn__menu {
+    display: grid;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .lpn__cta {
+    display: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .lpn__sheet {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   App header: the same navigation language as the landing page, as a sticky
+   frosted bar for the inner routes (see components/Header.jsx).
+   ========================================================================== */
+
+.lpn :focus-visible,
+.st :focus-visible,
+.stf :focus-visible {
+  outline: 2px solid var(--lp-ring, var(--lp-orange-soft));
+  outline-offset: 3px;
+}
+
+.lpn--app {
+  position: sticky;
+  inset: 0 auto auto;
+  padding: 0.65rem var(--lp-gutter);
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--st-chrome);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  pointer-events: auto;
+}
+
+.lpn--app .lpn__brand,
+.lpn--app .lpn__pill,
+.lpn--app .lpn__icon {
+  background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lpn--app .lpn__brand {
+  gap: 0.6rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 1.45rem;
+  text-transform: none;
+}
+
+.lpn__mono {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.75rem;
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+  font-weight: 800;
+  font-stretch: 80%;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+}
+
+.lpn__pill a[aria-current='page'] {
+  background: var(--lp-cream);
+  color: var(--lp-ink);
+}
+
+.lpn__sheet a[aria-current='page'] {
+  color: var(--lp-orange-soft);
+}
+
+.lpn--app .lpn__sheet {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: var(--lp-gutter);
+  width: min(calc(100% - 2 * var(--lp-gutter)), 22rem);
+  margin: 0;
+}
+
+/* ==========================================================================
+   Studio scaffolding: shared by every inner route (.st)
+   ========================================================================== */
+
+.st {
+  --lp-ring: var(--lp-focus);
+  --lp-accent: var(--lp-accent-text);
+  color: var(--lp-text);
+}
+
+.st-page {
+  min-height: calc(100vh - 4.3rem);
+  padding: clamp(2rem, 4vw, 3.4rem) var(--lp-gutter) clamp(3.5rem, 7vw, 5.5rem);
+  background: var(--lp-surface);
+}
+
+.st-wrap {
+  max-width: 86rem;
+  margin: 0 auto;
+}
+
+.st-title {
+  font-size: clamp(2.7rem, 5.6vw, 5rem);
+}
+
+.st-title .lp-serif {
+  color: var(--lp-accent);
+  font-size: 0.86em;
+}
+
+.st-sub {
+  margin: 0.9rem 0 0;
+  color: var(--lp-text-soft);
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.st-note {
+  margin: 0;
+  color: var(--lp-text-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.st-card {
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.5rem;
+  background: var(--st-desk);
+  box-shadow: 0 1.5rem 3rem -2rem var(--st-shadow);
+}
+
+/* Quiet pill button for secondary actions (primary actions use .lp-cta). */
+.st-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  height: 2.75rem;
+  padding: 0 1.15rem;
+  border: 1px solid var(--lp-line);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--lp-font-ui);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.4s var(--lp-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-btn .MuiSvgIcon-root {
+  font-size: 1.15rem;
+}
+
+.st-btn--quiet {
+  border-color: transparent;
+}
+
+.st-btn--solid {
+  border-color: var(--lp-text);
+  background: var(--lp-text);
+  color: var(--lp-surface);
+}
+
+.st-btn--sm {
+  height: 2.3rem;
+  padding: 0 0.9rem;
+  font-size: 0.8rem;
+}
+
+.st-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.st-iconbtn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lp-text-soft);
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.st-iconbtn .MuiSvgIcon-root {
+  font-size: 1.15rem;
+}
+
+.st-iconbtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .st-btn:not(:disabled):hover {
+    border-color: var(--lp-text);
+  }
+
+  .st-btn--quiet:not(:disabled):hover {
+    border-color: var(--lp-line);
+    background: var(--st-wash);
+  }
+
+  .st-btn--solid:not(:disabled):hover {
+    border-color: var(--lp-tomato);
+    background: var(--lp-tomato);
+    color: var(--lp-ink);
+  }
+
+  .st-iconbtn:not(:disabled):hover {
+    border-color: var(--lp-line);
+    background: var(--st-wash);
+    color: var(--lp-text);
+  }
+
+  .st-iconbtn--danger:not(:disabled):hover {
+    border-color: var(--lp-tomato);
+    color: var(--lp-accent-text);
+  }
+}
+
+/* Field grids and input + button rows (the builder, the edit dialog). */
+.st-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1rem;
+}
+
+.st-fields__wide {
+  grid-column: 1 / -1;
+}
+
+.st-inline {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.st-inline .st-btn {
+  flex: none;
+  height: 2.5rem;
+}
+
+@media (max-width: 599.98px) {
+  .st-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Small tracked label pill (status, counters, badges). */
+.st-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--lp-line);
+  border-radius: 999px;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.st-pill__dot {
+  position: relative;
+  flex: none;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--lp-tomato);
+}
+
+.st-pill__dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: st-pulse 1.8s ease-out infinite;
+}
+
+.st-pill__dot[data-state='saved'] {
+  background: #3f9d63;
+}
+
+@keyframes st-pulse {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+/* Loading / error / empty states shared by the inner routes. */
+.st-state {
+  display: grid;
+  justify-items: center;
+  gap: 1.2rem;
+  padding: clamp(3rem, 8vw, 6rem) 1rem;
+  text-align: center;
+}
+
+/* Presentation view backdrop (/resume/:id): warm linen by day, a dark room by night. */
+.st-gallery {
+  background: var(--st-room);
+}
+
+/* 404 */
+.st-lost__code {
+  color: var(--lp-accent);
+  font-size: clamp(7rem, 22vw, 15rem);
+  line-height: 0.82;
+}
+
+.st-lost .st-note {
+  max-width: 26rem;
+}
+
+.st-lost__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.8rem;
+  margin-top: 0.8rem;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.stf {
+  --lp-ring: var(--lp-orange-soft);
+  padding: clamp(3rem, 6vw, 4.5rem) var(--lp-gutter) 1.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--lp-night);
+  color: var(--lp-cream);
+}
+
+.stf__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 2.5rem clamp(2rem, 6vw, 6rem);
+  max-width: 86rem;
+  margin: 0 auto;
+}
+
+.stf__mark {
+  font-size: clamp(3rem, 7vw, 5.6rem);
+}
+
+.stf__mark .lp-serif {
+  margin-right: 0.03em;
+  color: var(--lp-orange-soft);
+}
+
+.stf__tag {
+  max-width: 26rem;
+  margin: 1rem 0 1.6rem;
+  color: var(--lp-night-soft);
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.stf__social {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: inherit;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.stf__links {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stf__links-title {
+  margin: 0 0 0.9rem;
+  color: var(--lp-night-soft);
+}
+
+.stf__links a {
+  position: relative;
+  display: inline-block;
+  padding: 0.45rem 0;
+  color: inherit;
+  font-family: var(--lp-font-display);
+  font-weight: 700;
+  font-stretch: 78%;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.stf__links a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0.3rem;
+  left: 0;
+  height: 2px;
+  background: var(--lp-tomato);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--lp-ease);
+}
+
+.stf__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 2rem;
+  max-width: 86rem;
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  padding-top: 1.3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--lp-night-soft);
+  font-size: 0.85rem;
+}
+
+.stf__base p {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+}
+
+.stf__base .MuiSvgIcon-root {
+  color: var(--lp-tomato);
+  font-size: 1rem;
+}
+
+@media (hover: hover) {
+  .stf__links a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .stf__social:hover {
+    border-color: var(--lp-tomato);
+    background: var(--lp-tomato);
+    color: var(--lp-ink);
+  }
+}
+
+.stf__links a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 699.98px) {
+  .stf__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================================
+   SweetAlert dialogs, in the studio's voice (colours follow the theme tokens)
+   ========================================================================== */
+
+.swal2-popup {
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.5rem;
+  background: var(--st-desk);
+  color: var(--lp-text);
+  font-family: var(--lp-font-ui);
+}
+
+.swal2-title {
+  color: var(--lp-text);
+  font-family: var(--lp-font-display);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.swal2-html-container {
+  color: var(--lp-text-soft);
+}
+
+.swal2-actions .swal2-styled {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.swal2-actions .swal2-confirm:not([style*='background-color']) {
+  background: var(--lp-tomato);
+  color: var(--lp-ink);
+}
+
+/* ==========================================================================
+   Reduced motion / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .st *,
+  .st *::before,
+  .st *::after,
+  .stf *,
+  .stf *::after {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,288 @@
+/* ==========================================================================
+   The easel (Preview): the live pane in the builder and the presentation view
+   of a finished resume. The A4 page itself is never restyled.
+   ========================================================================== */
+
+/* ---------- Live pane ---------- */
+
+.st-live {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.st-live__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+/* The studio mat: ambient light, a faint grid, and rulers along the top and left edges. */
+.st-mat {
+  position: relative;
+  padding: 2.1rem 1.5rem 1.6rem 2.1rem;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(var(--st-desk-line) 1px, transparent 1px) 0 0 / 1.5rem 1.5rem,
+    linear-gradient(90deg, var(--st-desk-line) 1px, transparent 1px) 0 0 / 1.5rem 1.5rem,
+    var(--st-mat);
+}
+
+.st-mat::before,
+.st-mat::after {
+  content: '';
+  position: absolute;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.st-mat::before {
+  top: 0;
+  right: 0;
+  left: 2.1rem;
+  height: 0.75rem;
+  background-image:
+    repeating-linear-gradient(90deg, var(--st-mat-line) 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(90deg, var(--st-mat-line) 0 1px, transparent 1px 10px);
+  background-size:
+    100% 100%,
+    100% 45%;
+}
+
+.st-mat::after {
+  top: 2.1rem;
+  bottom: 0;
+  left: 0;
+  width: 0.75rem;
+  background-image:
+    repeating-linear-gradient(0deg, var(--st-mat-line) 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(0deg, var(--st-mat-line) 0 1px, transparent 1px 10px);
+  background-size:
+    100% 100%,
+    45% 100%;
+}
+
+/* The sheet: the real A4 page, pinned to the mat with crop marks at two corners. */
+.st-sheet {
+  position: relative;
+  max-width: 794px;
+  margin: 0 auto;
+  background: #ffffff;
+  box-shadow:
+    0 1.4rem 2.6rem -1.2rem var(--st-shadow),
+    0 0 0 1px rgba(20, 0, 43, 0.06);
+}
+
+.st-sheet::before,
+.st-sheet::after {
+  content: '';
+  position: absolute;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 0 solid var(--st-mat-line);
+  pointer-events: none;
+}
+
+.st-sheet::before {
+  top: -0.55rem;
+  left: -0.55rem;
+  border-width: 1px 0 0 1px;
+}
+
+.st-sheet::after {
+  right: -0.55rem;
+  bottom: -0.55rem;
+  border-width: 0 1px 1px 0;
+}
+
+.st-sheet--hero {
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(20, 0, 43, 0.06);
+}
+
+/* ---------- Presentation view ---------- */
+
+.st-toolbar {
+  position: sticky;
+  top: 4.9rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.4rem);
+  padding: 0.6rem 0.7rem 0.6rem 0.8rem;
+  border: 1px solid var(--st-desk-line);
+  border-radius: 1.7rem;
+  background: var(--st-glass);
+  box-shadow: 0 1.2rem 2.6rem -1.6rem var(--st-shadow);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+}
+
+.st-toolbar__lead {
+  flex: none;
+}
+
+.st-toolbar__title {
+  display: flex;
+  flex: 1 1 15rem;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  padding-left: 0.4rem;
+}
+
+.st-toolbar__lead + .st-toolbar__title {
+  justify-content: center;
+  padding-left: 0;
+}
+
+.st-toolbar__title strong {
+  overflow: hidden;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-toolbar__title .st-pill {
+  flex: none;
+}
+
+.st-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+/* Back link with an arrow that leans into the direction of travel. */
+.st-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding: 0 0.9rem 0 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font-family: var(--lp-font-serif);
+  font-style: italic;
+  font-size: 1.08rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.st-back .MuiSvgIcon-root {
+  font-size: 1.15rem;
+  transition: transform 0.45s var(--lp-ease);
+}
+
+@media (hover: hover) {
+  .st-back:hover .MuiSvgIcon-root {
+    transform: translateX(-0.3rem);
+  }
+}
+
+.st-view__body {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.5rem, 3vw, 3rem);
+}
+
+.st-view__side {
+  position: sticky;
+  top: 10rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.st-view__side .st-score {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.st-view__design {
+  padding: 1.2rem;
+}
+
+.st-view__design .st-picker__templates {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.st-view__stage {
+  min-width: 0;
+}
+
+/* Below this width the page would no longer fit at full size beside the side panel. */
+@media (max-width: 1279.98px) {
+  .st-view__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .st-view__side {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  }
+
+  .st-view__side .st-score {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .st-view__design .st-picker__templates {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+}
+
+@media (max-width: 699.98px) {
+  .st-toolbar {
+    position: static;
+  }
+
+  .st-toolbar__title,
+  .st-toolbar__lead + .st-toolbar__title {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    padding-left: 0.6rem;
+  }
+
+  .st-toolbar__title .st-pill {
+    display: none;
+  }
+
+  .st-toolbar__actions {
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- Print: only the page itself. (index.css resets the scaler and hides chrome.) ---------- */
+
+@media print {
+  .st-page {
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .st-view__body {
+    display: block;
+  }
+
+  .st-sheet {
+    max-width: none;
+    box-shadow: none;
+  }
+
+  .st-sheet::before,
+  .st-sheet::after {
+    display: none;
+  }
+}

@@ -7,127 +7,362 @@ import {
   Card,
   CardContent,
   Container,
-} from "@mui/material"
-import { Link } from "react-router-dom"
-import DescriptionIcon from "@mui/icons-material/Description"
-import PreviewIcon from "@mui/icons-material/Preview"
-import DownloadIcon from "@mui/icons-material/Download"
-import EditIcon from "@mui/icons-material/Edit"
-import HistoryIcon from "@mui/icons-material/History"
-import SaveIcon from "@mui/icons-material/Save"
+  Chip
+} from '@mui/material'
+import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
+import DescriptionIcon from '@mui/icons-material/Description'
+import PreviewIcon from '@mui/icons-material/Preview'
+import DownloadIcon from '@mui/icons-material/Download'
+import EditIcon from '@mui/icons-material/Edit'
+import HistoryIcon from '@mui/icons-material/History'
+import SaveIcon from '@mui/icons-material/Save'
+import PaletteIcon from '@mui/icons-material/Palette'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+
+import { usePageTitle } from '../utils/usePageTitle'
+import { fadeUp, stagger } from '../motion/variants'
+import ScaledPage from '../components/resume/ScaledPage'
+import ResumeTemplate from '../components/resume/ResumeTemplate'
+
+const heroSampleResume = {
+  personalDetails: {
+    name: 'Sarah Jenkins',
+    title: 'Senior Frontend Engineer',
+    location: 'San Francisco, CA'
+  },
+  contactDetails: {
+    email: 'sarah.jenkins@example.com',
+    phoneNumber: '+1 (555) 234-5678',
+    github: 'https://github.com/example',
+    linkedIn: 'https://linkedin.com/in/example',
+    portfolio: 'https://sarahjenkins.dev'
+  },
+  education: {
+    course: 'B.S. in Computer Science',
+    college: 'University of California, Berkeley',
+    university: 'UC Berkeley',
+    year: '2021'
+  },
+  professionalDetails: {
+    jobTitle: 'Senior Software Engineer',
+    company: 'Vercel',
+    location: 'San Francisco',
+    duration: '2021 - Present'
+  },
+  skills: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Tailwind CSS', 'GraphQL'],
+  summary: 'Passionate frontend engineer with 4+ years of experience architecting fast, accessible web applications.'
+}
 
 const features = [
   {
-    title: "Guided Step Form",
-    desc: "Create your resume with an easy step-by-step guided form.",
-    icon: <DescriptionIcon />,
+    title: 'Guided Step Form',
+    desc: 'Structured 7-step wizard with built-in validation for every field.',
+    icon: <DescriptionIcon />
   },
   {
-    title: "Live Preview",
-    desc: "See your resume update in real time as you type.",
-    icon: <PreviewIcon />,
+    title: 'Instant Live Preview',
+    desc: 'Watch your resume render in real-time with authentic A4 proportions as you type.',
+    icon: <PreviewIcon />
   },
   {
-    title: "Instant PDF Export",
-    desc: "Download high quality resumes in one click.",
-    icon: <DownloadIcon />,
+    title: 'High-Resolution PDF',
+    desc: 'Export crisp, print-ready multi-page PDFs in seconds using client-side generation.',
+    icon: <DownloadIcon />
   },
   {
-    title: "Easy Editing",
-    desc: "Update your resume anytime with a simple modal editor.",
-    icon: <EditIcon />,
+    title: 'Direct Resume Editor',
+    desc: 'Revisit and edit any section with an intuitive modal editor that stays in sync.',
+    icon: <EditIcon />
   },
   {
-    title: "Resume History",
-    desc: "Track all your previously generated resumes.",
-    icon: <HistoryIcon />,
+    title: 'Download History',
+    desc: 'Access your previous resume snapshots anytime with instant previews and re-download.',
+    icon: <HistoryIcon />
   },
   {
-    title: "Autosave Drafts",
-    desc: "Never lose your progress — drafts are saved automatically.",
-    icon: <SaveIcon />,
+    title: 'Automatic Draft Autosave',
+    desc: 'Work at your own pace. Form drafts are safely preserved in your browser.',
+    icon: <SaveIcon />
   },
+  {
+    title: 'Modern Templates',
+    desc: 'Choose between Classic, Modern sidebar, and Minimal layouts with custom accent colors.',
+    icon: <PaletteIcon />
+  }
+]
+
+const steps = [
+  {
+    num: '01',
+    title: 'Fill Your Details',
+    desc: 'Follow the guided steps for contact info, education, work experience, and skills with helpful smart suggestions.'
+  },
+  {
+    num: '02',
+    title: 'Live Preview & Refine',
+    desc: 'Review your resume formatted in standard A4 dimensions. Pick your favorite template and color palette.'
+  },
+  {
+    num: '03',
+    title: 'Export & Apply',
+    desc: 'Generate a clean, recruiter-ready PDF with one click or print directly for applicant tracking systems.'
+  }
 ]
 
 const LandingPage = () => {
-  return (
-    <Box>
+  usePageTitle('Smart Resume Builder')
 
-      {/* HERO */}
+  return (
+    <Box sx={{ overflowX: 'hidden' }}>
+
+      {/* HERO SECTION */}
       <Box
         sx={(theme) => ({
-          minHeight: "92vh",
-          display: "flex",
-          alignItems: "center",
+          minHeight: { xs: 'auto', md: '92vh' },
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+          bgcolor: '#14002b',
           background: theme.custom.gradient,
-          color: "white",
+          color: 'white',
+          py: { xs: 8, md: 12 },
+          overflow: 'hidden',
+          '::before': {
+            content: '""',
+            position: 'absolute',
+            top: '-20%',
+            right: '-10%',
+            width: '600px',
+            height: '600px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,123,0,0.18) 0%, rgba(20,0,43,0) 70%)',
+            filter: 'blur(50px)',
+            pointerEvents: 'none'
+          },
+          '::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: '-20%',
+            left: '-10%',
+            width: '600px',
+            height: '600px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(61,0,102,0.6) 0%, rgba(20,0,43,0) 70%)',
+            filter: 'blur(60px)',
+            pointerEvents: 'none'
+          }
         })}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Grid container spacing={6} alignItems="center">
 
-            {/* LEFT */}
+            {/* LEFT HERO TEXT */}
             <Grid size={{ xs: 12, md: 6 }}>
-              <Stack spacing={3}>
-                <Typography variant="h2" fontWeight="bold">
-                  Build a Resume <br /> That Gets You Hired 🚀
-                </Typography>
-
-                <Typography variant="h6" sx={{ opacity: 0.85 }}>
-                  Create professional resumes in minutes.
-                  Showcase your skills and land your dream job faster.
-                </Typography>
-
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    component={Link}
-                    to="/resume"
-                    variant="contained"
-                    color="secondary"
-                    size="large"
+              <motion.div
+                initial="hidden"
+                animate="show"
+                variants={stagger(0.12)}
+              >
+                <motion.div variants={fadeUp}>
+                  <Chip
+                    icon={<CheckCircleIcon sx={{ color: '#ff7b00 !important' }} />}
+                    label="Free & Open Source Resume Builder"
                     sx={{
-                      px: 5,
-                      borderRadius: 3,
-                      fontWeight: "bold",
+                      bgcolor: 'rgba(255,255,255,0.08)',
+                      color: 'white',
+                      fontWeight: 600,
+                      mb: 2.5,
+                      border: '1px solid rgba(255,255,255,0.12)'
+                    }}
+                  />
+                </motion.div>
+
+                <motion.div variants={fadeUp}>
+                  <Typography
+                    variant="h1"
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: '2.5rem', sm: '3.2rem', md: '3.8rem' },
+                      lineHeight: 1.15,
+                      letterSpacing: '-0.02em',
+                      mb: 2.5
                     }}
                   >
-                    Create Resume
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/history"
-                    variant="outlined"
-                    size="large"
+                    Build a Resume <br />
+                    <span
+                      style={{
+                        background: 'linear-gradient(90deg, #ff7b00, #ffab40)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      That Gets Interviews
+                    </span>
+                  </Typography>
+                </motion.div>
+
+                <motion.div variants={fadeUp}>
+                  <Typography
+                    variant="h6"
                     sx={{
-                      color: "white",
-                      borderColor: "white",
-                      borderRadius: 3,
-                      ":hover": { bgcolor: "rgba(255,255,255,0.1)", borderColor: "white" }
+                      opacity: 0.88,
+                      fontWeight: 400,
+                      lineHeight: 1.6,
+                      fontSize: { xs: '1.05rem', md: '1.2rem' },
+                      mb: 4,
+                      maxWidth: 520
                     }}
                   >
-                    View History
-                  </Button>
-                </Stack>
-              </Stack>
+                    Craft a structured, recruiter-ready resume in minutes with our step-by-step generator, real-time A4 preview, and instant PDF download.
+                  </Typography>
+                </motion.div>
+
+                <motion.div variants={fadeUp}>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <Button
+                      component={Link}
+                      to="/form"
+                      variant="contained"
+                      color="secondary"
+                      size="large"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{
+                        px: 4,
+                        py: 1.6,
+                        borderRadius: 3,
+                        fontWeight: 'bold',
+                        fontSize: '1.05rem',
+                        boxShadow: '0 8px 24px rgba(255,123,0,0.35)',
+                        ':hover': {
+                          bgcolor: 'secondary.dark',
+                          transform: 'translateY(-2px)'
+                        },
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      Create My Resume
+                    </Button>
+
+                    <Button
+                      component={Link}
+                      to="/history"
+                      variant="outlined"
+                      size="large"
+                      sx={{
+                        color: 'white',
+                        borderColor: 'rgba(255,255,255,0.4)',
+                        borderRadius: 3,
+                        px: 3.5,
+                        py: 1.6,
+                        ':hover': {
+                          bgcolor: 'rgba(255,255,255,0.1)',
+                          borderColor: 'white'
+                        }
+                      }}
+                    >
+                      View History
+                    </Button>
+                  </Stack>
+                </motion.div>
+              </motion.div>
             </Grid>
 
-            {/* RIGHT — placeholder for animated resume in Phase 5 */}
+            {/* RIGHT HERO INTERACTIVE MINI RESUME */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Box
-                component="img"
-                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1200&q=75"
-                alt="Person working on a resume at a desk"
-                loading="lazy"
-                width={600}
-                height={400}
                 sx={{
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: 2,
-                  boxShadow: '0 4px 24px rgba(20,0,43,0.3)',
-                  mb: 4,
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  perspective: 1000
                 }}
-              />
+              >
+                {/* FLOATING RESUME PREVIEW */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, rotateY: -6 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    rotateY: -4,
+                    y: [0, -10, 0]
+                  }}
+                  transition={{
+                    opacity: { duration: 0.8 },
+                    scale: { duration: 0.8 },
+                    y: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
+                  }}
+                  style={{
+                    width: '100%',
+                    maxWidth: 380,
+                    boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+                    borderRadius: 16,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <ScaledPage targetWidth={380}>
+                    <ResumeTemplate data={heroSampleResume} />
+                  </ScaledPage>
+                </motion.div>
+
+                {/* FLOATING HIGHLIGHT CHIPS */}
+                <Box
+                  component={motion.div}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  sx={{
+                    position: 'absolute',
+                    top: '12%',
+                    left: { xs: 0, md: -20 },
+                    bgcolor: 'rgba(20, 0, 43, 0.92)',
+                    backdropFilter: 'blur(10px)',
+                    color: 'white',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 3,
+                    border: '1px solid rgba(255,123,0,0.4)',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <CheckCircleIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
+                  <Typography variant="caption" fontWeight="bold">
+                    100% Client-Side PDF
+                  </Typography>
+                </Box>
+
+                <Box
+                  component={motion.div}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7, duration: 0.6 }}
+                  sx={{
+                    position: 'absolute',
+                    bottom: '15%',
+                    right: { xs: 0, md: -20 },
+                    bgcolor: 'rgba(20, 0, 43, 0.92)',
+                    backdropFilter: 'blur(10px)',
+                    color: 'white',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 3,
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <Typography variant="caption" fontWeight="bold">
+                    ⚡ Live A4 Scaling
+                  </Typography>
+                </Box>
+              </Box>
             </Grid>
 
           </Grid>
@@ -135,94 +370,157 @@ const LandingPage = () => {
       </Box>
 
       {/* HOW IT WORKS */}
-      <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: "background.default" }}>
-        <Container maxWidth="md">
-          <Typography variant="h4" align="center" fontWeight="bold" mb={2}>
-            How It Works
-          </Typography>
-          <Typography align="center" color="text.secondary" mb={6}>
-            Three simple steps to your perfect resume
-          </Typography>
+      <Box sx={{ py: { xs: 8, md: 14 }, bgcolor: 'background.default' }}>
+        <Container maxWidth="lg">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+          >
+            <Typography variant="h3" align="center" fontWeight="bold" color="primary.main" mb={2}>
+              How It Works
+            </Typography>
+            <Typography align="center" color="text.secondary" maxWidth={600} mx="auto" mb={8}>
+              Build and download a complete, ATS-friendly resume in three easy steps
+            </Typography>
+          </motion.div>
 
           <Grid container spacing={4}>
-            {[
-              { step: "1", title: "Fill", desc: "Enter your details in a guided step-by-step form." },
-              { step: "2", title: "Preview", desc: "See a live preview update as you type." },
-              { step: "3", title: "Download", desc: "Export your resume as a professional PDF." },
-            ].map((item) => (
-              <Grid size={{ xs: 12, md: 4 }} key={item.step}>
-                <Box textAlign="center">
-                  <Box
+            {steps.map((st, i) => (
+              <Grid size={{ xs: 12, md: 4 }} key={st.num}>
+                <motion.div
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.2 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    show: { opacity: 1, y: 0, transition: { delay: i * 0.15, duration: 0.5 } }
+                  }}
+                >
+                  <Card
                     sx={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: "50%",
-                      bgcolor: "primary.main",
-                      color: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mx: "auto",
-                      mb: 2,
-                      fontSize: 24,
-                      fontWeight: 800,
+                      height: '100%',
+                      p: 4,
+                      borderRadius: 4,
+                      position: 'relative',
+                      bgcolor: '#ffffff',
+                      boxShadow: '0 4px 16px rgba(20,0,43,0.04)',
+                      border: '1px solid rgba(20,0,43,0.06)'
                     }}
                   >
-                    {item.step}
-                  </Box>
-                  <Typography variant="h6" fontWeight="bold" mb={1}>{item.title}</Typography>
-                  <Typography color="text.secondary">{item.desc}</Typography>
-                </Box>
+                    <Typography
+                      variant="h2"
+                      fontWeight={900}
+                      sx={{
+                        color: 'rgba(255,123,0,0.18)',
+                        position: 'absolute',
+                        top: 16,
+                        right: 24,
+                        userSelect: 'none'
+                      }}
+                    >
+                      {st.num}
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 2.5,
+                        bgcolor: 'primary.main',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2.5,
+                        fontWeight: 'bold',
+                        fontSize: 18
+                      }}
+                    >
+                      {i + 1}
+                    </Box>
+                    <Typography variant="h5" fontWeight="bold" color="primary.main" mb={1.5}>
+                      {st.title}
+                    </Typography>
+                    <Typography color="text.secondary" lineHeight={1.6}>
+                      {st.desc}
+                    </Typography>
+                  </Card>
+                </motion.div>
               </Grid>
             ))}
           </Grid>
         </Container>
       </Box>
 
-      {/* FEATURES */}
+      {/* CORE FEATURES GRID */}
       <Box sx={{ py: { xs: 8, md: 14 } }}>
         <Container maxWidth="lg">
-          <Typography variant="h3" align="center" fontWeight="bold" mb={7}>
-            Everything you need to get hired
-          </Typography>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+          >
+            <Typography variant="h3" align="center" fontWeight="bold" color="primary.main" mb={2}>
+              Designed for Speed &amp; Accuracy
+            </Typography>
+            <Typography align="center" color="text.secondary" maxWidth={600} mx="auto" mb={8}>
+              Everything you need to showcase your professional qualifications cleanly
+            </Typography>
+          </motion.div>
 
           <Grid container spacing={4}>
-            {features.map((f) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={f.title}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    p: 2,
-                    transition: "0.3s",
-                    ":hover": {
-                      transform: "translateY(-6px)",
-                    },
+            {features.map((feat, i) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={feat.title}>
+                <motion.div
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.2 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 24 },
+                    show: { opacity: 1, y: 0, transition: { delay: (i % 3) * 0.1, duration: 0.5 } }
                   }}
+                  whileHover={{ y: -6 }}
+                  style={{ height: '100%' }}
                 >
-                  <CardContent>
-                    <Box
-                      sx={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 3,
-                        bgcolor: "primary.main",
-                        color: "white",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        mb: 2,
-                      }}
-                    >
-                      {f.icon}
-                    </Box>
-                    <Typography variant="h6" fontWeight="bold" mb={1}>
-                      {f.title}
-                    </Typography>
-                    <Typography color="text.secondary">
-                      {f.desc}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      p: 3,
+                      borderRadius: 3.5,
+                      transition: 'all 0.3s ease',
+                      ':hover': {
+                        boxShadow: '0 12px 30px rgba(20,0,43,0.08)',
+                        borderColor: 'secondary.main'
+                      }
+                    }}
+                  >
+                    <CardContent>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 3,
+                          bgcolor: 'rgba(61,0,102,0.08)',
+                          color: 'primary.main',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mb: 2.5
+                        }}
+                      >
+                        {feat.icon}
+                      </Box>
+                      <Typography variant="h6" fontWeight="bold" color="primary.main" mb={1}>
+                        {feat.title}
+                      </Typography>
+                      <Typography color="text.secondary" variant="body2" lineHeight={1.6}>
+                        {feat.desc}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </Grid>
             ))}
           </Grid>
@@ -230,53 +528,64 @@ const LandingPage = () => {
       </Box>
 
       {/* TECH STRIP */}
-      <Box sx={{ py: 5, bgcolor: "background.default" }}>
+      <Box sx={{ py: 6, bgcolor: 'background.default', borderTop: '1px solid rgba(20,0,43,0.06)' }}>
         <Container maxWidth="md">
-          <Typography align="center" color="text.secondary" mb={3}>
-            Built with
+          <Typography align="center" variant="subtitle2" color="text.secondary" textTransform="uppercase" letterSpacing={1} mb={3}>
+            Built with Modern Web Technologies
           </Typography>
 
           <Stack
             direction="row"
             justifyContent="center"
+            alignItems="center"
             flexWrap="wrap"
-            gap={3}
+            gap={{ xs: 3, md: 6 }}
           >
-            <Typography fontWeight="bold">React 19</Typography>
-            <Typography fontWeight="bold">MUI v7</Typography>
-            <Typography fontWeight="bold">Vite</Typography>
-            <Typography fontWeight="bold">json-server</Typography>
+            {['React 19', 'MUI v7', 'Vite 7', 'Motion', 'json-server'].map((tech) => (
+              <Typography key={tech} variant="subtitle1" fontWeight={700} color="primary.main">
+                {tech}
+              </Typography>
+            ))}
           </Stack>
         </Container>
       </Box>
 
-      {/* FINAL CTA */}
+      {/* FINAL CALL TO ACTION */}
       <Box
         sx={(theme) => ({
           py: { xs: 8, md: 14 },
           background: theme.custom.gradient,
-          color: "white",
-          textAlign: "center",
+          color: 'white',
+          textAlign: 'center',
+          position: 'relative'
         })}
       >
-        <Typography variant="h3" fontWeight="bold" mb={3}>
-          Your Dream Job is One Resume Away
-        </Typography>
-
-        <Button
-          component={Link}
-          to="/resume"
-          variant="contained"
-          color="secondary"
-          size="large"
-          sx={{
-            px: 6,
-            borderRadius: 3,
-            fontWeight: "bold",
-          }}
-        >
-          Build Resume Now
-        </Button>
+        <Container maxWidth="sm">
+          <Typography variant="h3" fontWeight={800} mb={2.5}>
+            Ready to Build Your Resume?
+          </Typography>
+          <Typography sx={{ opacity: 0.85, mb: 4, fontSize: '1.1rem' }}>
+            Get started for free in seconds. No signup required.
+          </Typography>
+          <Button
+            component={Link}
+            to="/form"
+            variant="contained"
+            color="secondary"
+            size="large"
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              px: 5,
+              py: 1.8,
+              borderRadius: 3,
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+              boxShadow: '0 8px 24px rgba(255,123,0,0.4)'
+            }}
+          >
+            Start Building Now
+          </Button>
+        </Container>
       </Box>
 
     </Box>

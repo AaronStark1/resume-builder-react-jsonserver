@@ -1,9 +1,8 @@
 <p align="center">
-  <img src="https://cdn.iconscout.com/icon/free/png-256/free-resume-icon-svg-download-png-386556.png" alt="Resume Icon" width="80" />
+  <img src="rbuild/public/favicon.svg" alt="rBuild Logo" width="80" />
 </p>
 
 <h1 align="center">rBuild — Smart Resume Builder</h1>
-
 
 > Build professional resumes in minutes.\
 > Design. Preview. Download. Track history.
@@ -17,111 +16,107 @@ https://resume-builder-react-jsonserver.vercel.app/
 
 ## ✨ Overview
 
-**rBuild** is a modern resume builder web application that allows
-users to:
-
--   Create structured professional resumes
--   Preview changes live while filling the form
--   Download resumes instantly as PDF
--   Edit previously generated resumes
--   Track resume download history
-
-The application focuses on **simplicity, speed, and recruiter-friendly
-design.**
+**rBuild** is a modern, responsive resume builder web application built with React 19, Vite, MUI v7, and Motion. It enables job seekers to create recruiter-ready resumes with guided steps, live responsive A4 preview, client-side PDF export, direct modal editing, and local history tracking.
 
 ------------------------------------------------------------------------
 
 ## 🧠 Key Features
 
 ### 📝 Step-Based Resume Form
+- 7-step guided workflow: Basics, Contact, Education, Experience, Skills, Summary, and Review
+- Form validation with inline error states and auto URL normalization
+- Smart skill suggestions derived from your professional designation
+- Professional summary starter templates with live character counter
+- Local draft autosave — never lose your work on page refresh
 
--   Guided multi-step resume creation
--   Personal details, education, experience, skills & summary
--   Skill suggestions support
--   Clean validation-friendly architecture
+### 👁️ Live Responsive A4 Preview
+- Real-time preview rendered at true A4 dimensions (794 × 1123 px)
+- Proportional responsive scaling via `ScaledPage` and `ResizeObserver`
+- Mobile preview accessible via floating action button and full-screen modal
 
-### 👁️ Live Resume Preview
+### 📄 Multi-Page PDF & Print Export
+- Client-side multi-page PDF generation via lazy-loaded `html2canvas` and `jsPDF`
+- High-fidelity JPEG compression (quality 0.92) with automatic user-based naming
+- Print-optimized CSS stylesheet for ATS-friendly selectable text PDFs
 
--   Real-time preview updates
--   Shows placeholders when fields are empty
--   Professional structured layout
--   Edit support after resume submission
-
-### 📄 Instant PDF Download
-
--   Converts resume preview to PDF using `html2canvas` + `jsPDF`
--   Maintains layout consistency
--   One-click download experience
-
-### 🕘 Resume History Tracking
-
--   Stores previously downloaded resumes
--   Shows date & preview snapshot
--   Delete history records anytime
--   Organized dashboard layout
-
-### ✏️ Resume Editing
-
--   Update resume after creation
--   Modal based editing UI
--   Live preview refresh after update
+### 🕘 Resume History & Snapshots
+- Relationship-based snapshot history with json-server (`_expand=resume`)
+- Search by name or job title with instant filtering
+- Direct route `/resume/:id` to open, edit, and re-download any snapshot
+- Optimistic deletion with confirmation dialogs
 
 ------------------------------------------------------------------------
 
 ## 🛠️ Tech Stack
 
 ### Frontend
+- **React 19** + **Vite 7**
+- **Material UI (MUI v7)** + Emotion
+- **Motion (`motion/react`)** for smooth, accessible page & element animations
+- **React Router v7** with lazy-loaded route splitting
+- **SweetAlert2** + **canvas-confetti**
 
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Material UI](https://img.shields.io/badge/MUI-0081CB?logo=mui&logoColor=white)](https://mui.com/)
-[![React Router](https://img.shields.io/badge/React_Router-CA4245?logo=react-router&logoColor=white)](https://reactrouter.com/)
-[![SweetAlert2](https://img.shields.io/badge/SweetAlert2-FF6C37?logo=javascript&logoColor=white)](https://sweetalert2.github.io/)
+### Backend & Storage
+- **json-server 0.17** REST API (`server/`)
+- Browser `localStorage` for form draft autosaving
 
-### PDF Generation
-
-[![html2canvas](https://img.shields.io/badge/html2canvas-20232A?logo=javascript&logoColor=F7DF1E)](https://html2canvas.hertzen.com/)
-[![jsPDF](https://img.shields.io/badge/jsPDF-FFCA28?logo=javascript&logoColor=black)](https://parallax.github.io/jsPDF/)
-
-### Backend (Mock API)
-
-[![json-server](https://img.shields.io/badge/json--server-000000?logo=node.js&logoColor=white)](https://github.com/typicode/json-server)
+------------------------------------------------------------------------
 
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the Repository
 
-git clone https://github.com/AaronStark1/resume-builder-react-jsonserver\
-cd rbuild
+```bash
+git clone https://github.com/AaronStark1/resume-builder-react-jsonserver
+cd resume-builder-react-jsonserver
+```
 
-### 2️⃣ Install Dependencies
+### 2️⃣ Start Backend (Terminal 1)
 
+```bash
+cd server
 npm install
+npm start
+```
+The mock API server runs at `http://localhost:3000`.
 
-### 3️⃣ Start Backend
+> **Note on Free-tier Hosting:** Render's free tier has an ephemeral filesystem, meaning records reset upon server cold restarts or redeployments.
 
-npx json-server --watch db.json --port 3000
+### 3️⃣ Start Frontend (Terminal 2)
 
-### 4️⃣ Start Frontend
-
+```bash
+cd rbuild
+npm install
 npm run dev
+```
+The application runs at `http://localhost:5173`.
 
-Application runs at: http://localhost:5173
+### 🌐 Environment Variables
 
-> **Note for Deployment:** Vercel must define `VITE_API_URL=https://resume-builder-jsonserver.onrender.com` in environment variables.
+In `rbuild/`, copy `.env.example` to `.env`:
+```env
+VITE_API_URL=http://localhost:3000
+```
+For production deployment (e.g. Vercel), set:
+```env
+VITE_API_URL=https://resume-builder-jsonserver.onrender.com
+```
 
 ------------------------------------------------------------------------
 
-## 🎯 Future Enhancements
+## 📸 Screenshots & Visuals
 
--   Multiple resume templates
--   Theme & color customization
--   Authentication system
--   AI skill suggestions
--   Resume scoring system
+| Home Landing | Step Form & Live Preview |
+| :---: | :---: |
+| *(Interactive 3D mini resume & feature highlights)* | *(Two-pane split layout with real-time A4 scaling)* |
+
+| Resume History | PDF Export |
+| :---: | :---: |
+| *(A4 miniature cards with search & actions)* | *(Crisp multi-page PDF export & print preview)* |
 
 ------------------------------------------------------------------------
 
 ## 👨‍💻 Author
 
 **Aaron Correya**\
-Passionate Full Stack Developer
+Full Stack Developer

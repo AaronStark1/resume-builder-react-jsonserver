@@ -1,15 +1,25 @@
+import { useState } from 'react'
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
   Box,
-  Container
-} from "@mui/material"
-import { Link, useLocation } from "react-router-dom"
+  Container,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText
+} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import CloseIcon from '@mui/icons-material/Close'
+import { Link, useLocation } from 'react-router-dom'
 
 const Header = () => {
   const location = useLocation()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const isActive = (path) => {
     if (path === '/resume') {
@@ -18,16 +28,27 @@ const Header = () => {
     return location.pathname === path
   }
 
+  const navLinks = [
+    { label: 'Home', path: '/' },
+    { label: 'Create Resume', path: '/resume' },
+    { label: 'History', path: '/history' },
+  ]
+
   const navBtnStyle = (path) => ({
-    color: "white",
+    color: 'white',
     fontWeight: 600,
-    borderBottom: isActive(path) ? "2px solid" : "none",
-    borderBottomColor: isActive(path) ? "secondary.main" : "transparent",
+    fontSize: '0.95rem',
+    borderBottom: isActive(path) ? '2px solid' : '2px solid transparent',
+    borderBottomColor: isActive(path) ? 'secondary.main' : 'transparent',
     borderRadius: 0,
-    mx: 1,
-    ":hover": {
-      background: "rgba(255,255,255,0.08)"
-    }
+    mx: 1.5,
+    px: 1,
+    py: 1,
+    transition: '0.2s',
+    ':hover': {
+      background: 'rgba(255,255,255,0.08)',
+      borderBottomColor: isActive(path) ? 'secondary.main' : 'rgba(255,255,255,0.3)',
+    },
   })
 
   return (
@@ -35,73 +56,172 @@ const Header = () => {
       position="sticky"
       elevation={0}
       sx={(theme) => ({
-        background: theme.custom.gradient,
-        backdropFilter: "blur(12px)",
+        background: 'rgba(20, 0, 43, 0.92)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        zIndex: theme.zIndex.drawer + 1,
       })}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 72 } }}>
 
-          {/* LOGO */}
-          <Typography
-            variant="h6"
+          {/* BRAND LOGO (Monogram + Wordmark) */}
+          <Box
             component={Link}
             to="/"
             sx={{
-              fontWeight: "bold",
-              letterSpacing: 1,
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              color: 'white',
               mr: 4,
-              color: "white",
-              textDecoration: "none",
             }}
           >
-            rBuild
-          </Typography>
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: 2,
+                bgcolor: 'secondary.main',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: 18,
+                mr: 1.5,
+                boxShadow: '0 2px 8px rgba(255,123,0,0.4)',
+              }}
+            >
+              rB
+            </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+                letterSpacing: '-0.02em',
+                background: 'linear-gradient(90deg, #ffffff, #f0e6ff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              rBuild
+            </Typography>
+          </Box>
 
-          {/* NAVIGATION */}
-          <Box sx={{ flexGrow: 1 }}>
+          {/* DESKTOP NAVIGATION */}
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+            {navLinks.map((link) => (
+              <Button
+                key={link.path}
+                component={Link}
+                to={link.path}
+                sx={navBtnStyle(link.path)}
+              >
+                {link.label}
+              </Button>
+            ))}
+          </Box>
+
+          {/* DESKTOP CTA */}
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <Button
               component={Link}
-              to="/"
-              sx={navBtnStyle("/")}
+              to="/form"
+              variant="contained"
+              color="secondary"
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 2.5,
+                px: 3,
+                py: 1,
+                boxShadow: '0 4px 14px rgba(255,123,0,0.3)',
+                ':hover': {
+                  bgcolor: 'secondary.dark',
+                  transform: 'translateY(-1px)',
+                },
+                transition: '0.2s',
+              }}
             >
-              Home
-            </Button>
-
-            <Button
-              component={Link}
-              to="/resume"
-              sx={navBtnStyle("/resume")}
-            >
-              Create Resume
-            </Button>
-
-            <Button
-              component={Link}
-              to="/history"
-              sx={navBtnStyle("/history")}
-            >
-              History
+              Start Building
             </Button>
           </Box>
 
-          {/* RIGHT CTA */}
-          <Button
-            component={Link}
-            to="/resume"
-            variant="contained"
-            color="secondary"
-            sx={{
-              fontWeight: "bold",
-              borderRadius: 2,
-              px: 3,
-            }}
-          >
-            Start Now
-          </Button>
+          {/* MOBILE HAMBURGER BUTTON */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, ml: 'auto' }}>
+            <IconButton
+              color="inherit"
+              aria-label="Open mobile menu"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              edge="end"
+            >
+              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          </Box>
 
         </Toolbar>
       </Container>
+
+      {/* MOBILE DRAWER */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 260,
+            bgcolor: 'primary.dark',
+            color: 'white',
+            p: 3,
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <IconButton
+            onClick={() => setMobileOpen(false)}
+            sx={{ color: 'white' }}
+            aria-label="Close menu"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        <List>
+          {navLinks.map((link) => (
+            <ListItem key={link.path} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                component={Link}
+                to={link.path}
+                onClick={() => setMobileOpen(false)}
+                sx={{
+                  borderRadius: 2,
+                  bgcolor: isActive(link.path) ? 'rgba(255,123,0,0.18)' : 'transparent',
+                  color: isActive(link.path) ? 'secondary.main' : 'white',
+                }}
+              >
+                <ListItemText
+                  primary={link.label}
+                  primaryTypographyProps={{ fontWeight: isActive(link.path) ? 700 : 500 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        <Box sx={{ mt: 4 }}>
+          <Button
+            component={Link}
+            to="/form"
+            variant="contained"
+            color="secondary"
+            fullWidth
+            onClick={() => setMobileOpen(false)}
+            sx={{ py: 1.2, fontWeight: 'bold' }}
+          >
+            Start Building
+          </Button>
+        </Box>
+      </Drawer>
     </AppBar>
   )
 }

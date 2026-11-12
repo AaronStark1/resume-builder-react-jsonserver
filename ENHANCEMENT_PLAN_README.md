@@ -283,59 +283,59 @@ Refreshing the page loses everything.
 > Use the installed **frontend-design** / **ui-ux-pro-max** skills (§10) for this phase. The brand stays **deep purple (#14002b → #3d0066) + orange accent (#ff7b00)**. Refine it rather than replace it.
 
 ### 7.1 Typography & visual language
-- [ ] Fonts (self-hosted via `@fontsource-variable`): **Plus Jakarta Sans** for headings (700–800, tight letter-spacing `-0.02em`) and **Inter** for body and UI. Remove Barlow, or keep it only inside the resume template if preferred.
-- [ ] A type scale defined in the theme (h1 clamp(2.5rem, 5vw, 4rem), etc.) using `responsiveFontSizes(theme)`.
-- [ ] Consistent 8-pt spacing. Section padding `py: { xs: 8, md: 14 }`.
-- [ ] Surfaces: subtle 1px borders (`rgba(20,0,43,0.08)`) and layered soft shadows instead of MUI's default heavy `boxShadow: 10`.
-- [ ] Hero background: replace the flat gradient with gradient + soft radial glows (orange and violet blurred blobs) + a faint grid or noise texture, all in CSS, no images.
-- [ ] Glassy sticky header: `backdrop-filter: blur(12px)` with a semi-transparent purple background. It shrinks slightly on scroll.
+- [x] Fonts (self-hosted via `@fontsource-variable`): **Plus Jakarta Sans** for headings (700–800, tight letter-spacing `-0.02em`) and **Inter** for body and UI. Remove Barlow, or keep it only inside the resume template if preferred.
+- [x] A type scale defined in the theme (h1 clamp(2.5rem, 5vw, 4rem), etc.) using `responsiveFontSizes(theme)`.
+- [x] Consistent 8-pt spacing. Section padding `py: { xs: 8, md: 14 }`.
+- [x] Surfaces: subtle 1px borders (`rgba(20,0,43,0.08)`) and layered soft shadows instead of MUI's default heavy `boxShadow: 10`.
+- [x] Hero background: replace the flat gradient with gradient + soft radial glows (orange and violet blurred blobs) + a faint grid or noise texture, all in CSS, no images.
+- [x] Glassy sticky header: `backdrop-filter: blur(12px)` with a semi-transparent purple background. It shrinks slightly on scroll.
 
 ### 7.2 Page-by-page redesign
 
 **Header (`Header.jsx`)**
-- [ ] The logo becomes a `Link` to `/` (monogram + wordmark).
-- [ ] Mobile: hamburger `IconButton` → MUI `Drawer` with the nav links. Desktop nav is unchanged.
-- [ ] Highlight "Create Resume" as active for both `/resume` and `/form`.
-- [ ] The "Start Now" CTA duplicates "Create Resume". Keep only the CTA on desktop, styled as the orange primary action.
+- [x] The logo becomes a `Link` to `/` (monogram + wordmark).
+- [x] Mobile: hamburger `IconButton` → MUI `Drawer` with the nav links. Desktop nav is unchanged.
+- [x] Highlight "Create Resume" as active for both `/resume` and `/form`.
+- [x] The "Start Now" CTA duplicates "Create Resume". Keep only the CTA on desktop, styled as the orange primary action.
 
 **Landing (`LandingPage.jsx`)**
-- [ ] **Replace the stock Unsplash hero photo** with a live, animated mini resume: render `ResumeTemplate` with sample data inside `ScaledPage`, tilted in 3D (`perspective`, `rotateY(-8deg)`), floating gently, with 2–3 floating "chips" around it ("✓ PDF ready", "ATS-friendly", "6 steps"). This shows the actual product.
-- [ ] **Honesty pass on content:** the page currently claims *"AI powered suggestions"*, *"Modern Templates"*, *"drag & edit"*, shows a **"Trusted by Google / Amazon / Infosys…"** strip, and has **fabricated testimonials** with random avatars. None of these exist. Replace them with truthful content:
+- [x] **Replace the stock Unsplash hero photo** with a live, animated mini resume: render `ResumeTemplate` with sample data inside `ScaledPage`, tilted in 3D (`perspective`, `rotateY(-8deg)`), floating gently, with 2–3 floating "chips" around it ("✓ PDF ready", "ATS-friendly", "6 steps"). This shows the actual product.
+- [x] **Honesty pass on content:** the page currently claims *"AI powered suggestions"*, *"Modern Templates"*, *"drag & edit"*, shows a **"Trusted by Google / Amazon / Infosys…"** strip, and has **fabricated testimonials** with random avatars. None of these exist. Replace them with truthful content:
   - A "How it works" 3-step section (Fill → Preview live → Download), with numbered animated steps.
   - A features grid listing real features: guided steps, live preview, one-click PDF, edit anytime, history, autosave, and templates if Phase 6 is done. Each feature gets an MUI icon in a tinted rounded square.
   - Remove the logo strip and testimonials, or replace them with a single clearly labelled "Built with React, MUI & json-server" tech strip.
-- [ ] Fix the hover on the "View History" outlined button. It currently turns solid orange while the text stays white. Use a subtle white/10% fill instead.
-- [ ] All images get meaningful `alt` text, `loading="lazy"` (except the hero) and explicit width/height. Any remaining Unsplash URLs get `?auto=format&fit=crop&w=1200&q=75`, since they currently download full-resolution originals.
+- [x] Fix the hover on the "View History" outlined button. It currently turns solid orange while the text stays white. Use a subtle white/10% fill instead.
+- [x] All images get meaningful `alt` text, `loading="lazy"` (except the hero) and explicit width/height. Any remaining Unsplash URLs get `?auto=format&fit=crop&w=1200&q=75`, since they currently download full-resolution originals.
 
 **ResumeGeneratorPage (`/resume`)**
-- [ ] Match the new hero style. Replace the remote Freepik image with the same animated mini resume (or a template gallery if Phase 6 is done). Use MUI `CheckCircle` icons instead of "✔" text.
+- [x] Match the new hero style. Replace the remote Freepik image with the same animated mini resume (or a template gallery if Phase 6 is done). Use MUI `CheckCircle` icons instead of "✔" text.
 
 **Form (`/form`)**
-- [ ] Two-pane layout on ≥md: the form card is on the left and the **sticky** live preview (`position: sticky; top: 88px`) is on the right. Show a slim progress bar (`LinearProgress`) of the completion percentage above the form.
-- [ ] On < md, the preview is behind a floating "Preview" FAB that opens a full-screen `Dialog`.
+- [x] Two-pane layout on ≥md: the form card is on the left and the **sticky** live preview (`position: sticky; top: 88px`) is on the right. Show a slim progress bar (`LinearProgress`) of the completion percentage above the form.
+- [x] On < md, the preview is behind a floating "Preview" FAB that opens a full-screen `Dialog`.
 
 **History**
-- [ ] A masonry or responsive grid of A4 thumbnails with hover lift. On hover, an overlay with Open / Download / Delete fades in.
+- [x] A masonry or responsive grid of A4 thumbnails with hover lift. On hover, an overlay with Open / Download / Delete fades in.
 
 **PageNotFound**
-- [ ] Replace the bare `<div>PageNotFound</div>` with a branded 404: a large gradient "404", a short message, a "Go home" button and a subtle animated illustration.
+- [x] Replace the bare `<div>PageNotFound</div>` with a branded 404: a large gradient "404", a short message, a "Go home" button and a subtle animated illustration.
 
 **Footer**
-- [ ] Brand name is inconsistent ("ResumeBuilder" vs "rBuild"). Use **rBuild**.
-- [ ] The contact details (`rbuilder@gmail.com`, `+91 98989 89898`) look like placeholders. Replace them with real ones or remove them. Social `IconButton`s need real `href`s (`component="a"`, `target="_blank"`, `rel="noopener noreferrer"`) and an `aria-label`. Remove any without a real link.
-- [ ] Add quick links (Home / Create / History) and a GitHub repo link.
+- [x] Brand name is inconsistent ("ResumeBuilder" vs "rBuild"). Use **rBuild**.
+- [x] The contact details (`rbuilder@gmail.com`, `+91 98989 89898`) look like placeholders. Replace them with real ones or remove them. Social `IconButton`s need real `href`s (`component="a"`, `target="_blank"`, `rel="noopener noreferrer"`) and an `aria-label`. Remove any without a real link.
+- [x] Add quick links (Home / Create / History) and a GitHub repo link.
 
 ### 7.3 Motion system (use **Motion**, the successor to framer-motion)
-- [ ] `npm i motion`. Import with `import { motion, AnimatePresence, MotionConfig } from 'motion/react'`.
-- [ ] Create `rbuild/src/motion/variants.js` with shared variants so all motion feels like one system:
+- [x] `npm i motion`. Import with `import { motion, AnimatePresence, MotionConfig } from 'motion/react'`.
+- [x] Create `rbuild/src/motion/variants.js` with shared variants so all motion feels like one system:
   ```js
   export const ease = [0.22, 1, 0.36, 1]            // "easeOutQuint"-like
   export const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } } }
   export const stagger = (s = 0.08) => ({ hidden: {}, show: { transition: { staggerChildren: s } } })
   export const scaleIn = { hidden: { opacity: 0, scale: 0.96 }, show: { opacity: 1, scale: 1, transition: { duration: 0.4, ease } } }
   ```
-- [ ] Wrap the app in `<MotionConfig reducedMotion="user">` to **respect `prefers-reduced-motion`**. This is required.
-- [ ] Where to animate (and **only** here, to stay tasteful):
+- [x] Wrap the app in `<MotionConfig reducedMotion="user">` to **respect `prefers-reduced-motion`**. This is required.
+- [x] Where to animate (and **only** here, to stay tasteful):
   | Place | Animation |
   |---|---|
   | Route changes | `AnimatePresence mode="wait"` keyed on `location.pathname`. Fade plus a 8px slide, 250 ms. |
@@ -347,23 +347,23 @@ Refreshing the page loses everything.
   | Live preview | Subtle highlight flash on the section being edited (e.g. background pulse for 400 ms when its data changes). |
   | History cards | Staggered entrance. `exit={{ opacity: 0, scale: 0.9 }}` on delete with `layout` so the grid reflows smoothly. |
   | Success after Finish / Download | Small confetti burst (`canvas-confetti`, lazy-loaded) plus an MUI `Snackbar` instead of a modal SweetAlert for success cases. |
-- [ ] Keep durations at 150–600 ms. Animate only `transform` and `opacity` (no layout-thrashing properties). No infinite animations other than the hero float.
+- [x] Keep durations at 150–600 ms. Animate only `transform` and `opacity` (no layout-thrashing properties). No infinite animations other than the hero float.
 
 ### 7.4 Accessibility & SEO
-- [ ] Every icon-only button has an `aria-label`. All images have `alt`. Color contrast ≥ 4.5:1 (check orange text on white; use `#c25e00` for orange *text* if needed).
-- [ ] Visible focus rings (`:focus-visible` outline in theme overrides).
-- [ ] Keyboard: Enter submits the skill input, Esc closes dialogs (MUI default).
-- [ ] Set `document.title` per route (a small `usePageTitle` hook).
+- [x] Every icon-only button has an `aria-label`. All images have `alt`. Color contrast ≥ 4.5:1 (check orange text on white; use `#c25e00` for orange *text* if needed).
+- [x] Visible focus rings (`:focus-visible` outline in theme overrides).
+- [x] Keyboard: Enter submits the skill input, Esc closes dialogs (MUI default).
+- [x] Set `document.title` per route (a small `usePageTitle` hook).
 
 ### 7.5 Performance
-- [ ] Route-level code splitting: `React.lazy` + `Suspense` for `History`, `Form`, `ResumeView` and `PageNotFound`.
-- [ ] Lazy-load `html2canvas`, `jspdf`, `canvas-confetti` and `sweetalert2` where used.
-- [ ] **Acceptance:** `npm run build` shows **no chunk > 500 kB** and the initial JS is substantially below the 1,191 kB baseline.
+- [x] Route-level code splitting: `React.lazy` + `Suspense` for `History`, `Form`, `ResumeView` and `PageNotFound`.
+- [x] Lazy-load `html2canvas`, `jspdf`, `canvas-confetti` and `sweetalert2` where used.
+- [x] **Acceptance:** `npm run build` shows **no chunk > 500 kB** and the initial JS is substantially below the 1,191 kB baseline.
 
 ### 7.6 Root `README.md` fixes
-- [ ] The install steps are wrong: they say `cd rbuild` and then run `json-server --watch db.json` there, but `db.json` lives in `server/`. Replace them with the correct two-terminal instructions from §1.3, plus the `VITE_API_URL` env var.
-- [ ] Update the feature list and tech stack to match reality (Motion, the new PDF flow, autosave, templates if done). Remove "AI skill suggestions" unless implemented.
-- [ ] Add 2–3 screenshots or a GIF placeholder section.
+- [x] The install steps are wrong: they say `cd rbuild` and then run `json-server --watch db.json` there, but `db.json` lives in `server/`. Replace them with the correct two-terminal instructions from §1.3, plus the `VITE_API_URL` env var.
+- [x] Update the feature list and tech stack to match reality (Motion, the new PDF flow, autosave, templates if done). Remove "AI skill suggestions" unless implemented.
+- [x] Add 2–3 screenshots or a GIF placeholder section.
 
 ---
 

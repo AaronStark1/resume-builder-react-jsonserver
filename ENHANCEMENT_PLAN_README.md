@@ -267,14 +267,14 @@ Refreshing the page loses everything.
 
 ## 6. Phase 4 — History page
 
-- [ ] Fetch with json-server's relations and sorting instead of two calls plus a manual map: `GET /history?_expand=resume&_sort=id&_order=desc` (json-server 0.17 supports `_expand`, `_sort` and `_order`). Run each item through `normalizeResume`.
-- [ ] **Loading state:** skeleton cards (`Skeleton` with A4 aspect ratio). If a request exceeds ~3 s, show "Waking up the server… (free hosting can take up to a minute)" because Render free-tier cold starts are slow.
-- [ ] **Empty state:** an illustration or icon, "No resumes yet", and a CTA to `/form`.
-- [ ] **Delete:** confirm with SweetAlert2 (or an MUI `Dialog`), remove optimistically with an exit animation (§7.3), and restore on failure.
-- [ ] **Card actions:** add "Open" (navigates to a new route `/resume/:id` that loads the resume and shows the `final` Preview, so it can be edited and re-downloaded) and "Download" buttons.
-- [ ] Display dates from `createdAt` when present, formatted with `Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })`, falling back to `formattedDate`.
-- [ ] Optional: a search box filtering by name or title.
-- [ ] Add `App.jsx` route `/resume/:id` → `pages/ResumeView.jsx`.
+- [x] Fetch with json-server's relations and sorting instead of two calls plus a manual map: `GET /history?_expand=resume&_sort=id&_order=desc` (json-server 0.17 supports `_expand`, `_sort` and `_order`). Run each item through `normalizeResume`.
+- [x] **Loading state:** skeleton cards (`Skeleton` with A4 aspect ratio). If a request exceeds ~3 s, show "Waking up the server… (free hosting can take up to a minute)" because Render free-tier cold starts are slow.
+- [x] **Empty state:** an illustration or icon, "No resumes yet", and a CTA to `/form`.
+- [x] **Delete:** confirm with SweetAlert2 (or an MUI `Dialog`), remove optimistically with an exit animation (§7.3), and restore on failure.
+- [x] **Card actions:** add "Open" (navigates to a new route `/resume/:id` that loads the resume and shows the `final` Preview, so it can be edited and re-downloaded) and "Download" buttons.
+- [x] Display dates from `createdAt` when present, formatted with `Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })`, falling back to `formattedDate`.
+- [x] Optional: a search box filtering by name or title.
+- [x] Add `App.jsx` route `/resume/:id` → `pages/ResumeView.jsx`.
 
 ---
 

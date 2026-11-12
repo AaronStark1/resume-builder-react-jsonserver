@@ -23,7 +23,7 @@ export const addHistoryAPI = async (reqBody) => {
 }
 
 export const getHistoryAPI = async () => {
-  return await commonAPI('GET', '/history', {})
+  return await commonAPI('GET', '/history?_expand=resume&_sort=id&_order=desc', {})
 }
 
 export const deleteHistoryAPI = async (id) => {

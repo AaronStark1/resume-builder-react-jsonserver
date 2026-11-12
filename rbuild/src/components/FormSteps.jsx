@@ -7,8 +7,11 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
+import CircularProgress from '@mui/material/CircularProgress'
 import { addResumeAPI } from '../services/allAPIs'
 import Swal from 'sweetalert2'
+import { sections } from '../config/resumeFields'
+import SectionFields from './SectionFields'
 
 const steps = [
   'Basic Information',
@@ -20,17 +23,27 @@ const steps = [
 ]
 
 const FormSteps = ({ formData, setFormData, setIsFinished, setResumeId }) => {
-
-  const { personalDetails, contactDetails, education, professionalDetails, skills, summary } = formData
+  const { skills, summary } = formData
 
   const [inputSkill, setInputSkill] = useState('')
-  const suggestions = ['React', 'Angular', 'NodeJS', 'Express', 'MongoDB']
+  const [submitting, setSubmitting] = useState(false)
+  const suggestions = ['React', 'TypeScript', 'NodeJS', 'Express', 'MongoDB', 'Python', 'SQL', 'Git']
 
   const [activeStep, setActiveStep] = useState(0)
   const [skipped, setSkipped] = useState(new Set())
 
-  const isStepOptional = (step) => step === 1
+  const isStepOptional = (step) => step === 3 // Experience can be optional for freshers
   const isStepSkipped = (step) => skipped.has(step)
+
+  const updateSectionField = (sectionKey, fieldName, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [sectionKey]: {
+        ...prev[sectionKey],
+        [fieldName]: value
+      }
+    }))
+  }
 
   const handleNext = () => {
     let newSkipped = skipped
@@ -38,300 +51,142 @@ const FormSteps = ({ formData, setFormData, setIsFinished, setResumeId }) => {
       newSkipped = new Set(newSkipped.values())
       newSkipped.delete(activeStep)
     }
-    setActiveStep(prev => prev + 1)
+    setActiveStep((prev) => prev + 1)
     setSkipped(newSkipped)
   }
 
-  const handleBack = () => setActiveStep(prev => prev - 1)
+  const handleBack = () => setActiveStep((prev) => prev - 1)
 
   const handleSkip = () => {
-    if (!isStepOptional(activeStep)) throw new Error("Can't skip non optional step")
-
-    setActiveStep(prev => prev + 1)
-    setSkipped(prev => new Set(prev).add(activeStep))
+    if (!isStepOptional(activeStep)) return
+    setActiveStep((prev) => prev + 1)
+    setSkipped((prev) => new Set(prev).add(activeStep))
   }
 
   const addSkill = (skill) => {
-    if (!skill) return
-    if (skills.includes(skill)) {
-      alert("Skill already exists")
+    const trimmed = (skill || '').trim()
+    if (!trimmed) return
+    if (skills.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
+      Swal.fire('Notice', 'Skill already added', 'info')
     } else {
-      setFormData(data => ({ ...data, skills: [...data.skills, skill] }))
+      setFormData((data) => ({ ...data, skills: [...data.skills, trimmed] }))
       setInputSkill('')
     }
   }
 
   const removeSkill = (skill) => {
-    setFormData(data => ({
+    setFormData((data) => ({
       ...data,
-      skills: data.skills.filter(item => item !== skill)
+      skills: data.skills.filter((item) => item !== skill)
     }))
   }
 
   const handleAddResume = async () => {
+    setSubmitting(true)
     try {
       const response = await addResumeAPI(formData)
-      if (response.status === 201) {
+      if (response?.status === 201 || response?.status === 200) {
         setResumeId(response.data.id)
-        Swal.fire("Success", "Resume submitted", "success")
+        Swal.fire('Success', 'Resume submitted successfully!', 'success')
         setIsFinished(true)
       } else {
-        Swal.fire("Error", "Submission failed", "error")
+        Swal.fire('Error', 'Submission failed. Please try again.', 'error')
       }
     } catch {
-      Swal.fire("Error", "Something went wrong", "error")
+      Swal.fire('Error', 'Something went wrong connecting to the server.', 'error')
+    } finally {
+      setSubmitting(false)
     }
   }
 
   const renderStepContent = (step) => {
-    switch (step) {
-
-      case 0:
-        return (
-          <Stack spacing={2}>
-            <TextField
-              value={personalDetails.name}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  personalDetails: { ...personalDetails, name: e.target.value }
-                })}
-              label="Full Name"
-              fullWidth
-            />
-
-            <TextField
-              value={personalDetails.title}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  personalDetails: { ...personalDetails, title: e.target.value }
-                })}
-              label="Job Title"
-              fullWidth
-            />
-
-            <TextField
-              value={personalDetails.location}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  personalDetails: { ...personalDetails, location: e.target.value }
-                })}
-              label="Location"
-              fullWidth
-            />
-          </Stack>
-        )
-
-      case 1:
-        return (
-          <Stack spacing={2}>
-            <TextField
-              value={contactDetails.email}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  contactDetails: { ...contactDetails, email: e.target.value }
-                })}
-              label="Email"
-              fullWidth
-            />
-
-            <TextField
-              value={contactDetails.phoneNumber}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  contactDetails: { ...contactDetails, phoneNumber: e.target.value }
-                })}
-              label="Phone Number"
-              fullWidth
-            />
-
-            <TextField
-              value={contactDetails.github}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  contactDetails: { ...contactDetails, github: e.target.value }
-                })}
-              label="Github Profile"
-              fullWidth
-            />
-
-            <TextField
-              value={contactDetails.linkedIn}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  contactDetails: { ...contactDetails, linkedIn: e.target.value }
-                })}
-              label="LinkedIn Profile"
-              fullWidth
-            />
-
-            <TextField
-              value={contactDetails.portfolio}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  contactDetails: { ...contactDetails, portfolio: e.target.value }
-                })}
-              label="Portfolio"
-              fullWidth
-            />
-          </Stack>
-        )
-
-      case 2:
-        return (
-          <Stack spacing={2}>
-            <TextField
-              value={education.course}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  education: { ...education, course: e.target.value }
-                })}
-              label="Course"
-              fullWidth
-            />
-
-            <TextField
-              value={education.college}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  education: { ...education, college: e.target.value }
-                })}
-              label="College"
-              fullWidth
-            />
-
-            <TextField
-              value={education.university}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  education: { ...education, university: e.target.value }
-                })}
-              label="University"
-              fullWidth
-            />
-
-            <TextField
-              value={education.year}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  education: { ...education, year: e.target.value }
-                })}
-              label="Year"
-              fullWidth
-            />
-          </Stack>
-        )
-
-      case 3:
-        return (
-          <Stack spacing={2}>
-            <TextField
-              value={professionalDetails.jobTitle}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  professionalDetails: { ...professionalDetails, jobTitle: e.target.value }
-                })}
-              label="Job Title"
-              fullWidth
-            />
-
-            <TextField
-              value={professionalDetails.company}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  professionalDetails: { ...professionalDetails, company: e.target.value }
-                })}
-              label="Company"
-              fullWidth
-            />
-
-            <TextField
-              value={professionalDetails.location}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  professionalDetails: { ...professionalDetails, location: e.target.value }
-                })}
-              label="Location"
-              fullWidth
-            />
-
-            <TextField
-              value={professionalDetails.duration}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  professionalDetails: { ...professionalDetails, duration: e.target.value }
-                })}
-              label="Duration"
-              fullWidth
-            />
-          </Stack>
-        )
-
-      case 4:
-        return (
-          <Box>
-            <Stack direction="row" spacing={1}>
-              <TextField
-                value={inputSkill}
-                onChange={(e) => setInputSkill(e.target.value)}
-                label="Add Skill"
-                fullWidth
-              />
-              <Button onClick={() => addSkill(inputSkill)}>Add</Button>
-            </Stack>
-
-            <Typography mt={3}>Suggestions</Typography>
-            <Stack direction="row" flexWrap="wrap" gap={1} mt={1}>
-              {suggestions.map(item => (
-                <Button key={item} variant="outlined" onClick={() => addSkill(item)}>
-                  {item}
-                </Button>
-              ))}
-            </Stack>
-
-            <Typography mt={3}>Added Skills</Typography>
-            <Stack direction="row" flexWrap="wrap" gap={1} mt={1}>
-              {skills.map(item => (
-                <Button key={item} variant="contained" onClick={() => removeSkill(item)}>
-                  {item} ✕
-                </Button>
-              ))}
-            </Stack>
-          </Box>
-        )
-
-      case 5:
-        return (
-          <TextField
-            value={summary}
-            onChange={(e) =>
-              setFormData({ ...formData, summary: e.target.value })
-            }
-            multiline
-            rows={4}
-            label="Professional Summary"
-            fullWidth
-          />
-        )
-
-      default:
-        return null
+    if (step >= 0 && step <= 3) {
+      const currentSection = sections[step]
+      return (
+        <SectionFields
+          section={currentSection}
+          value={formData[currentSection.key]}
+          onChange={(field, val) => updateSectionField(currentSection.key, field, val)}
+        />
+      )
     }
+
+    if (step === 4) {
+      return (
+        <Box>
+          <Stack direction="row" spacing={1}>
+            <TextField
+              value={inputSkill}
+              onChange={(e) => setInputSkill(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  addSkill(inputSkill)
+                }
+              }}
+              label="Add Skill"
+              fullWidth
+            />
+            <Button variant="contained" onClick={() => addSkill(inputSkill)}>
+              Add
+            </Button>
+          </Stack>
+
+          <Typography variant="subtitle2" mt={3} mb={1} color="text.secondary">
+            Suggested Skills
+          </Typography>
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            {suggestions
+              .filter((item) => !skills.some((s) => s.toLowerCase() === item.toLowerCase()))
+              .map((item) => (
+                <Button key={item} size="small" variant="outlined" onClick={() => addSkill(item)}>
+                  + {item}
+                </Button>
+              ))}
+          </Stack>
+
+          <Typography variant="subtitle2" mt={3} mb={1} color="text.secondary">
+            Added Skills
+          </Typography>
+          <Stack direction="row" flexWrap="wrap" gap={1}>
+            {skills.map((item) => (
+              <Button
+                key={item}
+                size="small"
+                variant="contained"
+                onClick={() => removeSkill(item)}
+                sx={{ borderRadius: 4 }}
+              >
+                {item} ✕
+              </Button>
+            ))}
+            {skills.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                No skills added yet. Click suggestions or type above.
+              </Typography>
+            )}
+          </Stack>
+        </Box>
+      )
+    }
+
+    if (step === 5) {
+      return (
+        <TextField
+          value={summary}
+          onChange={(e) =>
+            setFormData({ ...formData, summary: e.target.value })
+          }
+          multiline
+          rows={5}
+          label="Professional Summary"
+          placeholder="Briefly describe your career goals, key achievements, and core strengths..."
+          fullWidth
+        />
+      )
+    }
+
+    return null
   }
 
   return (
@@ -346,17 +201,33 @@ const FormSteps = ({ formData, setFormData, setIsFinished, setResumeId }) => {
         ))}
       </Stepper>
 
-      <Box sx={{ mt: 3 }}>{renderStepContent(activeStep)}</Box>
+      <Box sx={{ mt: 4, mb: 3 }}>{renderStepContent(activeStep)}</Box>
 
-      <Box sx={{ display: 'flex', pt: 3 }}>
-        <Button disabled={activeStep === 0} onClick={handleBack}>Back</Button>
+      <Box sx={{ display: 'flex', pt: 2, borderTop: '1px solid #f0f0f0' }}>
+        <Button disabled={activeStep === 0 || submitting} onClick={handleBack}>
+          Back
+        </Button>
         <Box sx={{ flex: 1 }} />
         {isStepOptional(activeStep) && (
-          <Button onClick={handleSkip}>Skip</Button>
+          <Button disabled={submitting} onClick={handleSkip} sx={{ mr: 1 }}>
+            Skip
+          </Button>
         )}
-        {activeStep === steps.length - 1
-          ? <Button onClick={handleAddResume}>Finish</Button>
-          : <Button onClick={handleNext}>Next</Button>}
+        {activeStep === steps.length - 1 ? (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleAddResume}
+            disabled={submitting}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+          >
+            {submitting ? 'Submitting...' : 'Finish'}
+          </Button>
+        ) : (
+          <Button variant="contained" onClick={handleNext}>
+            Next
+          </Button>
+        )}
       </Box>
     </Box>
   )

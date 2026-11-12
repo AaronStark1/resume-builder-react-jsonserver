@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   Box,
   Container,
@@ -7,54 +7,68 @@ import {
   Paper,
   Stack,
   IconButton,
-  Chip
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { deleteHistoryAPI, getHistoryAPI, getResumesAPI } from "../services/allAPIs";
+  Chip,
+  Alert
+} from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { deleteHistoryAPI, getHistoryAPI, getResumesAPI } from '../services/allAPIs'
+import Swal from 'sweetalert2'
 
 const History = () => {
-
-  const [historyData, setHistoryData] = useState([]);
-  const [resumeMap, setResumeMap] = useState({});
+  const [historyData, setHistoryData] = useState([])
+  const [resumeMap, setResumeMap] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const loadData = async () => {
+    setLoading(true)
+    setError(null)
     try {
-      const historyRes = await getHistoryAPI();
-      const resumesRes = await getResumesAPI();
+      const historyRes = await getHistoryAPI()
+      const resumesRes = await getResumesAPI()
 
-      const map = {};
-      resumesRes.data.forEach(r => map[r.id] = r);
+      const map = {}
+      if (Array.isArray(resumesRes?.data)) {
+        resumesRes.data.forEach((r) => {
+          map[r.id] = r
+        })
+      }
 
-      setResumeMap(map);
-      setHistoryData(historyRes.data);
-
-    } catch (err) {
-      console.log(err);
+      setResumeMap(map)
+      setHistoryData(Array.isArray(historyRes?.data) ? historyRes.data : [])
+    } catch {
+      setError('Could not connect to the server. Please ensure the backend is running.')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   const deleteHistory = async (id) => {
-    await deleteHistoryAPI(id);
-    loadData();
-  };
+    try {
+      await deleteHistoryAPI(id)
+      setHistoryData((prev) => prev.filter((item) => item.id !== id))
+      Swal.fire('Deleted', 'History record deleted', 'success')
+    } catch {
+      Swal.fire('Error', 'Failed to delete history record', 'error')
+    }
+  }
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData()
+  }, [])
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom,#f8f9fc,#eef1f6)",
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #f8f9fc, #eef1f6)',
         py: 6
       }}
     >
       <Container maxWidth="lg">
-
         {/* HEADER */}
         <Box mb={5}>
-          <Typography variant="h4" fontWeight="bold">
+          <Typography variant="h4" fontWeight="bold" color="primary.main">
             Resume History
           </Typography>
           <Typography color="text.secondary">
@@ -62,177 +76,195 @@ const History = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4} justifyContent="center">
+        {error && (
+          <Alert severity="error" sx={{ mb: 4 }}>
+            {error}
+          </Alert>
+        )}
 
-          {historyData.map(item => {
+        {loading ? (
+          <Typography color="text.secondary">Loading history...</Typography>
+        ) : historyData.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">
+              No resumes in history yet.
+            </Typography>
+          </Box>
+        ) : (
+          <Grid container spacing={4} justifyContent="flex-start">
+            {historyData.map((item) => {
+              const resume = resumeMap[item.resumeId]
 
-            const resume = resumeMap[item.resumeId];
-
-            return (
-              <Grid item key={item.id}>
-
-                <Paper
-                  sx={{
-                    width: 320,          // ⭐ fixed card width
-                    borderRadius: 4,
-                    p: 2,
-                    transition: "0.3s",
-                    ":hover": {
-                      transform: "translateY(-8px)",
-                      boxShadow: 6
-                    }
-                  }}
-                >
-
-                  {/* TOP BAR */}
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={1}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      {item.formattedDate}
-                    </Typography>
-
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => deleteHistory(item.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-
-                  {/* A4 PREVIEW */}
-                  <Box
+              return (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
+                  <Paper
                     sx={{
-                      background: "#fff",
-                      borderRadius: 3,
-                      boxShadow: 3,
+                      borderRadius: 4,
                       p: 2,
-                      height: 450,        // ⭐ A4 feel
-                      overflow: "hidden"
+                      transition: '0.3s',
+                      ':hover': {
+                        transform: 'translateY(-6px)',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.08)'
+                      }
                     }}
                   >
+                    {/* TOP BAR */}
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mb={1}
+                    >
+                      <Typography variant="caption" color="text.secondary">
+                        {item.formattedDate || (item.createdAt ? new Date(item.createdAt).toLocaleString() : '')}
+                      </Typography>
 
-                    {resume ? (
-                      <>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        aria-label="Delete history entry"
+                        onClick={() => deleteHistory(item.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
 
-                        <Typography align="center" fontWeight="bold">
-                          {resume.personalDetails.name}
-                        </Typography>
-
-                        <Typography
-                          align="center"
-                          fontSize={13}
-                          color="text.secondary"
-                        >
-                          {resume.personalDetails.title}
-                        </Typography>
-
-                        <Typography
-                          align="center"
-                          fontSize={11}
-                          color="text.secondary"
-                        >
-                          {resume.contactDetails.phoneNumber} • {resume.contactDetails.email}
-                        </Typography>
-
-                        <Typography
-                          align="center"
-                          fontSize={11}
-                          color="text.secondary"
-                        >
-                          {resume.personalDetails.location}
-                        </Typography>
-
-                        <Box mt={2}>
-                          <Typography fontWeight="bold" fontSize={13}>
-                            Summary
+                    {/* A4 PREVIEW CONTAINER */}
+                    <Box
+                      sx={{
+                        background: '#fff',
+                        borderRadius: 3,
+                        boxShadow: 2,
+                        p: 2,
+                        height: 450,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {resume ? (
+                        <>
+                          <Typography align="center" fontWeight="bold" variant="subtitle1">
+                            {resume.personalDetails?.name || 'Untitled Resume'}
                           </Typography>
 
                           <Typography
-                            fontSize={12}
-                            sx={{
-                              display: "-webkit-box",
-                              WebkitLineClamp: 4,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden"
-                            }}
+                            align="center"
+                            fontSize={13}
+                            color="text.secondary"
                           >
-                            {resume.summary}
-                          </Typography>
-                        </Box>
-
-                        <Box mt={1}>
-                          <Typography fontWeight="bold" fontSize={13}>
-                            Education
+                            {resume.personalDetails?.title}
                           </Typography>
 
-                          <Typography fontSize={12}>
-                            {resume.education.course}
-                          </Typography>
-
-                          <Typography fontSize={11} color="text.secondary">
-                            {resume.education.college}
-                          </Typography>
-                        </Box>
-
-                        <Box mt={1}>
-                          <Typography fontWeight="bold" fontSize={13}>
-                            Experience
-                          </Typography>
-
-                          <Typography fontSize={12}>
-                            {resume.professionalDetails.jobTitle}
-                          </Typography>
-
-                          <Typography fontSize={11} color="text.secondary">
-                            {resume.professionalDetails.company}
-                          </Typography>
-                        </Box>
-
-                        <Box mt={1}>
-                          <Typography fontWeight="bold" fontSize={13}>
-                            Skills
-                          </Typography>
-
-                          <Stack
-                            direction="row"
-                            flexWrap="wrap"
-                            gap={0.5}
-                            sx={{
-                              maxHeight: 60,
-                              overflow: "hidden"
-                            }}
+                          <Typography
+                            align="center"
+                            fontSize={11}
+                            color="text.secondary"
                           >
-                            {resume.skills.map((s, i) => (
-                              <Chip key={i} label={s} size="small" />
-                            ))}
-                          </Stack>
+                            {[resume.contactDetails?.phoneNumber, resume.contactDetails?.email]
+                              .filter(Boolean)
+                              .join(' • ')}
+                          </Typography>
+
+                          <Typography
+                            align="center"
+                            fontSize={11}
+                            color="text.secondary"
+                          >
+                            {resume.personalDetails?.location}
+                          </Typography>
+
+                          {resume.summary && (
+                            <Box mt={2}>
+                              <Typography fontWeight="bold" fontSize={13}>
+                                Summary
+                              </Typography>
+                              <Typography
+                                fontSize={12}
+                                sx={{
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                {resume.summary}
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {resume.education?.course && (
+                            <Box mt={1.5}>
+                              <Typography fontWeight="bold" fontSize={13}>
+                                Education
+                              </Typography>
+                              <Typography fontSize={12}>
+                                {resume.education.course}
+                              </Typography>
+                              <Typography fontSize={11} color="text.secondary">
+                                {resume.education.college}
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {resume.professionalDetails?.jobTitle && (
+                            <Box mt={1.5}>
+                              <Typography fontWeight="bold" fontSize={13}>
+                                Experience
+                              </Typography>
+                              <Typography fontSize={12}>
+                                {resume.professionalDetails.jobTitle}
+                              </Typography>
+                              <Typography fontSize={11} color="text.secondary">
+                                {resume.professionalDetails.company}
+                              </Typography>
+                            </Box>
+                          )}
+
+                          {Array.isArray(resume.skills) && resume.skills.length > 0 && (
+                            <Box mt={1.5}>
+                              <Typography fontWeight="bold" fontSize={13} mb={0.5}>
+                                Skills
+                              </Typography>
+                              <Stack
+                                direction="row"
+                                flexWrap="wrap"
+                                gap={0.5}
+                                sx={{
+                                  maxHeight: 60,
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                {resume.skills.map((s, i) => (
+                                  <Chip key={i} label={s} size="small" />
+                                ))}
+                              </Stack>
+                            </Box>
+                          )}
+                        </>
+                      ) : (
+                        <Box sx={{ textAlign: 'center', mt: 15, px: 2 }}>
+                          <Typography variant="body2" color="text.secondary" mb={2}>
+                            Resume details no longer available
+                          </Typography>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            aria-label="Remove record"
+                            onClick={() => deleteHistory(item.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                         </Box>
-
-                      </>
-                    ) : (
-                      <Typography align="center" mt={15}>
-                        Loading...
-                      </Typography>
-                    )}
-
-                  </Box>
-
-                </Paper>
-
-              </Grid>
-            );
-          })}
-
-        </Grid>
-
+                      )}
+                    </Box>
+                  </Paper>
+                </Grid>
+              )
+            })}
+          </Grid>
+        )}
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default History;
+export default History

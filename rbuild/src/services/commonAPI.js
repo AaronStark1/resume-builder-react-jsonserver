@@ -1,15 +1,9 @@
 import axios from 'axios'
+import { serverURL } from './serverURL'
 
-export const commonAPI = async(httpMethod,url,reqBody)=> {
-    const reqConfig={
-        method:httpMethod,
-        url,
-        data:reqBody 
-    }
-    return await axios(reqConfig).then((response)=>{
-        return response
-    })
-    .catch((err)=>{
-        return err
-    })
-}
+export const api = axios.create({
+  baseURL: serverURL,
+  timeout: 60000, // Render cold start can take ~50s
+})
+
+export const commonAPI = (method, url, data) => api({ method, url, data })

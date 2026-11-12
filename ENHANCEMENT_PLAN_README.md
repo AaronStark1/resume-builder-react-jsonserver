@@ -124,7 +124,7 @@ Brand colors are hard-coded in ~15 places (`#14002b`, `#3d0066`, `#ff7b00`, `#e5
 
 ### 3.1 MUI v7 `Grid` API — layouts are silently broken
 MUI 7.3.4's `Grid` is the former Grid v2. It **deletes** the `item` prop and the `xs/sm/md` props at runtime (see `node_modules/@mui/system/Grid/deleteLegacyGridProps.js`). Every `<Grid item xs={12} md={6}>` in the app is therefore ignored, and columns don't size responsively.
-- [ ] In `LandingPage.jsx`, `ResumeGeneratorPage.jsx`, `Footer.jsx` and `History.jsx`, migrate:
+- [x] In `LandingPage.jsx`, `ResumeGeneratorPage.jsx`, `Footer.jsx` and `History.jsx`, migrate:
   ```jsx
   <Grid item xs={12} md={6}>   →   <Grid size={{ xs: 12, md: 6 }}>
   <Grid item>                  →   <Grid>
@@ -133,12 +133,12 @@ MUI 7.3.4's `Grid` is the former Grid v2. It **deletes** the `item` prop and the
 
 ### 3.2 `Edit.jsx` — inputs lose focus after every keystroke
 `const Section = ({title, children}) => …` is declared **inside** the `Edit` render function. Each render creates a new component type, so React unmounts and remounts every `TextField` and focus is lost after each character.
-- [ ] Move `Section` to module scope (outside `Edit`), or inline it.
+- [x] Move `Section` to module scope (outside `Edit`), or inline it.
 - **Acceptance:** you can type a full sentence into any Edit modal field without clicking back into it.
 
 ### 3.3 `Edit.jsx` — many fields are not editable
 The modal omits `contactDetails.portfolio`, `education.university`, `education.year` and **all** of `professionalDetails` (jobTitle, company, location, duration).
-- [ ] Add the missing fields. To avoid repeating ~400 lines of near-identical `TextField` JSX in both `FormSteps` and `Edit`, create **`rbuild/src/config/resumeFields.js`**:
+- [x] Add the missing fields. To avoid repeating ~400 lines of near-identical `TextField` JSX in both `FormSteps` and `Edit`, create **`rbuild/src/config/resumeFields.js`**:
   ```js
   export const sections = [
     { key: 'personalDetails', title: 'Basic Information', fields: [
@@ -155,12 +155,12 @@ The modal omits `contactDetails.portfolio`, `education.university`, `education.y
   ]
   ```
   …and a reusable `<SectionFields section value onChange errors />` component that renders the fields. Use it in both `FormSteps` and `Edit`.
-- [ ] Use a single nested-update helper instead of hand-written spreads: `updateField(sectionKey, fieldName, value)`.
+- [x] Use a single nested-update helper instead of hand-written spreads: `updateField(sectionKey, fieldName, value)`.
 - **Acceptance:** every field of the data model can be edited in the modal, and the change appears in the preview and the PDF.
 
 ### 3.4 `commonAPI.js` swallows errors
 `commonAPI` `.catch`es and **returns** the axios error, so every caller's `try/catch` is dead code. On failure, callers read `response.data` → `undefined` → crash. For example, `Edit.handleUpdate` calls `onUpdate(undefined)`, and then `Preview` crashes on `updatedData.personalDetails`. `History` crashes on `resumesRes.data.forEach`.
-- [ ] Rewrite using an axios instance that **throws**:
+- [x] Rewrite using an axios instance that **throws**:
   ```js
   import axios from 'axios'
   import { serverURL } from './serverURL'
@@ -168,35 +168,35 @@ The modal omits `contactDetails.portfolio`, `education.university`, `education.y
   export const commonAPI = (method, url, data) => api({ method, url, data })
   ```
   Update `allAPIs.js` to pass relative paths (`/resumes`, …).
-- [ ] Wrap every call site in `try/catch` and show a non-blocking error: `FormSteps.handleAddResume`, `Preview.handlePdfDownload`, `Edit.getResumeDetailsById`, `Edit.handleUpdate`, `History.loadData`, `History.deleteHistory`.
+- [x] Wrap every call site in `try/catch` and show a non-blocking error: `FormSteps.handleAddResume`, `Preview.handlePdfDownload`, `Edit.getResumeDetailsById`, `Edit.handleUpdate`, `History.loadData`, `History.deleteHistory`.
 - **Acceptance:** with the server stopped, no screen crashes. Each action shows a friendly error message.
 
 ### 3.5 Downloading before submission creates orphan history records
 `Form.jsx` renders `Preview` (with the **Download PDF**, Edit and History buttons) beside the form while it is being filled. At that point `resumeId` is `null`, so a download POSTs `{ resumeId: null }` to `/history`. The History page then shows that card as **"Loading..." forever**.
-- [ ] Add a `mode` prop to `Preview`: `'live'` (form side, no action bar, or only a disabled hint "Finish the form to download") vs `'final'` (full action bar).
-- [ ] In `handlePdfDownload`, guard `if (!resumeId) return`.
-- [ ] In `History.jsx`, render a "Resume no longer available" state (with a delete button) when `resumeMap[item.resumeId]` is missing, instead of "Loading...".
+- [x] Add a `mode` prop to `Preview`: `'live'` (form side, no action bar, or only a disabled hint "Finish the form to download") vs `'final'` (full action bar).
+- [x] In `handlePdfDownload`, guard `if (!resumeId) return`.
+- [x] In `History.jsx`, render a "Resume no longer available" state (with a delete button) when `resumeMap[item.resumeId]` is missing, instead of "Loading...".
 - **Acceptance:** no `/history` record is ever created with a `null` `resumeId`, and no card is stuck on "Loading…".
 
 ### 3.6 Edit → preview sync is fragile
 `Preview` keeps a separate `updatedData` state and merges it field by field. `sk = updatedData.skills?.length ? updatedData.skills : skills` means that **removing all skills in Edit reverts the preview to the old skills**. The `Form`'s `formData` also goes stale.
-- [ ] Remove `updatedData` from `Preview`. Pass `setFormData` (or an `onUpdate` callback) from `Form` → `Preview` → `Edit`, and on successful PUT call `setFormData(response.data)`. `Preview` renders only from `formData`.
-- [ ] In `Edit`, re-fetch (or reset from the latest data) **each time the modal opens**, so Cancel discards unsaved edits.
+- [x] Remove `updatedData` from `Preview`. Pass `setFormData` (or an `onUpdate` callback) from `Form` → `Preview` → `Edit`, and on successful PUT call `setFormData(response.data)`. `Preview` renders only from `formData`.
+- [x] In `Edit`, re-fetch (or reset from the latest data) **each time the modal opens**, so Cancel discards unsaved edits.
 - **Acceptance:** edit → remove all skills → save → the preview shows the placeholder skills state. Edit → change name → Cancel → reopen → the original name is shown.
 
 ### 3.7 Double-submit on "Finish"
-- [ ] Add a `submitting` state in `FormSteps`. Disable the Finish button and show a `CircularProgress` inside it while the POST is in flight. Do the same for "Save Changes" in Edit and "Download PDF".
+- [x] Add a `submitting` state in `FormSteps`. Disable the Finish button and show a `CircularProgress` inside it while the POST is in flight. Do the same for "Save Changes" in Edit and "Download PDF".
 
 ### 3.8 SPA deep links 404 on Vercel
 The repo has no `vercel.json`, so refreshing `/history` or `/form` on the live site 404s (Vite builds a single `index.html`).
-- [ ] Add `rbuild/vercel.json` (Vercel's project root is `rbuild/`):
+- [x] Add `rbuild/vercel.json` (Vercel's project root is `rbuild/`):
   ```json
   { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
   ```
 
 ### 3.9 Invalid nested interactive elements
 `<Link to="…"><Button>…</Button></Link>` renders `<a><button>`, which is invalid HTML and causes double focus stops. It appears in `LandingPage.jsx` (×4), `ResumeGeneratorPage.jsx` and `Preview.jsx`.
-- [ ] Replace each one with `<Button component={Link} to="…">`.
+- [x] Replace each one with `<Button component={Link} to="…">`.
 
 ### 3.10 Remove the meaningless `/edit` route
 `App.jsx` mounts `<Edit/>` at `/edit` with no `resumeId`, which renders a lone disabled button. Remove the route and its import.

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from 'react'
 import {
   Box,
   Button,
@@ -7,205 +7,183 @@ import {
   Stack,
   TextField,
   Divider,
-  Chip
-} from "@mui/material";
-import { getAResumeAPI, updateAResumeAPI } from "../services/allAPIs";
-import Swal from "sweetalert2";
+  Chip,
+  CircularProgress
+} from '@mui/material'
+import { getAResumeAPI, updateAResumeAPI } from '../services/allAPIs'
+import Swal from 'sweetalert2'
+import { sections } from '../config/resumeFields'
+import SectionFields from './SectionFields'
 
 const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: { xs: "95%", md: 820 },
-  maxHeight: "90vh",
-  overflow: "hidden",
-  bgcolor: "#fff",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '95%', sm: 600, md: 800 },
+  maxHeight: '90vh',
+  overflow: 'hidden',
+  bgcolor: '#fff',
   borderRadius: 4,
   boxShadow: 24,
-  display: "flex",
-  flexDirection: "column"
-};
+  display: 'flex',
+  flexDirection: 'column'
+}
+
+// Module-level Section wrapper to avoid React remount / focus loss
+const Section = ({ title, children }) => (
+  <Box sx={{ mb: 4 }}>
+    <Typography variant="h6" fontWeight="bold" mb={2} color="primary.main">
+      {title}
+    </Typography>
+    {children}
+  </Box>
+)
+
+const initialResumeState = {
+  personalDetails: { name: '', title: '', location: '' },
+  contactDetails: { email: '', phoneNumber: '', github: '', linkedIn: '', portfolio: '' },
+  education: { course: '', college: '', university: '', year: '' },
+  professionalDetails: { jobTitle: '', company: '', location: '', duration: '' },
+  skills: [],
+  summary: ''
+}
 
 const Edit = ({ resumeId, onUpdate }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [resumeData, setResumeData] = useState(initialResumeState)
+  const [inputSkill, setInputSkill] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const [resumeData, setResumeData] = useState({
-    personalDetails: { name: "", title: "", location: "" },
-    contactDetails: { email: "", phoneNumber: "", github: "", linkedIn: "", portfolio: "" },
-    education: { course: "", college: "", university: "", year: "" },
-    professionalDetails: { jobTitle: "", company: "", location: "", duration: "" },
-    skills: [],
-    summary: ""
-  });
+  const loadResume = useCallback(async () => {
+    if (!resumeId) return
+    try {
+      const response = await getAResumeAPI(resumeId)
+      if (response?.data) {
+        setResumeData({
+          personalDetails: { ...initialResumeState.personalDetails, ...response.data.personalDetails },
+          contactDetails: { ...initialResumeState.contactDetails, ...response.data.contactDetails },
+          education: { ...initialResumeState.education, ...response.data.education },
+          professionalDetails: { ...initialResumeState.professionalDetails, ...response.data.professionalDetails },
+          skills: Array.isArray(response.data.skills) ? [...response.data.skills] : [],
+          summary: response.data.summary ?? ''
+        })
+      }
+    } catch {
+      Swal.fire('Error', 'Failed to fetch resume details', 'error')
+    }
+  }, [resumeId])
 
-  const [inputSkill, setInputSkill] = useState("");
-
-  const getResumeDetailsById = async (id) => {
-    const response = await getAResumeAPI(id);
-    setResumeData(response.data);
-  };
-
+  // Re-fetch / reset fresh data whenever the modal opens
   useEffect(() => {
-    if (resumeId) getResumeDetailsById(resumeId);
-  }, [resumeId]);
+    if (open && resumeId) {
+      loadResume()
+    }
+  }, [open, resumeId, loadResume])
+
+  const updateField = (sectionKey, fieldName, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      [sectionKey]: {
+        ...prev[sectionKey],
+        [fieldName]: value
+      }
+    }))
+  }
 
   const addSkill = () => {
-    if (!inputSkill) return;
-    if (resumeData.skills.includes(inputSkill)) return;
-    setResumeData({ ...resumeData, skills: [...resumeData.skills, inputSkill] });
-    setInputSkill("");
-  };
+    const trimmed = inputSkill.trim()
+    if (!trimmed) return
+    if (resumeData.skills.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
+      Swal.fire('Notice', 'Skill already added', 'info')
+      return
+    }
+    setResumeData((prev) => ({
+      ...prev,
+      skills: [...prev.skills, trimmed]
+    }))
+    setInputSkill('')
+  }
 
-  const removeSkill = (skill) => {
-    setResumeData({
-      ...resumeData,
-      skills: resumeData.skills.filter((s) => s !== skill)
-    });
-  };
+  const removeSkill = (skillToRemove) => {
+    setResumeData((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((s) => s !== skillToRemove)
+    }))
+  }
 
   const handleUpdate = async () => {
-    const response = await updateAResumeAPI(resumeId, resumeData);
-    onUpdate(response.data);
-    setOpen(false);
-
-    Swal.fire({
-      title: "Updated",
-      text: "Resume updated successfully",
-      icon: "success"
-    });
-  };
-
-  const Section = ({ title, children }) => (
-    <Box sx={{ mb: 4 }}>
-      <Typography fontWeight="bold" mb={2}>
-        {title}
-      </Typography>
-      <Stack spacing={2}>{children}</Stack>
-    </Box>
-  );
+    setSubmitting(true)
+    try {
+      const response = await updateAResumeAPI(resumeId, resumeData)
+      if (response?.data) {
+        onUpdate(response.data)
+        setOpen(false)
+        Swal.fire({
+          title: 'Updated',
+          text: 'Resume updated successfully',
+          icon: 'success'
+        })
+      }
+    } catch {
+      Swal.fire('Error', 'Failed to update resume. Please check your connection.', 'error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <>
-      <Button variant="contained" onClick={() => setOpen(true)} disabled={!resumeId}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setOpen(true)}
+        disabled={!resumeId}
+      >
         Edit
       </Button>
 
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <Modal open={open} onClose={() => !submitting && setOpen(false)}>
         <Box sx={modalStyle}>
 
           {/* HEADER */}
-          <Box sx={{ p: 3, borderBottom: "1px solid #eee" }}>
+          <Box sx={{ p: 3, borderBottom: '1px solid #eee' }}>
             <Typography variant="h6" fontWeight="bold">
               Edit Resume
             </Typography>
           </Box>
 
           {/* SCROLL BODY */}
-          <Box sx={{ p: 3, overflowY: "auto" }}>
+          <Box sx={{ p: 3, overflowY: 'auto' }}>
+            {sections.map((section) => (
+              <Box key={section.key}>
+                <Section title={section.title}>
+                  <SectionFields
+                    section={section}
+                    value={resumeData[section.key]}
+                    onChange={(field, val) => updateField(section.key, field, val)}
+                  />
+                </Section>
+                <Divider sx={{ my: 3 }} />
+              </Box>
+            ))}
 
-            <Section title="Personal Details">
-              <TextField
-                label="Full Name"
-                value={resumeData.personalDetails.name}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    personalDetails: { ...resumeData.personalDetails, name: e.target.value }
-                  })
-                }
-                fullWidth
-              />
-              <TextField
-                label="Title"
-                value={resumeData.personalDetails.title}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    personalDetails: { ...resumeData.personalDetails, title: e.target.value }
-                  })
-                }
-                fullWidth
-              />
-              <TextField
-                label="Location"
-                value={resumeData.personalDetails.location}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    personalDetails: { ...resumeData.personalDetails, location: e.target.value }
-                  })
-                }
-                fullWidth
-              />
-            </Section>
-
-            <Divider />
-
-            <Section title="Contact">
-              <TextField label="Email" value={resumeData.contactDetails.email}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    contactDetails: { ...resumeData.contactDetails, email: e.target.value }
-                  })
-                } fullWidth />
-
-              <TextField label="Phone" value={resumeData.contactDetails.phoneNumber}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    contactDetails: { ...resumeData.contactDetails, phoneNumber: e.target.value }
-                  })
-                } fullWidth />
-
-              <TextField label="GitHub" value={resumeData.contactDetails.github}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    contactDetails: { ...resumeData.contactDetails, github: e.target.value }
-                  })
-                } fullWidth />
-
-              <TextField label="LinkedIn" value={resumeData.contactDetails.linkedIn}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    contactDetails: { ...resumeData.contactDetails, linkedIn: e.target.value }
-                  })
-                } fullWidth />
-            </Section>
-
-            <Divider />
-
-            <Section title="Education">
-              <TextField label="Course" value={resumeData.education.course}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    education: { ...resumeData.education, course: e.target.value }
-                  })
-                } fullWidth />
-              <TextField label="College" value={resumeData.education.college}
-                onChange={(e) =>
-                  setResumeData({
-                    ...resumeData,
-                    education: { ...resumeData.education, college: e.target.value }
-                  })
-                } fullWidth />
-            </Section>
-
-            <Divider />
-
+            {/* SKILLS */}
             <Section title="Skills">
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} mb={2}>
                 <TextField
                   label="Add Skill"
                   value={inputSkill}
                   onChange={(e) => setInputSkill(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addSkill()
+                    }
+                  }}
                   fullWidth
                 />
-                <Button onClick={addSkill}>Add</Button>
+                <Button variant="outlined" onClick={addSkill}>Add</Button>
               </Stack>
 
               <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -217,45 +195,57 @@ const Edit = ({ resumeId, onUpdate }) => {
                     color="primary"
                   />
                 ))}
+                {resumeData.skills.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    No skills added yet.
+                  </Typography>
+                )}
               </Stack>
             </Section>
 
-            <Divider />
+            <Divider sx={{ my: 3 }} />
 
-            <Section title="Summary">
+            {/* SUMMARY */}
+            <Section title="Professional Summary">
               <TextField
                 multiline
                 rows={4}
                 value={resumeData.summary}
                 onChange={(e) =>
-                  setResumeData({ ...resumeData, summary: e.target.value })
+                  setResumeData((prev) => ({ ...prev, summary: e.target.value }))
                 }
                 fullWidth
               />
             </Section>
-
           </Box>
 
           {/* FOOTER */}
           <Box
             sx={{
               p: 2,
-              borderTop: "1px solid #eee",
-              display: "flex",
-              justifyContent: "flex-end",
+              borderTop: '1px solid #eee',
+              display: 'flex',
+              justifyContent: 'flex-end',
               gap: 2
             }}
           >
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button variant="contained" onClick={handleUpdate}>
-              Save Changes
+            <Button disabled={submitting} onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleUpdate}
+              disabled={submitting}
+              startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+            >
+              {submitting ? 'Saving...' : 'Save Changes'}
             </Button>
           </Box>
 
         </Box>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default Edit;
+export default Edit

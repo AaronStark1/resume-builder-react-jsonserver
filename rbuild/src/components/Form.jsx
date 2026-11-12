@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -6,9 +6,8 @@ import Preview from './Preview'
 import FormSteps from './FormSteps'
 
 const Form = () => {
-
   const [formData, setFormData] = useState({
-    personalDetails: { name: "", title: '', location: '' },
+    personalDetails: { name: '', title: '', location: '' },
     contactDetails: {
       email: '',
       phoneNumber: '',
@@ -21,70 +20,72 @@ const Form = () => {
       jobTitle: '',
       company: '',
       location: '',
-      duration: ''
+      duration: '',
     },
     skills: [],
-    summary: ''
+    summary: '',
   })
   const [resumeId, setResumeId] = useState(null)
   const [isFinished, setIsFinished] = useState(false)
 
   return (
-    <Box sx={{ px: { xs: 2, md: 5 }, py: 3 }}>
-
+    <Box sx={{ px: { xs: 2, md: 5 }, py: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* PAGE TITLE */}
-      <Typography variant="h5" fontWeight="bold" mb={2}>
-        Resume Builder
+      <Typography variant="h4" fontWeight="bold" mb={3} color="primary.main">
+        {isFinished ? 'Your Resume is Ready!' : 'Resume Builder'}
       </Typography>
 
       {/* WORK AREA */}
       <Stack
-        direction={{ xs: "column", md: "row" }}
+        direction={{ xs: 'column', md: 'row' }}
         spacing={4}
         sx={{
-          alignItems: "flex-start"
+          alignItems: 'flex-start',
         }}
       >
+        {isFinished ? (
+          <Box sx={{ width: '100%' }}>
+            <Preview
+              formData={formData}
+              resumeId={resumeId}
+              mode="final"
+              onUpdate={(updated) => setFormData(updated)}
+            />
+          </Box>
+        ) : (
+          <>
+            {/* FORM SIDE */}
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <FormSteps
+                formData={formData}
+                setFormData={setFormData}
+                setIsFinished={setIsFinished}
+                setResumeId={setResumeId}
+              />
+            </Box>
 
-        {
-          isFinished
-            ? (
-              <Box sx={{ width: "100%" }}>
-                <Preview formData={formData} resumeId={resumeId}/>
-              </Box>
-            )
-            : (
-              <>
-                {/* FORM SIDE */}
-                <Box sx={{ flex: 1 }}>
-                  <FormSteps
-                    formData={formData}
-                    setFormData={setFormData}
-                    isFinished={isFinished}
-                    setIsFinished={setIsFinished}
-                    setResumeId={setResumeId}
-                  />
-                </Box>
-
-                {/* PREVIEW SIDE */}
-                <Box
-                  sx={{
-                    flex: 1.3,
-                    p: 2,
-                    borderRadius: 2,
-                    backgroundColor: "#fafafa",
-                    border: "1px solid #e0e0e0",
-                    minHeight: 500
-                  }}
-                >
-                  <Preview formData={formData} resumeId={resumeId}/>
-                </Box>
-              </>
-            )
-        }
-
+            {/* PREVIEW SIDE */}
+            <Box
+              sx={{
+                flex: 1.2,
+                width: '100%',
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: '#fafafa',
+                border: '1px solid #e0e0e0',
+                minHeight: 500,
+              }}
+            >
+              <Preview
+                formData={formData}
+                resumeId={resumeId}
+                mode="live"
+                onUpdate={(updated) => setFormData(updated)}
+              />
+            </Box>
+          </>
+        )}
       </Stack>
-
     </Box>
   )
 }

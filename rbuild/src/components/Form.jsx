@@ -11,15 +11,15 @@ import CloseIcon from '@mui/icons-material/Close'
 
 import { usePageTitle } from '../utils/usePageTitle'
 import '../studio/builder.css'
-import { isAccentHex, isTemplateId } from '../config/resumeDesign'
+import { DEFAULT_ACCENT, DEFAULT_TEMPLATE, isAccentHex, isTemplateId } from '../config/resumeDesign'
 import Preview from './Preview'
 import FormSteps from './FormSteps'
 
 const STORAGE_KEY = 'rbuild_draft_resume_v1'
 
 const initialFormState = {
-  template: 'classic',
-  accentColor: '#3d0066',
+  template: DEFAULT_TEMPLATE, // any of the seven TEMPLATE_IDS (config/resumeDesign.js)
+  accentColor: DEFAULT_ACCENT,
   personalDetails: { name: '', title: '', location: '' },
   contactDetails: {
     email: '',

@@ -16,6 +16,7 @@ import Swal from 'sweetalert2'
 import { sections } from '../config/resumeFields'
 import SectionFields from './SectionFields'
 import TemplatePicker from './resume/TemplatePicker'
+import { DEFAULT_ACCENT, DEFAULT_TEMPLATE, isTemplateId } from '../config/resumeDesign'
 
 const modalStyle = {
   position: 'absolute',
@@ -43,8 +44,8 @@ const Section = ({ title, children }) => (
 )
 
 const initialResumeState = {
-  template: 'classic',
-  accentColor: '#3d0066',
+  template: DEFAULT_TEMPLATE,
+  accentColor: DEFAULT_ACCENT,
   personalDetails: { name: '', title: '', location: '' },
   contactDetails: { email: '', phoneNumber: '', github: '', linkedIn: '', portfolio: '' },
   education: { course: '', college: '', university: '', year: '' },
@@ -67,8 +68,8 @@ const Edit = ({ resumeId, onUpdate }) => {
       const response = await getAResumeAPI(resumeId)
       if (response?.data) {
         setResumeData({
-          template: response.data.template || 'classic',
-          accentColor: response.data.accentColor || '#3d0066',
+          template: isTemplateId(response.data.template) ? response.data.template : DEFAULT_TEMPLATE,
+          accentColor: response.data.accentColor || DEFAULT_ACCENT,
           personalDetails: { ...initialResumeState.personalDetails, ...response.data.personalDetails },
           contactDetails: { ...initialResumeState.contactDetails, ...response.data.contactDetails },
           education: { ...initialResumeState.education, ...response.data.education },
@@ -164,7 +165,7 @@ const Edit = ({ resumeId, onUpdate }) => {
             {/* TEMPLATE & ACCENT PICKER */}
             <Section title="Design &amp; Layout">
               <TemplatePicker
-                currentTemplate={resumeData.template || 'classic'}
+                currentTemplate={resumeData.template || DEFAULT_TEMPLATE}
                 currentAccent={resumeData.accentColor || '#3d0066'}
                 onTemplateChange={(tpl) => setResumeData((prev) => ({ ...prev, template: tpl }))}
                 onAccentChange={(hex) => setResumeData((prev) => ({ ...prev, accentColor: hex }))}

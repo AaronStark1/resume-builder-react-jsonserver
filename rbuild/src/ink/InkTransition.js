@@ -63,7 +63,8 @@ export class InkTransition {
 
   /**
    * Toggle the theme, spreading from `point` (viewport CSS px) or from `element`'s centre.
-   * `element` (the toggle) stays live above the overlay. Returns the new target theme.
+   * `element` (the toggle) stays live: above the overlay if its chrome is `data-ink-ignore`,
+   * otherwise through a hole in it. Returns the new target theme.
    */
   toggle({ point, element } = {}) {
     if (this.destroyed) return this.target
@@ -275,6 +276,8 @@ export class InkTransition {
     canvas.style.transition = 'none'
     canvas.style.opacity = '1'
     canvas.classList.add('is-active')
+    // Lifts the chrome that is left out of the snapshots above the canvas (see studio.css).
+    document.documentElement.setAttribute('data-ink', 'active')
   }
 
   fadeOut(ms) {
@@ -305,6 +308,7 @@ export class InkTransition {
       this.canvas.style.transition = ''
       this.canvas.style.opacity = ''
     }
+    document.documentElement.removeAttribute('data-ink')
     this.renderer?.release()
   }
 
@@ -409,8 +413,14 @@ function viewportCenter() {
   return { x: el.clientWidth / 2, y: el.clientHeight / 2 }
 }
 
-/** The toggle's box (CSS px, viewport-relative), kept transparent so it stays live. */
+/**
+ * The toggle's box (CSS px, viewport-relative), kept transparent so it stays live. A toggle inside
+ * chrome that is left out of the snapshots (`data-ink-ignore`, i.e. the header) needs no hole: it
+ * is not in the texture and it sits above the canvas, so cutting one would only expose a second,
+ * slightly offset copy of whatever is behind it.
+ */
 function holeOf(element) {
+  if (element?.closest?.('[data-ink-ignore]')) return null
   const r = element?.getBoundingClientRect?.()
   if (!r || !r.width || !r.height) return null
   const raw = getComputedStyle(element).borderTopLeftRadius || '0'

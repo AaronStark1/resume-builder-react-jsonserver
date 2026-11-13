@@ -9,8 +9,9 @@ body {
 .ink-canvas {
   position: fixed;
   inset: 0;
-  /* Above app bar (1100+), drawer (1200), modal (1300), snackbar (1400) and tooltip (1500). */
-  z-index: 2000;
+  /* Above everything the snapshot contains: modal (1300), snackbar (1400), tooltip (1500).
+     Only the header rises above it, and only while the ink is running (see studio.css). */
+  z-index: 10000;
   width: 100%;
   height: 100%;
   pointer-events: none;

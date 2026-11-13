@@ -24,7 +24,17 @@ description: Design-system and motion conventions for the rBuild resume builder 
 - Use MUI v7 APIs: `<Grid size={{ xs: 12, md: 6 }}>` (never `item`/`xs` props).
 - Links that look like buttons: `<Button component={Link} to="...">`, never nest Button in Link.
 - Never declare components inside another component's render body.
+- One header: `components/Header.jsx`, the fixed floating pill navigation, rendered once in
+  `App.jsx` for every route. Pages leave room for it with `--lpn-space`. It carries
+  `data-ink-ignore`: it is left out of the ink transition's snapshots and rises above the ink
+  canvas only while the ink runs, so never add a second header or a theme toggle outside it.
 - Resume rendering only through `components/resume/ResumeTemplate.jsx` + `ScaledPage`.
+- Seven templates, listed once in `config/resumeDesign.js` (`TEMPLATE_IDS`, `resumeTemplates`):
+  classic, modern, minimal (in `ResumeTemplate.jsx`) and executive, tech, compact, creative
+  (in `components/resume/templates/`). Inside a template: root is `<Box id="resume-a4-page">`
+  with `pageSx` (794 x 1123 min, white); no `<header>`, `<footer>` or `<button>` (print hides
+  them); no `font-stretch` (html2canvas ignores it); bullets via `templates/Bullets.jsx`;
+  never invent content — derive from the resume's own fields or omit the section.
 - Every API call goes through `services/allAPIs.js`, wrapped in try/catch with user feedback.
 - Resume data from the API always passes through `utils/normalizeResume.js`.
 

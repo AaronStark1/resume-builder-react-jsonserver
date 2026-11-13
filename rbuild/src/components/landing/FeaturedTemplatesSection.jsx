@@ -92,6 +92,13 @@ const StackCard = ({ template, index, focus }) => {
 
 const BADGE_TEXT = 'Real templates · Live A4 preview · '
 
+// Scroll progress -> focused card, for any number of cards: every template holds for a moment
+// (HOLD of its share of the scroll) and the stack travels between holds.
+const HOLD = 0.5
+const SPAN = 1 / (LAST + HOLD)
+const FOCUS_STOPS = showcaseTemplates.flatMap((_, index) => [index * SPAN, (index + HOLD) * SPAN])
+const FOCUS_VALUES = showcaseTemplates.flatMap((_, index) => [index, index])
+
 const RotatingBadge = ({ rotate }) => (
   <div className="lpt__badge" aria-hidden="true">
     <motion.svg viewBox="0 0 120 120" style={{ rotate }} focusable="false">
@@ -112,7 +119,7 @@ const RotatingBadge = ({ rotate }) => (
 
 /**
  * Desktop: a 100vh viewport pinned with `position: sticky` inside a tall section. Scroll progress
- * drives one "focus" value (with a hold on every template so each gets its moment); the three
+ * drives one "focus" value (with a hold on every template so each gets its moment); the
  * cards, the copy and the badge all derive from it. No scroll-jacking — the page scrolls natively.
  */
 const PinnedShowcase = () => {
@@ -122,7 +129,7 @@ const PinnedShowcase = () => {
   const [active, setActive] = useState(0)
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
-  const steps = useTransform(scrollYProgress, [0, 0.14, 0.42, 0.58, 0.86, 1], [0, 0, 1, 1, 2, 2])
+  const steps = useTransform(scrollYProgress, FOCUS_STOPS, FOCUS_VALUES)
   const focus = useSpring(steps, { stiffness: 140, damping: 26, mass: 0.5 })
   const badgeRotate = useTransform(scrollYProgress, [0, 1], [0, 320])
 
@@ -215,7 +222,7 @@ const PinnedShowcase = () => {
   )
 }
 
-/** Tablet, mobile and reduced motion: the same three cards as a layered vertical showcase. */
+/** Tablet, mobile and reduced motion: the same cards as a layered vertical showcase. */
 const FlowShowcase = () => (
   <section id="templates" className="lpt lpt--flow" aria-labelledby="lpt-heading">
     <div className="lpt__copy">

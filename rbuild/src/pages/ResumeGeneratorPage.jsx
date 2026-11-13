@@ -7,7 +7,7 @@ import ScaledPage from '../components/resume/ScaledPage'
 import ResumeTemplate from '../components/resume/ResumeTemplate'
 import TemplatePicker from '../components/resume/TemplatePicker'
 import SplitHeading from '../components/landing/SplitHeading'
-import { sampleResume } from '../components/landing/sampleData'
+import { sampleFor, templateFrames } from '../components/landing/sampleData'
 import { CtaLink } from '../components/studio/Bits'
 import { accentName, templateName, DEFAULT_ACCENT, DEFAULT_TEMPLATE } from '../config/resumeDesign'
 import '../studio/launchpad.css'
@@ -17,13 +17,11 @@ const HEADLINE = [[{ text: 'The drafting' }], [{ text: 'studio' }]]
 const points = [
   'Structured 7-step guided input form',
   'Real-time live A4 resume preview',
-  'Multiple professional templates & accent colors',
+  'Seven professional templates & six accent colors',
   'Instant high-resolution PDF download',
   'Autosaved draft history in browser',
   'Edit anytime with direct sync',
 ]
-
-const FRAMES = { classic: 'var(--lp-lavender)', modern: 'var(--lp-peach-soft)', minimal: 'var(--lp-sage)' }
 
 const rise = (delay) => ({
   initial: { opacity: 0, y: 22 },
@@ -39,7 +37,7 @@ const ResumeGeneratorPage = () => {
   usePageTitle('Create Resume')
   const [template, setTemplate] = useState(DEFAULT_TEMPLATE)
   const [accent, setAccent] = useState(DEFAULT_ACCENT)
-  const preview = useMemo(() => ({ ...sampleResume, template, accentColor: accent }), [template, accent])
+  const preview = useMemo(() => ({ ...sampleFor(template), template, accentColor: accent }), [template, accent])
 
   return (
     <div className="st st-launch">
@@ -91,7 +89,7 @@ const ResumeGeneratorPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease, delay: 0.4 }}
         >
-          <div className="st-launch__frame" style={{ '--frame': FRAMES[template] }}>
+          <div className="st-launch__frame" style={{ '--frame': templateFrames[template] }}>
             <div className="st-launch__frame-head">
               <span>{templateName(template)}</span>
               {accentName(accent)}

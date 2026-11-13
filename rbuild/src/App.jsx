@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom'
 import { MotionConfig, AnimatePresence, motion } from 'motion/react'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -34,17 +34,18 @@ const PageFallback = () => (
   </Box>
 )
 
-// The landing page brings its own editorial navigation (same colour-mode context and ink toggle).
-const AppHeader = () => {
-  const { pathname } = useLocation()
-  return pathname === '/' ? null : <Header />
-}
-
 const AnimatedRoutes = () => {
   const location = useLocation()
+  const navigationType = useNavigationType()
+
+  // A new page starts at its top (between the exit and the entrance, so the jump is never seen).
+  // Back/forward keeps the browser's position, and a hash is left to the page that owns the section.
+  const resetScroll = () => {
+    if (navigationType !== 'POP' && !window.location.hash) window.scrollTo(0, 0)
+  }
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" onExitComplete={resetScroll}>
       <motion.div
         key={location.pathname}
         variants={pageTransition}
@@ -74,7 +75,7 @@ function App() {
       {studioTokens}
       <BrowserRouter>
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <AppHeader />
+          <Header />
           <Box component="main" sx={{ flex: 1 }}>
             <AnimatedRoutes />
           </Box>

@@ -92,8 +92,9 @@ const Preview = ({ formData, resumeId, mode = 'final', onUpdate, lead = null, dr
       pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, totalHeightMm)
       heightLeft -= pageHeightMm
 
-      // Multi-page slicing if content exceeds 1 page
-      while (heightLeft > 0) {
+      // Multi-page slicing if content exceeds 1 page. The 794 x 1123 px sheet is 0.02 mm taller
+      // than A4, so a sliver under a millimetre is rounding, not a page.
+      while (heightLeft > 1) {
         position = -(totalHeightMm - heightLeft)
         pdf.addPage()
         pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, totalHeightMm)

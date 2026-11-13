@@ -6,7 +6,22 @@ const A4_HEIGHT = 1123
 
 const ScaledPage = ({ children, targetWidth, sx = {} }) => {
   const containerRef = useRef(null)
+  const scalerRef = useRef(null)
   const [scale, setScale] = useState(1)
+  const [pageHeight, setPageHeight] = useState(A4_HEIGHT)
+
+  // A resume longer than one page makes the frame taller instead of being cut off at the first
+  // page. `offsetHeight` is the unscaled layout height. Thumbnails clip to one page themselves
+  // (.lp-paper); print releases the frame in CSS (.resume-frame in easel.css), without this state.
+  useLayoutEffect(() => {
+    const el = scalerRef.current
+    if (!el) return undefined
+    const update = () => setPageHeight(Math.max(A4_HEIGHT, el.offsetHeight))
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   // Layout effect: the scale is applied before the first paint, so a preview never flashes unscaled.
   useLayoutEffect(() => {
@@ -40,18 +55,21 @@ const ScaledPage = ({ children, targetWidth, sx = {} }) => {
   return (
     <Box
       ref={containerRef}
+      className="resume-frame"
       sx={{
         width: targetWidth ? `${targetWidth}px` : '100%',
-        height: `${Math.ceil(A4_HEIGHT * scale)}px`,
+        height: `${Math.ceil(pageHeight * scale)}px`,
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'flex-start',
         ...sx,
       }}
     >
       <Box
         id="resume-scaler"
+        ref={scalerRef}
         sx={{
           width: `${A4_WIDTH}px`,
           minHeight: `${A4_HEIGHT}px`,

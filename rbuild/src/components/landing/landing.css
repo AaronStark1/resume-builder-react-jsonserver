@@ -691,7 +691,7 @@
 
 /* Desktop: a tall section whose 100vh child is pinned with position: sticky. */
 .lpt--pinned {
-  height: 340vh;
+  height: 430vh; /* four templates: roughly a viewport of scroll each, plus the pin itself */
 }
 
 .lpt__sticky {

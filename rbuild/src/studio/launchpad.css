@@ -14,8 +14,8 @@
   --st-desk: var(--lp-night);
   --st-desk-line: rgba(255, 255, 255, 0.14);
   position: relative;
-  min-height: calc(100vh - 4.3rem);
-  padding: clamp(2.5rem, 6vw, 5rem) var(--lp-gutter) clamp(3.5rem, 7vw, 6rem);
+  min-height: 100vh;
+  padding: calc(var(--lpn-space) + clamp(2.5rem, 6vw, 5rem)) var(--lp-gutter) clamp(3.5rem, 7vw, 6rem);
   overflow: hidden;
   background:
     radial-gradient(60rem 40rem at 92% 12%, var(--lp-night-glow), transparent 70%),

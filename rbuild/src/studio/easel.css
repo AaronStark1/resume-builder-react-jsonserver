@@ -214,11 +214,18 @@
 }
 
 .st-view__design .st-picker__templates {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .st-view__stage {
   min-width: 0;
+}
+
+/* Seven template tiles make the side panel taller than a short window: let it scroll with the page. */
+@media (max-height: 940px) {
+  .st-view__side {
+    position: static;
+  }
 }
 
 /* Below this width the page would no longer fit at full size beside the side panel. */
@@ -238,7 +245,7 @@
   }
 
   .st-view__design .st-picker__templates {
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(6.6rem, 1fr));
   }
 }
 
@@ -284,5 +291,13 @@
   .st-sheet::before,
   .st-sheet::after {
     display: none;
+  }
+
+  /* The on-screen frame (ScaledPage) is sized in pixels for the screen's scale; on paper the
+     document takes its natural height, so a second page prints instead of being cut off. */
+  .resume-frame {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 }

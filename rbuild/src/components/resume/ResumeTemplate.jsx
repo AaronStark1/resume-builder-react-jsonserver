@@ -5,9 +5,19 @@ import Chip from '@mui/material/Chip'
 import { ThemeProvider } from '@mui/material/styles'
 import { normalizeResume } from '../../utils/normalizeResume'
 import { getAppTheme } from '../../theme'
+import { A4_MIN_HEIGHT, A4_WIDTH } from './templates/helpers'
+import ExecutiveTemplate from './templates/ExecutiveTemplate'
+import TechTemplate from './templates/TechTemplate'
+import CompactTemplate from './templates/CompactTemplate'
+import CreativeTemplate from './templates/CreativeTemplate'
 
-const A4_WIDTH = 794
-const A4_MIN_HEIGHT = 1123
+// The four newer archetypes live in ./templates; classic, modern and minimal are below.
+const TEMPLATE_COMPONENTS = {
+  executive: ExecutiveTemplate,
+  tech: TechTemplate,
+  compact: CompactTemplate,
+  creative: CreativeTemplate,
+}
 
 // The resume is a printed document: white paper and dark text whatever the app theme, so its MUI
 // tokens (text.secondary, Chip, typography) always resolve against the light theme.
@@ -43,6 +53,28 @@ const ResumeDocument = ({ data, placeholders = false }) => {
     contactDetails.linkedIn ? { label: 'LinkedIn', url: contactDetails.linkedIn } : null,
     contactDetails.portfolio ? { label: 'Portfolio', url: contactDetails.portfolio } : null
   ].filter(Boolean)
+
+  // -------------------------------------------------------------
+  // EXECUTIVE / TECH / COMPACT / CREATIVE (see ./templates)
+  // -------------------------------------------------------------
+  const Archetype = TEMPLATE_COMPONENTS[template]
+  if (Archetype) {
+    return (
+      <Archetype
+        name={name || 'Full Name'}
+        title={title || 'Professional Title'}
+        contactItems={contactItems}
+        links={links}
+        accentColor={accentColor}
+        summary={summary || (placeholders ? 'Add your professional summary here.' : '')}
+        experienceList={experienceList}
+        educationList={educationList}
+        skills={skills}
+        projects={projects}
+        certifications={certifications}
+      />
+    )
+  }
 
   // -------------------------------------------------------------
   // MODERN TEMPLATE (2 Columns: Left Accent Sidebar, Right Body)
